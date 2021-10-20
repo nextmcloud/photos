@@ -3,7 +3,7 @@
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
  *
- * @license GNU AGPL version 3 or any later version
+ * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 import { generateUrl } from '@nextcloud/router'
@@ -31,6 +30,7 @@ import { videoMimes } from '../services/AllowedMimes'
 const Albums = () => import('../views/Albums')
 const Tags = () => import('../views/Tags')
 const Timeline = () => import('../views/Timeline')
+const Timeline1 = () => import('../views/Timeline1')
 
 Vue.use(Router)
 
@@ -42,8 +42,9 @@ if (!isMapsInstalled) {
 /**
  * Parse the path of a route : join the elements of the array and return a single string with slashes
  * + always lead current path with a slash
- * @param {string|array} path path arguments to parse
- * @returns {string}
+ *
+ * @param {string | Array} path path arguments to parse
+ * @return {string}
  */
 const parsePathParams = (path) => {
 	return `/${Array.isArray(path) ? path.join('/') : path || ''}`
@@ -62,6 +63,17 @@ export default new Router({
 			name: 'timeline',
 			props: route => ({
 				rootTitle: t('photos', 'Your photos'),
+			}),
+		},
+		{
+			path: '/gallery/:path*',
+			component: Timeline1,
+			name: 'timeline1',
+			props: route => ({
+				path: parsePathParams(route.params.path),
+				// if path is empty
+				isRoot: !route.params.path,
+				rootTitle: t('photos', 'Your gallery'),
 			}),
 		},
 		{

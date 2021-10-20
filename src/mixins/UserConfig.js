@@ -3,7 +3,7 @@
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
  *
- * @license GNU AGPL version 3 or any later version
+ * @license AGPL-3.0-or-later
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 import { emit, subscribe, unsubscribe } from '@nextcloud/event-bus'
@@ -30,15 +29,22 @@ const eventName = 'photos:user-config-changed'
 export default {
 	data() {
 		const croppedLayoutLocalStorage = localStorage.getItem('photos:croppedLayout')
+		const galleryLayoutLocalStorage = localStorage.getItem('photos:galleryLayout')
 		return {
 			croppedLayout: croppedLayoutLocalStorage !== null
 				? croppedLayoutLocalStorage === 'true'
 				: loadState('photos', 'croppedLayout') === 'true',
+
+			galleryLayout: galleryLayoutLocalStorage !== null
+				? galleryLayoutLocalStorage === 'true'
+				: loadState('photos', 'galleryLayout') === 'true',
+			
 		}
 	},
 
 	created() {
 		subscribe(eventName, this.updateLocalSetting)
+		this.checkLocalSettings();
 	},
 
 	beforeDestroy() {
@@ -49,6 +55,43 @@ export default {
 		updateLocalSetting({ setting, value }) {
 			this[setting] = value
 		},
+
+		checkLocalSettings(){
+			var v = "galleryLayout"
+			var oldVal = localStorage.getItem('photos:' +v)
+			if(oldVal==="true"){
+				console.log("route"+ this.$route.name);
+				if(this.$route.name!=="timeline1"){
+					this.$router.push('/gallery'); 	
+				}
+				
+			}
+		},
+		
+		updateGallerySettings(setting){
+			const value = this[setting]
+			// Long time save setting
+			axios.put(generateUrl('apps/photos/api/v1/config/' + setting), {
+				value: value.toString(),
+			})
+			var v ="galleryLayout";
+			var oldVal = localStorage.getItem('photos:' + setting)
+			console.log(oldVal);
+			// Current session save setting
+			localStorage.setItem('photos:' + setting, value)
+			// Visible elements update setting
+			emit(eventName, { setting, value })
+			if(value){
+				console.log("aaaa"+ value);
+				this.$router.push('/gallery'); 
+			}
+			else{
+				this.$router.push('/'); 
+			}
+			
+		},
+
+
 		updateSetting(setting) {
 			const value = this[setting]
 			// Long time save setting

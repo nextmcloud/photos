@@ -1,3 +1,1176 @@
-/*! For license information please see photos-src_patchedRequest_js-src_views_Tags_vue.js.LICENSE.txt */
-(self.webpackChunkphotos=self.webpackChunkphotos||[]).push([["src_patchedRequest_js-src_views_Tags_vue"],{82223:(n,t,e)=>{const i=e(14601),a=i.prepareRequestOptions;i.prepareRequestOptions=function(n,t){t.cancelToken&&"object"==typeof t.cancelToken&&(n.cancelToken=t.cancelToken),a(n,t),t.method&&"string"==typeof t.method&&(n.method=t.method)},n.exports=i},81067:(n,t,e)=>{"use strict";e.d(t,{Z:()=>A});var i=e(48796),a=e.n(i),o=e(4820),r=e(84564),s=e.n(r),c=e(79753);a().getPatcher().patch("request",o.default);const d=(0,c.generateRemoteUrl)("dav"),l=a().createClient(d),A=(s()(d).pathname,l)},2161:(n,t,e)=>{"use strict";e.d(t,{N:()=>i});const i="\n\t<oc:fileid />\n\t<d:getlastmodified />\n\t<d:getetag />\n\t<d:getcontenttype />\n\t<d:getcontentlength />\n\t<nc:has-preview />\n\t<oc:favorite />\n\t<d:resourcetype />";'<?xml version="1.0"?>\n\t\t\t<d:propfind xmlns:d="DAV:"\n\t\t\t\txmlns:oc="http://owncloud.org/ns"\n\t\t\t\txmlns:nc="http://nextcloud.org/ns"\n\t\t\t\txmlns:ocs="http://open-collaboration-services.org/ns">\n\t\t\t\t<d:prop>\n\t\t\t\t\t'.concat(i,"\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>")},32706:(n,t,e)=>{"use strict";e.d(t,{Z:()=>o});var i=e(23645),a=e.n(i)()(!0);a.push([n.id,".file[data-v-72c8239b],.folder[data-v-72c8239b]{position:relative;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;border-radius:var(--border-radius);overflow:hidden}.file .cover[data-v-72c8239b],.folder .cover[data-v-72c8239b]{z-index:2;width:100%;padding-bottom:100%;transition:opacity var(--animation-quick) ease-in-out;opacity:0;background-color:var(--color-main-text)}.file.active .cover[data-v-72c8239b],.file:active .cover[data-v-72c8239b],.file:hover .cover[data-v-72c8239b],.file:focus .cover[data-v-72c8239b],.folder.active .cover[data-v-72c8239b],.folder:active .cover[data-v-72c8239b],.folder:hover .cover[data-v-72c8239b],.folder:focus .cover[data-v-72c8239b]{opacity:.3}.file--clear.active .cover[data-v-72c8239b],.file--clear:active .cover[data-v-72c8239b],.file--clear:hover .cover[data-v-72c8239b],.file--clear:focus .cover[data-v-72c8239b],.folder--clear.active .cover[data-v-72c8239b],.folder--clear:active .cover[data-v-72c8239b],.folder--clear:hover .cover[data-v-72c8239b],.folder--clear:focus .cover[data-v-72c8239b]{opacity:.1}.fade-enter-active[data-v-72c8239b],.fade-leave-active[data-v-72c8239b]{transition:opacity var(--animation-quick) ease-in-out}.fade-enter[data-v-72c8239b],.fade-leave-to[data-v-72c8239b]{opacity:0}.folder-content[data-v-72c8239b]{position:absolute;display:grid;width:100%;height:100%}.folder-content--grid-1[data-v-72c8239b]{grid-template-columns:1fr;grid-template-rows:1fr}.folder-content--grid-2[data-v-72c8239b]{grid-template-columns:1fr;grid-template-rows:1fr 1fr}.folder-content--grid-3[data-v-72c8239b]{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}.folder-content--grid-3 img[data-v-72c8239b]:first-child{grid-column:span 2}.folder-content--grid-4[data-v-72c8239b]{grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr}.folder-content img[data-v-72c8239b]{width:100%;height:100%;object-fit:cover}.folder-name[data-v-72c8239b]{position:absolute;z-index:3;display:flex;overflow:hidden;flex-direction:column;width:100%;height:100%;transition:opacity var(--animation-quick) ease-in-out;opacity:1}.folder-name__icon[data-v-72c8239b]{height:40%;margin-top:calc(30% - 1rem / 2);background-size:40%}.folder-name__name[data-v-72c8239b]{overflow:hidden;height:1rem;padding:0 10px;text-align:center;white-space:nowrap;text-overflow:ellipsis;color:var(--color-main-background);text-shadow:0 0 8px var(--color-main-text);font-size:1rem;line-height:1rem}.folder--clear .folder-name__icon[data-v-72c8239b]{opacity:.3}.folder--clear .folder-name__name[data-v-72c8239b]{color:var(--color-main-text);text-shadow:0 0 8px var(--color-main-background)}.folder:not(.folder--clear) .cover[data-v-72c8239b]{opacity:.3}.folder:not(.folder--clear):active .folder-name[data-v-72c8239b],.folder:not(.folder--clear):active .cover[data-v-72c8239b],.folder:not(.folder--clear):hover .folder-name[data-v-72c8239b],.folder:not(.folder--clear):hover .cover[data-v-72c8239b],.folder:not(.folder--clear):focus .folder-name[data-v-72c8239b],.folder:not(.folder--clear):focus .cover[data-v-72c8239b]{opacity:0}","",{version:3,sources:["webpack://src/mixins/FileFolder.scss","webpack://src/components/FolderTagPreview.vue"],names:[],mappings:"AAsBA,gDAEC,iBAAA,CACA,YAAA,CACA,kBAAA,CACA,sBAAA,CACA,wBAAA,CAAA,gBAAA,CACA,kCAAA,CACA,eAAA,CAEA,8DACC,SAAA,CAMA,UAAA,CACA,mBAAA,CACA,qDAAA,CACA,SAAA,CACA,uCAAA,CAOA,4SACC,UAAA,CAQD,oWACC,UAAA,CAKH,wEACC,qDAAA,CAGD,6DACC,SAAA,CCiFD,iCACC,iBAAA,CACA,YAAA,CACA,UAAA,CACA,WAAA,CAEA,yCACC,yBAAA,CACA,sBAAA,CAED,yCACC,yBAAA,CACA,0BAAA,CAED,yCACC,6BAAA,CACA,0BAAA,CACA,yDACC,kBAAA,CAGF,yCACC,6BAAA,CACA,0BAAA,CAED,qCACC,UAAA,CACA,WAAA,CAEA,gBAAA,CAMF,8BACC,iBAAA,CACA,SAAA,CACA,YAAA,CACA,eAAA,CACA,qBAAA,CACA,UAAA,CACA,WAAA,CACA,qDAAA,CACA,SAAA,CACA,oCACC,UAAA,CACA,+BAAA,CACA,mBAAA,CAED,oCACC,eAAA,CACA,WAnBY,CAoBZ,cAAA,CACA,iBAAA,CACA,kBAAA,CACA,sBAAA,CACA,kCAAA,CACA,0CAAA,CACA,cA1BY,CA2BZ,gBA3BY,CAmCZ,mDACC,UAAA,CAED,mDACC,4BAAA,CACA,gDAAA,CAQD,oDACC,UAAA,CAQA,gXAEC,SAAA",sourcesContent:["/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n\n.file,\n.folder {\n\tposition: relative;\n\tdisplay: flex;\n\talign-items: center;\n\tjustify-content: center;\n\tuser-select: none;\n\tborder-radius: var(--border-radius);\n\toverflow: hidden;\n\n\t.cover {\n\t\tz-index: 2;\n\t\t// We want nice squares despite anything that is in it.\n\t\t// The .cover is what makes the exact square size of the grid.\n\t\t// We use padding-bottom because padding with percentage\n\t\t// always refers to the width. And we only want to fit\n\t\t// the css grid's width.\n\t\twidth: 100%;\n\t\tpadding-bottom: 100%;\n\t\ttransition: opacity var(--animation-quick) ease-in-out;\n\t\topacity: 0;\n\t\tbackground-color: var(--color-main-text);\n\t}\n\n\t&.active,\n\t&:active,\n\t&:hover,\n\t&:focus {\n\t\t.cover {\n\t\t\topacity: .3;\n\t\t}\n\t}\n\n\t&--clear.active,\n\t&--clear:active,\n\t&--clear:hover,\n\t&--clear:focus {\n\t\t.cover {\n\t\t\topacity: .1;\n\t\t}\n\t}\n}\n\n.fade-enter-active, .fade-leave-active {\n\ttransition: opacity var(--animation-quick) ease-in-out;\n}\n\n.fade-enter, .fade-leave-to {\n\topacity: 0;\n}\n","$sizes: (400: (count: 3, marginTop: 66, marginW: 8), 700: (count: 4, marginTop: 66, marginW: 8), 1024: (count: 5, marginTop: 66, marginW: 44), 1280: (count: 4, marginTop: 66, marginW: 44), 1440: (count: 5, marginTop: 88, marginW: 66), 1600: (count: 6, marginTop: 88, marginW: 66), 2048: (count: 7, marginTop: 88, marginW: 66), 2560: (count: 8, marginTop: 88, marginW: 88), 3440: (count: 9, marginTop: 88, marginW: 88), max: (count: 10, marginTop: 88, marginW: 88));\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n@import '../mixins/FileFolder.scss';\n\n.folder-content {\n\tposition: absolute;\n\tdisplay: grid;\n\twidth: 100%;\n\theight: 100%;\n\t// folder layout if less than 4 pictures\n\t&--grid-1 {\n\t\tgrid-template-columns: 1fr;\n\t\tgrid-template-rows: 1fr;\n\t}\n\t&--grid-2 {\n\t\tgrid-template-columns: 1fr;\n\t\tgrid-template-rows: 1fr 1fr;\n\t}\n\t&--grid-3 {\n\t\tgrid-template-columns: 1fr 1fr;\n\t\tgrid-template-rows: 1fr 1fr;\n\t\timg:first-child {\n\t\t\tgrid-column: span 2;\n\t\t}\n\t}\n\t&--grid-4 {\n\t\tgrid-template-columns: 1fr 1fr;\n\t\tgrid-template-rows: 1fr 1fr;\n\t}\n\timg {\n\t\twidth: 100%;\n\t\theight: 100%;\n\n\t\tobject-fit: cover;\n\t}\n}\n\n$name-height: 1rem;\n\n.folder-name {\n\tposition: absolute;\n\tz-index: 3;\n\tdisplay: flex;\n\toverflow: hidden;\n\tflex-direction: column;\n\twidth: 100%;\n\theight: 100%;\n\ttransition: opacity var(--animation-quick) ease-in-out;\n\topacity: 1;\n\t&__icon {\n\t\theight: 40%;\n\t\tmargin-top: calc(30% - #{$name-height} / 2); // center name+icon\n\t\tbackground-size: 40%;\n\t}\n\t&__name {\n\t\toverflow: hidden;\n\t\theight: $name-height;\n\t\tpadding: 0 10px;\n\t\ttext-align: center;\n\t\twhite-space: nowrap;\n\t\ttext-overflow: ellipsis;\n\t\tcolor: var(--color-main-background);\n\t\ttext-shadow: 0 0 8px var(--color-main-text);\n\t\tfont-size: $name-height;\n\t\tline-height: $name-height;\n\t}\n}\n\n// Cover management empty/full\n.folder {\n\t// if no img, let's display the folder icon as default black\n\t&--clear {\n\t\t.folder-name__icon {\n\t\t\topacity: .3;\n\t\t}\n\t\t.folder-name__name {\n\t\t\tcolor: var(--color-main-text);\n\t\t\ttext-shadow: 0 0 8px var(--color-main-background);\n\t\t}\n\t}\n\n\t// show the cover as background\n\t// if  there are pictures in it\n\t// so we can sho the folder+name above it\n\t&:not(.folder--clear) {\n\t\t.cover {\n\t\t\topacity: .3;\n\t\t}\n\n\t\t// hide everything but pictures\n\t\t// on hover/active/focus\n\t\t&:active,\n\t\t&:hover,\n\t\t&:focus {\n\t\t\t.folder-name,\n\t\t\t.cover {\n\t\t\t\topacity: 0;\n\t\t\t}\n\t\t}\n\t}\n}\n\n"],sourceRoot:""}]);const o=a},21653:(n,t,e)=>{"use strict";e.d(t,{Z:()=>o});var i=e(23645),a=e.n(i)()(!0);a.push([n.id,"@media(min-width: 0px)and (max-width: 400px){.grid-container[data-v-2e312000]{padding:0px 8px 256px 8px}}@media(min-width: 400px)and (max-width: 700px){.grid-container[data-v-2e312000]{padding:0px 8px 256px 8px}}@media(min-width: 700px)and (max-width: 1024px){.grid-container[data-v-2e312000]{padding:0px 44px 256px 44px}}@media(min-width: 1024px)and (max-width: 1280px){.grid-container[data-v-2e312000]{padding:0px 44px 256px 44px}}@media(min-width: 1280px)and (max-width: 1440px){.grid-container[data-v-2e312000]{padding:0px 66px 256px 66px}}@media(min-width: 1440px)and (max-width: 1600px){.grid-container[data-v-2e312000]{padding:0px 66px 256px 66px}}@media(min-width: 1600px)and (max-width: 2048px){.grid-container[data-v-2e312000]{padding:0px 66px 256px 66px}}@media(min-width: 2048px)and (max-width: 2560px){.grid-container[data-v-2e312000]{padding:0px 88px 256px 88px}}@media(min-width: 2560px)and (max-width: 3440px){.grid-container[data-v-2e312000]{padding:0px 88px 256px 88px}}@media(min-width: 3440px){.grid-container[data-v-2e312000]{padding:0px 88px 256px 88px}}","",{version:3,sources:["webpack://src/mixins/GridSizes.scss","webpack://src/views/Tags.vue"],names:[],mappings:"AAoCG,6CCwPH,iCAEE,yBAAA,CAAA,CD1PC,+CCwPH,iCAEE,yBAAA,CAAA,CD1PC,gDCwPH,iCAEE,2BAAA,CAAA,CD1PC,iDCwPH,iCAEE,2BAAA,CAAA,CD1PC,iDCwPH,iCAEE,2BAAA,CAAA,CD1PC,iDCwPH,iCAEE,2BAAA,CAAA,CD1PC,iDCwPH,iCAEE,2BAAA,CAAA,CD1PC,iDCwPH,iCAEE,2BAAA,CAAA,CD1PC,iDCwPH,iCAEE,2BAAA,CAAA,CD9PC,0BC4PH,iCAEE,2BAAA,CAAA",sourcesContent:["/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n@use 'sass:map';\n\n@mixin grid-sizes() {\n\t$previous: 0;\n\n\t@each $size, $config in $sizes {\n\t\t$count: map-get($config, 'count');\n\t\t$marginTop: map-get($config, 'marginTop');\n\t\t$marginW: map-get($config, 'marginW');\n\n\t\t@if $size == 'max' {\n\t\t\t@media (min-width: #{$previous}px) {\n\t\t\t\t@content($marginTop, $marginW);\n\t\t\t}\n\t\t} @else {\n\t\t\t@media (min-width: #{$previous}px) and (max-width: #{$size}px) {\n\t\t\t\t@content($marginTop, $marginW);\n\t\t\t}\n\t\t}\n\t\t$previous: $size;\n\t}\n}\n","$sizes: (400: (count: 3, marginTop: 66, marginW: 8), 700: (count: 4, marginTop: 66, marginW: 8), 1024: (count: 5, marginTop: 66, marginW: 44), 1280: (count: 4, marginTop: 66, marginW: 44), 1440: (count: 5, marginTop: 88, marginW: 66), 1600: (count: 6, marginTop: 88, marginW: 66), 2048: (count: 7, marginTop: 88, marginW: 66), 2560: (count: 8, marginTop: 88, marginW: 88), 3440: (count: 9, marginTop: 88, marginW: 88), max: (count: 10, marginTop: 88, marginW: 88));\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n@import '../mixins/GridSizes.scss';\n\n.grid-container {\n\t@include grid-sizes using ($marginTop, $marginW) {\n\t\tpadding: 0px #{$marginW}px 256px #{$marginW}px;\n\t}\n}\n"],sourceRoot:""}]);const o=a},35035:(n,e,i)=>{"use strict";i.d(e,{Z:()=>l});var a=i(79753);const o={name:"FolderTagPreview",props:{icon:{type:String,default:"icon-folder"},id:{type:Number,required:!0},name:{type:String,required:!0},path:{type:String,required:!0},fileList:{type:Array,default:()=>[]}},data:()=>({loaded:!1,failed:[]}),computed:{isEmpty(){return 0===this.previewList.length},ariaUuid(){return"folder-".concat(this.id)},ariaLabel(){return t("photos",'Open the "{name}" sub-directory',{name:this.name})},previewList(){return this.fileList.filter((n=>-1===this.failed.indexOf(n.fileid)))},to(){const n=/^\/?(.+)/i.exec(this.path)[1];return Object.assign({},this.$route,{params:{path:n.split("/")}})}},methods:{generateImgSrc:({fileid:n,etag:t})=>(0,a.generateUrl)("/core/preview?fileId=".concat(n,"&x=",256,"&y=",256,"&a=true&v=").concat(t)),onPreviewFail({fileid:n}){this.failed.push(n)}}};var r=i(93379),s=i.n(r),c=i(32706),d={insert:"head",singleton:!1};s()(c.Z,d);c.Z.locals;const l=(0,i(51900).Z)(o,(function(){var n=this,t=n.$createElement,e=n._self._c||t;return e("router-link",{staticClass:"folder",class:{"folder--clear":n.isEmpty},attrs:{to:n.to,"aria-label":n.ariaLabel}},[e("transition",{attrs:{name:"fade"}},[e("div",{directives:[{name:"show",rawName:"v-show",value:n.loaded,expression:"loaded"}],staticClass:"folder-content",class:"folder-content--grid-"+n.previewList.length,attrs:{role:"none"}},n._l(n.previewList,(function(t){return e("img",{key:t.fileid,attrs:{src:n.generateImgSrc(t),alt:""},on:{load:function(t){n.loaded=!0},error:function(e){return n.onPreviewFail(t)}}})})),0)]),n._v(" "),e("div",{staticClass:"folder-name"},[e("span",{staticClass:"folder-name__icon",class:[n.isEmpty?"icon-dark":"icon-white",n.icon],attrs:{role:"img"}}),n._v(" "),e("p",{staticClass:"folder-name__name",attrs:{id:n.ariaUuid}},[n._v("\n\t\t\t"+n._s(n.name)+"\n\t\t")])]),n._v(" "),e("div",{staticClass:"cover",attrs:{role:"none"}})],1)}),[],!1,null,"72c8239b",null).exports},15323:(n,t,e)=>{"use strict";e.r(t),e.d(t,{default:()=>_});var i=e(20629),a=e(30329),o=e.n(a),r=e(81067),s=e(99588);async function c(n,t={}){return(await r.Z.getDirectoryContents("/systemtags/",Object.assign({},{data:'<?xml version="1.0"?>\n\t\t\t<d:propfind  xmlns:d="DAV:"\n\t\t\t\txmlns:oc="http://owncloud.org/ns">\n\t\t\t\t<d:prop>\n\t\t\t\t\t<oc:id />\n\t\t\t\t\t<oc:display-name />\n\t\t\t\t\t<oc:user-visible />\n\t\t\t\t\t<oc:user-assignable />\n\t\t\t\t\t<oc:can-assign />\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>',details:!0},t))).data.map((n=>(0,s.AX)(n)))}var d=e(22200),l=e(2161),A=e(3301);async function p(n,t={}){t=Object.assign({method:"REPORT",data:'<?xml version="1.0"?>\n\t\t\t<oc:filter-files\n\t\t\t\txmlns:d="DAV:"\n\t\t\t\txmlns:oc="http://owncloud.org/ns"\n\t\t\t\txmlns:nc="http://nextcloud.org/ns"\n\t\t\t\txmlns:ocs="http://open-collaboration-services.org/ns">\n\t\t\t\t<d:prop>\n\t\t\t\t\t'.concat(l.N,"\n\t\t\t\t</d:prop>\n\t\t\t\t<oc:filter-rules>\n\t\t\t\t\t<oc:systemtag>").concat(n,"</oc:systemtag>\n\t\t\t\t</oc:filter-rules>\n\t\t\t</oc:filter-files>"),details:!0},t);const e="/files/".concat((0,d.getCurrentUser)().uid);return(await r.Z.getDirectoryContents(e,t)).data.map((n=>(0,s.AX)(n))).filter((n=>n.mime&&-1!==A.ZP.indexOf(n.mime))).map((n=>Object.assign({},n,{filename:n.filename.replace(e,"")})))}var m=e(68287),h=e(4615),g=e(35035),u=e(25108);const f={name:"Tag",components:{FolderTagPreview:g.Z},inheritAttrs:!1,props:{item:{type:Object,required:!0}},data:()=>({cancelRequest:null}),computed:{...(0,i.Se)(["files","tags"]),folderContent(){return this.tags[this.item.injected.id].files},fileList(){return this.folderContent?this.folderContent.map((n=>this.files[n])).filter((n=>!!n)).slice(0,4):[]}},beforeDestroy(){this.cancelRequest&&this.cancelRequest("Navigated away")},async created(){const{request:n,cancel:t}=(0,h.Z)(p);this.cancelRequest=t;try{const t=await n(this.item.injected.id);this.$store.dispatch("updateTag",{id:this.item.injected.id,files:t}),this.$store.dispatch("appendFiles",t)}catch(n){n.response&&n.response.status&&u.error("Failed to get folder content",this.item.injected.id,n.response)}finally{this.cancelRequest=null}}};var C=e(51900);const v=(0,C.Z)(f,(function(){var n=this,t=n.$createElement;return(n._self._c||t)("FolderTagPreview",{attrs:{id:n.item.injected.id,icon:"icon-tag",name:n.item.injected.displayName,path:n.item.injected.displayName,"file-list":n.fileList}})}),[],!1,null,null,null).exports;var x=e(42283),w=e(91456),y=e(85324),b=e(25108);const T={name:"Tags",components:{VirtualGrid:o(),EmptyContent:m.Z,Navigation:w.Z},mixins:[y.Z],props:{rootTitle:{type:String,required:!0},path:{type:String,default:""},loading:{type:Boolean,required:!0},isRoot:{type:Boolean,default:!0}},data:()=>({error:null,cancelRequest:null}),computed:{...(0,i.Se)(["files","tags","tagsNames"]),tagId(){return this.$store.getters.tagId(this.path)},tag(){return this.tags[this.tagId]},tagsList(){return Object.values(this.tagsNames).map((n=>this.tags[n]))},fileList(){return this.tag&&this.tag.files.map((n=>this.files[n])).filter((n=>!!n))},contentList(){return this.isRoot?this.tagsList.flatMap((n=>""===n.id?[]:[{id:"tag-".concat(n.id),injected:{...n},width:256,height:256,columnSpan:1,renderComponent:v}])):this.fileList.map((n=>({id:"file-".concat(n.fileid),injected:{...n,list:this.fileList},width:256,height:256,columnSpan:1,renderComponent:x.Z})))},isEmpty(){return this.isRoot?0===Object.keys(this.tagsNames).length:0===this.fileList.length}},watch:{async path(){this.tagId||await this.fetchRootContent(),this.isRoot||this.fetchContent()}},beforeDestroy(){this.cancelRequest&&this.cancelRequest("Navigated away")},async beforeMount(){this.tagId||await this.fetchRootContent(),this.isRoot||this.fetchContent()},methods:{async fetchRootContent(){this.cancelRequest&&this.cancelRequest("Changed folder"),OCA.Viewer.close(),this.tags[this.tagId]||this.$emit("update:loading",!0),this.error=null;const{request:n,cancel:t}=(0,h.Z)(c);this.cancelRequest=t;try{const t=await n();this.$store.dispatch("updateTags",t)}catch(n){b.error(n),this.error=!0}finally{this.$emit("update:loading",!1),this.cancelRequest=null}},async fetchContent(){this.cancelRequest&&this.cancelRequest(),OCA.Viewer.close(),this.tags[this.tagId]||this.$emit("update:loading",!0),this.error=null;const{request:n,cancel:t}=(0,h.Z)(p);this.cancelRequest=t;try{const t=await n(this.tagId);this.$store.dispatch("updateTag",{id:this.tagId,files:t}),this.$store.dispatch("appendFiles",t)}catch(n){b.error(n),this.error=!0}finally{this.$emit("update:loading",!1),this.cancelRequest=null}}}};var k=e(93379),E=e.n(k),B=e(21653),R={insert:"head",singleton:!1};E()(B.Z,R);B.Z.locals;const _=(0,C.Z)(T,(function(){var n=this,t=n.$createElement,e=n._self._c||t;return n.error?e("EmptyContent",[n._v("\n\t"+n._s(n.t("photos","An error occurred"))+"\n")]):n.loading?n._e():e("div",[e("Navigation",{key:"navigation",attrs:{basename:n.path,filename:"/"+n.path,"root-title":n.rootTitle}}),n._v(" "),n.isEmpty?e("EmptyContent",{key:"emptycontent",attrs:{"illustration-name":"empty"},scopedSlots:n._u([{key:"desc",fn:function(){return[n._v("\n\t\t\t"+n._s(n.t("photos","Photos with tags will show up here"))+"\n\t\t")]},proxy:!0}],null,!1,4132175345)},[n._v("\n\t\t"+n._s(n.t("photos","No tags yet"))+"\n\t\t")]):e("div",{staticClass:"grid-container"},[e("VirtualGrid",{ref:"virtualgrid",attrs:{items:n.contentList,"get-column-count":function(){return n.gridConfig.count},"get-grid-gap":function(){return n.gridConfig.gap}}})],1)],1)}),[],!1,null,"2e312000",null).exports},80950:()=>{},46601:()=>{},89214:()=>{},96419:()=>{},56353:()=>{},8623:()=>{},7748:()=>{},85568:()=>{},69386:()=>{},31616:()=>{},56619:()=>{},77108:()=>{},69862:()=>{},40964:()=>{}}]);
-//# sourceMappingURL=photos-src_patchedRequest_js-src_views_Tags_vue.js.map?v=b8bf0e0b944cce9e0e5c
+(self["webpackChunkphotos"] = self["webpackChunkphotos"] || []).push([["src_patchedRequest_js-src_views_Tags_vue"],{
+
+/***/ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/components/Tag.vue?vue&type=script&lang=js&":
+/*!*************************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/components/Tag.vue?vue&type=script&lang=js& ***!
+  \*************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var _services_TaggedImages__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/TaggedImages */ "./src/services/TaggedImages.js");
+/* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
+/* harmony import */ var _FolderTagPreview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FolderTagPreview */ "./src/components/FolderTagPreview.vue");
+/* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'Tag',
+  components: {
+    FolderTagPreview: _FolderTagPreview__WEBPACK_IMPORTED_MODULE_2__.default
+  },
+  inheritAttrs: false,
+  props: {
+    item: {
+      type: Object,
+      required: true
+    }
+  },
+
+  data() {
+    return {
+      cancelRequest: null
+    };
+  },
+
+  computed: { // global lists
+    ...(0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapGetters)(['files', 'tags']),
+
+    // files list of the current folder
+    folderContent() {
+      return this.tags[this.item.injected.id].files;
+    },
+
+    fileList() {
+      return this.folderContent ? this.folderContent.map(id => this.files[id]).filter(file => !!file).slice(0, 4) // only get the 4 first images
+      : [];
+    }
+
+  },
+
+  beforeDestroy() {
+    // cancel any pending requests
+    if (this.cancelRequest) {
+      this.cancelRequest('Navigated away');
+    }
+  },
+
+  async created() {
+    // init cancellable request
+    const {
+      request,
+      cancel
+    } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_0__.default);
+    this.cancelRequest = cancel;
+
+    try {
+      // get data
+      const files = await request(this.item.injected.id);
+      this.$store.dispatch('updateTag', {
+        id: this.item.injected.id,
+        files
+      });
+      this.$store.dispatch('appendFiles', files);
+    } catch (error) {
+      if (error.response && error.response.status) {
+        console.error('Failed to get folder content', this.item.injected.id, error.response);
+      }
+    } finally {
+      this.cancelRequest = null;
+    }
+  }
+
+});
+
+/***/ }),
+
+/***/ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=script&lang=js&":
+/*!*********************************************************************************************************************************************************!*\
+  !*** ./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=script&lang=js& ***!
+  \*********************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var vuex__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! vuex */ "./node_modules/vuex/dist/vuex.esm.js");
+/* harmony import */ var vue_virtual_grid__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! vue-virtual-grid */ "./node_modules/vue-virtual-grid/dist/virtual-grid.common.js");
+/* harmony import */ var vue_virtual_grid__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(vue_virtual_grid__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _services_SystemTags__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../services/SystemTags */ "./src/services/SystemTags.js");
+/* harmony import */ var _services_TaggedImages__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../services/TaggedImages */ "./src/services/TaggedImages.js");
+/* harmony import */ var _components_EmptyContent__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../components/EmptyContent */ "./src/components/EmptyContent.vue");
+/* harmony import */ var _components_Tag__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../components/Tag */ "./src/components/Tag.vue");
+/* harmony import */ var _components_File__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ../components/File */ "./src/components/File.vue");
+/* harmony import */ var _components_Navigation__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/Navigation */ "./src/components/Navigation.vue");
+/* harmony import */ var _mixins_GridConfig__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../mixins/GridConfig */ "./src/mixins/GridConfig.js");
+/* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
+/* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+
+
+
+
+
+
+
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
+  name: 'Tags',
+  components: {
+    VirtualGrid: (vue_virtual_grid__WEBPACK_IMPORTED_MODULE_0___default()),
+    EmptyContent: _components_EmptyContent__WEBPACK_IMPORTED_MODULE_3__.default,
+    Navigation: _components_Navigation__WEBPACK_IMPORTED_MODULE_6__.default
+  },
+  mixins: [_mixins_GridConfig__WEBPACK_IMPORTED_MODULE_7__.default],
+  props: {
+    rootTitle: {
+      type: String,
+      required: true
+    },
+    path: {
+      type: String,
+      default: ''
+    },
+    loading: {
+      type: Boolean,
+      required: true
+    },
+    isRoot: {
+      type: Boolean,
+      default: true
+    }
+  },
+
+  data() {
+    return {
+      error: null,
+      cancelRequest: null
+    };
+  },
+
+  computed: { // global lists
+    ...(0,vuex__WEBPACK_IMPORTED_MODULE_9__.mapGetters)(['files', 'tags', 'tagsNames']),
+
+    // current tag id from current path
+    tagId() {
+      return this.$store.getters.tagId(this.path);
+    },
+
+    // current tag
+    tag() {
+      return this.tags[this.tagId];
+    },
+
+    tagsList() {
+      return Object.values(this.tagsNames).map(tagsId => this.tags[tagsId]);
+    },
+
+    // files list of the current tag
+    fileList() {
+      return this.tag && this.tag.files.map(id => this.files[id]).filter(file => !!file);
+    },
+
+    contentList() {
+      if (this.isRoot) {
+        return this.tagsList.flatMap(tag => {
+          return tag.id === '' ? [] : [{
+            id: "tag-".concat(tag.id),
+            injected: { ...tag
+            },
+            width: 256,
+            height: 256,
+            columnSpan: 1,
+            renderComponent: _components_Tag__WEBPACK_IMPORTED_MODULE_4__.default
+          }];
+        });
+      }
+
+      return this.fileList.map(file => {
+        return {
+          id: "file-".concat(file.fileid),
+          injected: { ...file,
+            list: this.fileList
+          },
+          width: 256,
+          height: 256,
+          columnSpan: 1,
+          renderComponent: _components_File__WEBPACK_IMPORTED_MODULE_5__.default
+        };
+      });
+    },
+
+    isEmpty() {
+      if (this.isRoot) {
+        return Object.keys(this.tagsNames).length === 0;
+      }
+
+      return this.fileList.length === 0;
+    }
+
+  },
+  watch: {
+    async path() {
+      // if we don't have the tag in the store yet,
+      // we need to fetch the list first
+      if (!this.tagId) {
+        await this.fetchRootContent();
+      } // if we're not in the root, we fetch the data
+
+
+      if (!this.isRoot) {
+        this.fetchContent();
+      }
+    }
+
+  },
+
+  beforeDestroy() {
+    // cancel any pending requests
+    if (this.cancelRequest) {
+      this.cancelRequest('Navigated away');
+    }
+  },
+
+  async beforeMount() {
+    // if we don't have the tag in the store yet,
+    // we need to fetch the list first
+    if (!this.tagId) {
+      await this.fetchRootContent();
+    } // if we're not in the root, we fetch the data
+
+
+    if (!this.isRoot) {
+      this.fetchContent();
+    }
+  },
+
+  methods: {
+    async fetchRootContent() {
+      // cancel any pending requests
+      if (this.cancelRequest) {
+        this.cancelRequest('Changed folder');
+      } // close any potential opened viewer
+
+
+      OCA.Viewer.close(); // if we don't already have some cached data let's show a loader
+
+      if (!this.tags[this.tagId]) {
+        this.$emit('update:loading', true);
+      }
+
+      this.error = null; // init cancellable request
+
+      const {
+        request,
+        cancel
+      } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_SystemTags__WEBPACK_IMPORTED_MODULE_1__.default);
+      this.cancelRequest = cancel;
+
+      try {
+        // fetch content
+        const tags = await request();
+        this.$store.dispatch('updateTags', tags);
+      } catch (error) {
+        console.error(error);
+        this.error = true;
+      } finally {
+        // done loading
+        this.$emit('update:loading', false);
+        this.cancelRequest = null;
+      }
+    },
+
+    async fetchContent() {
+      // cancel any pending requests
+      if (this.cancelRequest) {
+        this.cancelRequest();
+      } // close any potential opened viewer
+
+
+      OCA.Viewer.close(); // if we don't already have some cached data let's show a loader
+
+      if (!this.tags[this.tagId]) {
+        this.$emit('update:loading', true);
+      }
+
+      this.error = null; // init cancellable request
+
+      const {
+        request,
+        cancel
+      } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_2__.default);
+      this.cancelRequest = cancel;
+
+      try {
+        // get data
+        const files = await request(this.tagId);
+        this.$store.dispatch('updateTag', {
+          id: this.tagId,
+          files
+        });
+        this.$store.dispatch('appendFiles', files);
+      } catch (error) {
+        console.error(error);
+        this.error = true;
+      } finally {
+        // done loading
+        this.$emit('update:loading', false);
+        this.cancelRequest = null;
+      }
+    }
+
+  }
+});
+
+/***/ }),
+
+/***/ "./src/patchedRequest.js":
+/*!*******************************!*\
+  !*** ./src/patchedRequest.js ***!
+  \*******************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+/**
+ * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+const request = __webpack_require__(/*! webdav/dist/node/request */ "./node_modules/webdav/dist/node/request.js");
+
+const oldPrepareRequestOptions = request.prepareRequestOptions; // While we wait for official cancellable webdav requests
+// https://github.com/perry-mitchell/webdav-client/issues/179
+// let's properly forward our axios options through webdav to axios
+
+request.prepareRequestOptions = function (requestOptions, methodOptions) {
+  // add our cancelToken support
+  if (methodOptions.cancelToken && typeof methodOptions.cancelToken === 'object') {
+    requestOptions.cancelToken = methodOptions.cancelToken;
+  } // exploit old method
+
+
+  oldPrepareRequestOptions(requestOptions, methodOptions); // allow us to override the request method
+
+  if (methodOptions.method && typeof methodOptions.method === 'string') {
+    requestOptions.method = methodOptions.method;
+  }
+};
+
+module.exports = request;
+
+/***/ }),
+
+/***/ "./src/services/DavClient.js":
+/*!***********************************!*\
+  !*** ./src/services/DavClient.js ***!
+  \***********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "remotePath": () => (/* binding */ remotePath),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var webdav__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! webdav */ "./node_modules/webdav/dist/node/index.js");
+/* harmony import */ var webdav__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(webdav__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.js");
+/* harmony import */ var url_parse__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! url-parse */ "./node_modules/url-parse/index.js");
+/* harmony import */ var url_parse__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(url_parse__WEBPACK_IMPORTED_MODULE_2__);
+/* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
+/**
+ * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+ // force our axios
+
+const patcher = webdav__WEBPACK_IMPORTED_MODULE_0___default().getPatcher();
+patcher.patch('request', _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__.default); // init webdav client on default dav endpoint
+
+const remote = (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_3__.generateRemoteUrl)('dav');
+const client = webdav__WEBPACK_IMPORTED_MODULE_0___default().createClient(remote);
+const remotePath = url_parse__WEBPACK_IMPORTED_MODULE_2___default()(remote).pathname;
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (client);
+
+/***/ }),
+
+/***/ "./src/services/DavRequest.js":
+/*!************************************!*\
+  !*** ./src/services/DavRequest.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "props": () => (/* binding */ props),
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/**
+ * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+const props = "\n\t<oc:fileid />\n\t<d:getlastmodified />\n\t<d:getetag />\n\t<d:getcontenttype />\n\t<d:getcontentlength />\n\t<nc:has-preview />\n\t<oc:favorite />\n\t<d:resourcetype />";
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("<?xml version=\"1.0\"?>\n\t\t\t<d:propfind xmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\"\n\t\t\t\txmlns:nc=\"http://nextcloud.org/ns\"\n\t\t\t\txmlns:ocs=\"http://open-collaboration-services.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t".concat(props, "\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>"));
+
+/***/ }),
+
+/***/ "./src/services/SystemTags.js":
+/*!************************************!*\
+  !*** ./src/services/SystemTags.js ***!
+  \************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _DavClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DavClient */ "./src/services/DavClient.js");
+/* harmony import */ var _utils_fileUtils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/fileUtils */ "./src/utils/fileUtils.js");
+/**
+ * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+/**
+ * List system tags
+ *
+ * @param {String} path the path relative to the user root
+ * @param {Object} [options] optional options for axios
+ * @returns {Array} the file list
+ */
+
+/* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(path, options = {}) {
+  const response = await _DavClient__WEBPACK_IMPORTED_MODULE_0__.default.getDirectoryContents('/systemtags/', Object.assign({}, {
+    data: "<?xml version=\"1.0\"?>\n\t\t\t<d:propfind  xmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t<oc:id />\n\t\t\t\t\t<oc:display-name />\n\t\t\t\t\t<oc:user-visible />\n\t\t\t\t\t<oc:user-assignable />\n\t\t\t\t\t<oc:can-assign />\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>",
+    details: true
+  }, options));
+  return response.data.map(data => (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_1__.genFileInfo)(data));
+}
+
+/***/ }),
+
+/***/ "./src/services/TaggedImages.js":
+/*!**************************************!*\
+  !*** ./src/services/TaggedImages.js ***!
+  \**************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (/* export default binding */ __WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _utils_fileUtils__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../utils/fileUtils */ "./src/utils/fileUtils.js");
+/* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.js");
+/* harmony import */ var _DavRequest__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DavRequest */ "./src/services/DavRequest.js");
+/* harmony import */ var _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AllowedMimes */ "./src/services/AllowedMimes.js");
+/* harmony import */ var _DavClient__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DavClient */ "./src/services/DavClient.js");
+/**
+ * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @author John Molakvoæ <skjnldsv@protonmail.com>
+ *
+ * @license GNU AGPL version 3 or any later version
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+
+
+
+
+
+/**
+ * Get tagged files based on provided tag id
+ *
+ * @param {number} id the tag id to filter
+ * @param {Object} [options] optional options for axios
+ * @returns {Array} the file list
+ */
+
+/* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(id, options = {}) {
+  options = Object.assign({
+    method: 'REPORT',
+    data: "<?xml version=\"1.0\"?>\n\t\t\t<oc:filter-files\n\t\t\t\txmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\"\n\t\t\t\txmlns:nc=\"http://nextcloud.org/ns\"\n\t\t\t\txmlns:ocs=\"http://open-collaboration-services.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t".concat(_DavRequest__WEBPACK_IMPORTED_MODULE_2__.props, "\n\t\t\t\t</d:prop>\n\t\t\t\t<oc:filter-rules>\n\t\t\t\t\t<oc:systemtag>").concat(id, "</oc:systemtag>\n\t\t\t\t</oc:filter-rules>\n\t\t\t</oc:filter-files>"),
+    details: true
+  }, options);
+  const prefixPath = "/files/".concat((0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)().uid);
+  const response = await _DavClient__WEBPACK_IMPORTED_MODULE_4__.default.getDirectoryContents(prefixPath, options);
+  return response.data.map(data => (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_0__.genFileInfo)(data)) // filter out unwanted mime because server REPORT service only support
+  // hardcoded props and mime is not one of them
+  // https://github.com/nextcloud/server/blob/5bf3d1bb384da56adbf205752be8f840aac3b0c5/apps/dav/lib/Connector/Sabre/FilesReportPlugin.php#L274
+  .filter(file => file.mime && _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__.default.indexOf(file.mime) !== -1) // remove prefix path from full file path
+  .map(data => Object.assign({}, data, {
+    filename: data.filename.replace(prefixPath, '')
+  }));
+}
+
+/***/ }),
+
+/***/ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true&":
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true& ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
+// Imports
+
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
+// Module
+___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n@media (min-width: 0px) and (max-width: 400px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 8px 256px 8px;\n}\n}\n@media (min-width: 400px) and (max-width: 700px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 8px 256px 8px;\n}\n}\n@media (min-width: 700px) and (max-width: 1024px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 44px 256px 44px;\n}\n}\n@media (min-width: 1024px) and (max-width: 1280px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 44px 256px 44px;\n}\n}\n@media (min-width: 1280px) and (max-width: 1440px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 66px 256px 66px;\n}\n}\n@media (min-width: 1440px) and (max-width: 1600px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 66px 256px 66px;\n}\n}\n@media (min-width: 1600px) and (max-width: 2048px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 66px 256px 66px;\n}\n}\n@media (min-width: 2048px) and (max-width: 2560px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 88px 256px 88px;\n}\n}\n@media (min-width: 2560px) and (max-width: 3440px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 88px 256px 88px;\n}\n}\n@media (min-width: 3440px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 88px 256px 88px;\n}\n}", ""]);
+// Exports
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
+
+
+/***/ }),
+
+/***/ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true&":
+/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true& ***!
+  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! !../../node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js */ "./node_modules/style-loader/dist/runtime/injectStylesIntoStyleTag.js");
+/* harmony import */ var _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! !!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true& */ "./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true&");
+
+            
+
+var options = {};
+
+options.insert = "head";
+options.singleton = false;
+
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_1__.default, options);
+
+
+
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
+
+/***/ }),
+
+/***/ "./src/components/Tag.vue":
+/*!********************************!*\
+  !*** ./src/components/Tag.vue ***!
+  \********************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tag.vue?vue&type=template&id=bb7ceecc& */ "./src/components/Tag.vue?vue&type=template&id=bb7ceecc&");
+/* harmony import */ var _Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tag.vue?vue&type=script&lang=js& */ "./src/components/Tag.vue?vue&type=script&lang=js&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! !../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+
+
+/* normalize component */
+;
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+  _Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__.render,
+  _Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  null,
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "src/components/Tag.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
+/***/ "./src/views/Tags.vue":
+/*!****************************!*\
+  !*** ./src/views/Tags.vue ***!
+  \****************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./Tags.vue?vue&type=template&id=730c32d3&scoped=true& */ "./src/views/Tags.vue?vue&type=template&id=730c32d3&scoped=true&");
+/* harmony import */ var _Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./Tags.vue?vue&type=script&lang=js& */ "./src/views/Tags.vue?vue&type=script&lang=js&");
+/* harmony import */ var _Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true& */ "./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true&");
+/* harmony import */ var _node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! !../../node_modules/vue-loader/lib/runtime/componentNormalizer.js */ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js");
+
+
+
+;
+
+
+/* normalize component */
+
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__.default)(
+  _Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
+  _Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render,
+  _Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
+  false,
+  null,
+  "730c32d3",
+  null
+  
+)
+
+/* hot reload */
+if (false) { var api; }
+component.options.__file = "src/views/Tags.vue"
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (component.exports);
+
+/***/ }),
+
+/***/ "./src/components/Tag.vue?vue&type=script&lang=js&":
+/*!*********************************************************!*\
+  !*** ./src/components/Tag.vue?vue&type=script&lang=js& ***!
+  \*********************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tag.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/components/Tag.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
+/***/ "./src/views/Tags.vue?vue&type=script&lang=js&":
+/*!*****************************************************!*\
+  !*** ./src/views/Tags.vue?vue&type=script&lang=js& ***!
+  \*****************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
+/* harmony export */ });
+/* harmony import */ var _node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tags.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=script&lang=js&");
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
+
+/***/ }),
+
+/***/ "./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true&":
+/*!**************************************************************************************!*\
+  !*** ./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true& ***!
+  \**************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony import */ var _node_modules_style_loader_dist_cjs_js_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/style-loader/dist/cjs.js!../../node_modules/css-loader/dist/cjs.js!../../node_modules/vue-loader/lib/loaders/stylePostLoader.js!../../node_modules/postcss-loader/dist/cjs.js!../../node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true& */ "./node_modules/style-loader/dist/cjs.js!./node_modules/css-loader/dist/cjs.js!./node_modules/vue-loader/lib/loaders/stylePostLoader.js!./node_modules/postcss-loader/dist/cjs.js!./node_modules/sass-loader/dist/cjs.js??clonedRuleSet-2[0].rules[0].use[3]!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=style&index=0&id=730c32d3&lang=scss&scoped=true&");
+
+
+/***/ }),
+
+/***/ "./src/components/Tag.vue?vue&type=template&id=bb7ceecc&":
+/*!***************************************************************!*\
+  !*** ./src/components/Tag.vue?vue&type=template&id=bb7ceecc& ***!
+  \***************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tag.vue?vue&type=template&id=bb7ceecc& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/components/Tag.vue?vue&type=template&id=bb7ceecc&");
+
+
+/***/ }),
+
+/***/ "./src/views/Tags.vue?vue&type=template&id=730c32d3&scoped=true&":
+/*!***********************************************************************!*\
+  !*** ./src/views/Tags.vue?vue&type=template&id=730c32d3&scoped=true& ***!
+  \***********************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render),
+/* harmony export */   "staticRenderFns": () => (/* reexport safe */ _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns)
+/* harmony export */ });
+/* harmony import */ var _node_modules_vue_loader_lib_loaders_templateLoader_js_vue_loader_options_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tags.vue?vue&type=template&id=730c32d3&scoped=true& */ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=template&id=730c32d3&scoped=true&");
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/components/Tag.vue?vue&type=template&id=bb7ceecc&":
+/*!******************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/components/Tag.vue?vue&type=template&id=bb7ceecc& ***!
+  \******************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _c("FolderTagPreview", {
+    attrs: {
+      id: _vm.item.injected.id,
+      icon: "icon-tag",
+      name: _vm.item.injected.displayName,
+      path: _vm.item.injected.displayName,
+      "file-list": _vm.fileList
+    }
+  })
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=template&id=730c32d3&scoped=true&":
+/*!**************************************************************************************************************************************************************************************************************!*\
+  !*** ./node_modules/vue-loader/lib/loaders/templateLoader.js??vue-loader-options!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=template&id=730c32d3&scoped=true& ***!
+  \**************************************************************************************************************************************************************************************************************/
+/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export */ __webpack_require__.d(__webpack_exports__, {
+/* harmony export */   "render": () => (/* binding */ render),
+/* harmony export */   "staticRenderFns": () => (/* binding */ staticRenderFns)
+/* harmony export */ });
+var render = function() {
+  var _vm = this
+  var _h = _vm.$createElement
+  var _c = _vm._self._c || _h
+  return _vm.error
+    ? _c("EmptyContent", [
+        _vm._v("\n\t" + _vm._s(_vm.t("photos", "An error occurred")) + "\n")
+      ])
+    : !_vm.loading
+    ? _c(
+        "div",
+        [
+          _c("Navigation", {
+            key: "navigation",
+            attrs: {
+              basename: _vm.path,
+              filename: "/" + _vm.path,
+              "root-title": _vm.rootTitle
+            }
+          }),
+          _vm._v(" "),
+          _vm.isEmpty
+            ? _c(
+                "EmptyContent",
+                {
+                  key: "emptycontent",
+                  attrs: { "illustration-name": "empty" },
+                  scopedSlots: _vm._u(
+                    [
+                      {
+                        key: "desc",
+                        fn: function() {
+                          return [
+                            _vm._v(
+                              "\n\t\t\t" +
+                                _vm._s(
+                                  _vm.t(
+                                    "photos",
+                                    "Photos with tags will show up here"
+                                  )
+                                ) +
+                                "\n\t\t"
+                            )
+                          ]
+                        },
+                        proxy: true
+                      }
+                    ],
+                    null,
+                    false,
+                    4132175345
+                  )
+                },
+                [
+                  _vm._v(
+                    "\n\t\t" + _vm._s(_vm.t("photos", "No tags yet")) + "\n\t\t"
+                  )
+                ]
+              )
+            : _c(
+                "div",
+                { staticClass: "grid-container" },
+                [
+                  _c("VirtualGrid", {
+                    ref: "virtualgrid",
+                    attrs: {
+                      items: _vm.contentList,
+                      "get-column-count": function() {
+                        return _vm.gridConfig.count
+                      },
+                      "get-grid-gap": function() {
+                        return _vm.gridConfig.gap
+                      }
+                    }
+                  })
+                ],
+                1
+              )
+        ],
+        1
+      )
+    : _vm._e()
+}
+var staticRenderFns = []
+render._withStripped = true
+
+
+
+/***/ }),
+
+/***/ "?d546":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?8131":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?3fc0":
+/*!************************!*\
+  !*** crypto (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?cad2":
+/*!**********************!*\
+  !*** util (ignored) ***!
+  \**********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?593c":
+/*!**********************!*\
+  !*** util (ignored) ***!
+  \**********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?4068":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?e7e4":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?7bec":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?802b":
+/*!**********************!*\
+  !*** util (ignored) ***!
+  \**********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?1e44":
+/*!**********************!*\
+  !*** util (ignored) ***!
+  \**********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?0aec":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?fbf1":
+/*!************************!*\
+  !*** buffer (ignored) ***!
+  \************************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?3e83":
+/*!**********************!*\
+  !*** util (ignored) ***!
+  \**********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ }),
+
+/***/ "?19e6":
+/*!**********************!*\
+  !*** util (ignored) ***!
+  \**********************/
+/***/ (() => {
+
+/* (ignored) */
+
+/***/ })
+
+}]);
+//# sourceMappingURL=photos-src_patchedRequest_js-src_views_Tags_vue.js.map?v=35cfe47aea0fe40f19df
