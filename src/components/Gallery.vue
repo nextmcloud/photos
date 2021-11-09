@@ -15,7 +15,7 @@
       ref="myDiv"
       :src="src"
       :height="height"
-      :width="width"
+      :max-width="width"
     />
 
     <p :id="ariaUuid" class="hidden-visually">{{ item.injected.basename }}</p>
@@ -113,7 +113,5 @@ export default {
 </script>
 
 <style scoped>
-.img {
-  height: 200px;
-}
+
 </style>

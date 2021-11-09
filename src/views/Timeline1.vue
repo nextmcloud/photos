@@ -190,9 +190,10 @@ export default {
       var tempArray2 = [];
       var j = -1;
       var k = 0;
+      debugger;
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
-      var originalMainWindow = windowWidth - leftContainer.offsetWidth - 10;
+      var originalMainWindow = windowWidth - leftContainer.offsetWidth;
       var gap = 2;
       var max_height = 200;
       var rowWidth = 0;
@@ -213,17 +214,12 @@ export default {
             0
           );
 
-          finalData[i].injected.height = this.aspectRatioHeight(
-            finalData[i].injected.height,
-            finalData[i].injected.width,
-            200,
-            0
-          );
+  
           if (finalData[i].injected.height > 200) {
             finalData[i].injected.height = max_height;
           }
 
-          rowWidth += finalData[i].injected.width;
+          rowWidth += finalData[i].injected.width +4;
           console.log(
             "file ID :" +
               finalData[i].id +
@@ -232,13 +228,18 @@ export default {
               " image resize Height:" +
               finalData[i].injected.height
           );
-
-          tempArray.push(finalData[i]);
+          if(rowWidth < totalRowWidth){
+            tempArray.push(finalData[i]);
+          }
+          
           if (rowWidth >= totalRowWidth) {
-            tempArray2 = this.adjustHeightWidth(tempArray);
+            console.log("I am in adjustment");
+
+            tempArray2 = this.adjustHeight(tempArray);
             console.log(tempArray2);
             tempArray = [];
-            rowWidth = 0;
+            tempArray.push(finalData[i]);
+            rowWidth = finalData[i].injected.width;;
           }
         }
       }
@@ -317,13 +318,40 @@ export default {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
 
+    adjustHeight(fileArray){
+
+      var totalImageWidth = 0;
+      var leftContainer = document.getElementById("app-navigation-vue");
+      var windowWidth = document.documentElement.clientWidth;
+         var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5);
+      debugger;
+      for (var i = 0; i < fileArray.length; i++) {
+          totalImageWidth+= fileArray[i].injected.width;       
+      }
+      var HeightRatio = totalImageWidth/200;
+      var NewHieght =  mainWindow/HeightRatio;
+      NewHieght = NewHieght-4;
+       for (var i = 0; i < fileArray.length; i++) {
+
+          fileArray[i].injected.width = this.aspectRatio(
+            fileArray[i].injected.height,
+            fileArray[i].injected.width,
+            NewHieght,
+            0
+          );
+          fileArray[i].injected.height = NewHieght;
+        }
+      console.log(totalImageWidth);
+      return fileArray;
+    },
+
     adjustHeightWidth(fileArray) {
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
       if (windowWidth < 768) {
-        var mainWindow = windowWidth - 10;
+        var mainWindow = windowWidth - (fileArray.length*4);
       } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - 10;
+        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*4);
       }
 
       var gap = 2;
@@ -356,9 +384,8 @@ export default {
 
     aspectRatio: function (height, width, requiredHeight, repeat = 0) {
       var height1 = requiredHeight;
-      var aspectRatio = height1 / (height / width);
       //console.log("------" + Math.round(aspectRatio), height, width);
-      return Math.round(aspectRatio);
+      return Math.round((width/height)*height1);
     },
 
     aspectRatioHeight: function (height, width, requiredwidth, repeat = 0) {
@@ -706,14 +733,13 @@ export default {
 
 .item {
   width: auto;
-  margin: 4px;
-  height: 200px;
+  margin: 2px;
 }
 
 .title-item {
   height: 90px;
   width: 100%;
-  margin: 2px;
+  margin: 4px;
 }
 .fullWidth {
   width: 100%;
