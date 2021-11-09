@@ -37,7 +37,9 @@
         </div>
       </div>
     </div>
+     <div class="footer-replace"> </div>
   </div>
+ 
 </template>
 
 <script>
@@ -744,5 +746,8 @@ export default {
 .fullWidth {
   width: 100%;
   height: auto;
+}
+.footer-replace{
+  height: 64px;
 }
 </style>
