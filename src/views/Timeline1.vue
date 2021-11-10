@@ -194,7 +194,12 @@ export default {
       var k = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
-      var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+      //var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+      if (windowWidth <= 1024) {
+        var originalMainWindow = windowWidth;
+      } else {
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+      }
       var gap = 2;
       var max_height = 200;
       var rowWidth = 0;
@@ -323,7 +328,7 @@ export default {
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
-      if (windowWidth < 768) {
+      if (windowWidth <= 1024) {
         var mainWindow = windowWidth - (fileArray.length*4);
       } else {
         var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5);
