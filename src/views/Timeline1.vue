@@ -192,7 +192,6 @@ export default {
       var tempArray2 = [];
       var j = -1;
       var k = 0;
-      debugger;
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
       var originalMainWindow = windowWidth - leftContainer.offsetWidth;
@@ -308,7 +307,6 @@ export default {
     windowResize() {
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
-      console.log("windowWidth");
       if (windowWidth < 760) {
         this.resetState();
         this.getContent();
@@ -325,8 +323,12 @@ export default {
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
-         var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5);
-      debugger;
+      if (windowWidth < 768) {
+        var mainWindow = windowWidth - (fileArray.length*4);
+      } else {
+        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5);
+      }
+      
       for (var i = 0; i < fileArray.length; i++) {
           totalImageWidth+= fileArray[i].injected.width;       
       }
@@ -343,7 +345,6 @@ export default {
           );
           fileArray[i].injected.height = NewHieght;
         }
-      console.log(totalImageWidth);
       return fileArray;
     },
 
@@ -749,5 +750,34 @@ export default {
 }
 .footer-replace{
   height: 64px;
+}
+@media only screen and (max-width: 768px) {
+  body {
+    background-color: lightblue;
+  }
+  /* ----------- iPad Pro ----------- */
+/* Portrait and Landscape */
+@media only screen 
+  and (min-width: 1024px) 
+  and (max-height: 1366px) 
+  and (-webkit-min-device-pixel-ratio: 1.5) {
+}
+
+/* Portrait */
+@media only screen 
+  and (min-width: 1024px) 
+  and (max-height: 1366px) 
+  and (orientation: portrait) 
+  and (-webkit-min-device-pixel-ratio: 1.5) {
+}
+
+/* Landscape */
+@media only screen 
+  and (min-width: 1024px) 
+  and (max-height: 1366px) 
+  and (orientation: landscape) 
+  and (-webkit-min-device-pixel-ratio: 1.5) {
+
+}
 }
 </style>

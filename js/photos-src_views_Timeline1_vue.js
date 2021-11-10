@@ -525,7 +525,6 @@ __webpack_require__.r(__webpack_exports__);
       var tempArray2 = [];
       var j = -1;
       var k = 0;
-      debugger;
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
       var originalMainWindow = windowWidth - leftContainer.offsetWidth;
@@ -631,7 +630,6 @@ __webpack_require__.r(__webpack_exports__);
     windowResize() {
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
-      console.log("windowWidth");
 
       if (windowWidth < 760) {
         this.resetState();
@@ -648,8 +646,12 @@ __webpack_require__.r(__webpack_exports__);
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var windowWidth = document.documentElement.clientWidth;
-      var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 5;
-      debugger;
+
+      if (windowWidth < 768) {
+        var mainWindow = windowWidth - fileArray.length * 4;
+      } else {
+        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 5;
+      }
 
       for (var i = 0; i < fileArray.length; i++) {
         totalImageWidth += fileArray[i].injected.width;
@@ -664,7 +666,6 @@ __webpack_require__.r(__webpack_exports__);
         fileArray[i].injected.height = NewHieght;
       }
 
-      console.log(totalImageWidth);
       return fileArray;
     },
 
@@ -1058,7 +1059,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 64px;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 64px;\n}\n@media only screen and (max-width: 768px) {\nbody[data-v-3f501974] {\n    background-color: lightblue;\n}\n  /* ----------- iPad Pro ----------- */\n/* Portrait and Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Portrait */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: portrait) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: landscape) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1725,4 +1726,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=97f4c4459e642bcd95fb
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=371a07d96dc64aab6a3f
