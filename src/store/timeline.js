@@ -24,6 +24,12 @@ const state = {
 	timeline: [],
 }
 
+const getDefaultState = () => {
+	return {
+		timeline: [],
+	}
+  }
+
 const mutations = {
 	/**
 	 * Update timeline files list

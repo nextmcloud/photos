@@ -57,6 +57,10 @@ const mutations = {
 			Vue.set(state.files[fileid], 'folders', subfolders)
 		}
 	},
+
+	resetFiles(state) {
+		state.files = {};
+	},
 }
 
 const getters = {
@@ -87,6 +91,9 @@ const actions = {
 	 */
 	appendFiles(context, files = []) {
 		context.commit('updateFiles', files)
+	},
+	resetFiles(context) {
+		context.commit('resetFiles')
 	},
 }
 

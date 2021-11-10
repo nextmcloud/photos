@@ -137,13 +137,13 @@ export default {
   z-index: 20;
 }
 
-/*.icon-video-white {
+.icon-video-white {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%);
   z-index: 20;
-}*/
+}
 
 img {
   position: absolute;
@@ -169,8 +169,8 @@ svg {
   width: 70%;
   height: 70%;
 }
-/*.item {
+.item {
   position: relative;
   
-}*/
+}
 </style>

@@ -113,5 +113,7 @@ export default {
 </script>
 
 <style scoped>
-
+div {
+  line-height: 0 !important;
+}
 </style>

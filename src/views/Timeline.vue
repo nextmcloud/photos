@@ -190,6 +190,7 @@ export default {
 	},
 
 	beforeMount() {
+		this.resetState()
 		this.getContent()
 	},
 
@@ -239,12 +240,12 @@ export default {
 				if (files.length !== numberOfImagesPerBatch) {
 					this.done = true
 				}
-
-				this.$store.dispatch('updateTimeline', files)
-				this.$store.dispatch('appendFiles', files)
-
+				if(this.timeline.length <= this.page *  numberOfImagesPerBatch ){
+					this.$store.dispatch('updateTimeline', files)
+					this.$store.dispatch('appendFiles', files)
+				}
 				this.page += 1
-
+				
 				if (doReturn) {
 					return Promise.resolve(files)
 				}
@@ -263,6 +264,7 @@ export default {
 				}
 
 				// cancelled request, moving on...
+				this.$store.dispatch('resetTimeline')
 				console.error('Error fetching timeline', error)
 				return Promise.resolve(true)
 			} finally {
@@ -282,7 +284,7 @@ export default {
 			this.page = 0
 			this.lastSection = ''
 			this.$emit('update:loading', true)
-			this.$refs.virtualgrid.resetGrid()
+			//this.$refs.virtualgrid.resetGrid()
 		},
 
 		getFormatedDate(string, format) {

@@ -66,13 +66,10 @@ export default new Router({
 			}),
 		},
 		{
-			path: '/gallery/:path*',
+			path: '/gallery',
 			component: Timeline1,
 			name: 'timeline1',
 			props: route => ({
-				path: parsePathParams(route.params.path),
-				// if path is empty
-				isRoot: !route.params.path,
 				rootTitle: t('photos', 'Your gallery'),
 			}),
 		},

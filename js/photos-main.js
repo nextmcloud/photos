@@ -6599,13 +6599,10 @@ const parsePathParams = path => {
       rootTitle: t('photos', 'Your photos')
     })
   }, {
-    path: '/gallery/:path*',
+    path: '/gallery',
     component: Timeline1,
     name: 'timeline1',
     props: route => ({
-      path: parsePathParams(route.params.path),
-      // if path is empty
-      isRoot: !route.params.path,
       rootTitle: t('photos', 'Your gallery')
     })
   }, {
@@ -6863,6 +6860,10 @@ const mutations = {
       .filter(id => id >= 0);
       vue__WEBPACK_IMPORTED_MODULE_0__.default.set(state.files[fileid], 'folders', subfolders);
     }
+  },
+
+  resetFiles(state) {
+    state.files = {};
   }
 
 };
@@ -6900,6 +6901,10 @@ const actions = {
    */
   appendFiles(context, files = []) {
     context.commit('updateFiles', files);
+  },
+
+  resetFiles(context) {
+    context.commit('resetFiles');
   }
 
 };
@@ -7270,6 +7275,13 @@ __webpack_require__.r(__webpack_exports__);
 const state = {
   timeline: []
 };
+
+const getDefaultState = () => {
+  return {
+    timeline: []
+  };
+};
+
 const mutations = {
   /**
    * Update timeline files list
@@ -37186,7 +37198,7 @@ var render = function() {
     }),
     _vm._v(" "),
     _c("label", { attrs: { for: "enable-gallery-layout" } }, [
-      _vm._v(_vm._s(_vm.t("photos", "Enable Gallery view")))
+      _vm._v(_vm._s(_vm.t("photos", "Display image gallery view")))
     ])
   ])
 }
@@ -50454,7 +50466,7 @@ module.exports = function whichTypedArray(value) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"23e634838c2fa871f9e6","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"60887132eca01981fd3c","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"cc940a94aa96c40fcbbd","src_views_Albums_vue":"c85508466a8ea35d81a8","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"5cfb86fdc1f3c908f824","src_patchedRequest_js-src_views_Tags_vue":"35cfe47aea0fe40f19df","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"f1ad1b950e4f0423d792","src_views_Timeline_vue":"f2d4c2c4daaa67352a86","src_views_Timeline1_vue":"7b99e4a8883e835f983c","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"23e634838c2fa871f9e6","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"60887132eca01981fd3c","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"cc940a94aa96c40fcbbd","src_views_Albums_vue":"c85508466a8ea35d81a8","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"5cfb86fdc1f3c908f824","src_patchedRequest_js-src_views_Tags_vue":"35cfe47aea0fe40f19df","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"f1ad1b950e4f0423d792","src_views_Timeline_vue":"321dacd6475b9a7bca54","src_views_Timeline1_vue":"ccc399e6ee44870db486","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -50724,4 +50736,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=074834c881f8884a9a23
+//# sourceMappingURL=photos-main.js.map?v=4b2f507f3bb0d892b07d

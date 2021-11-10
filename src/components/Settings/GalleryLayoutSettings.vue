@@ -28,7 +28,7 @@
 				type="checkbox"
 				class="checkbox"
 				@change="updateGallerySettings('galleryLayout')">
-			<label for="enable-gallery-layout">{{ t('photos', 'Enable Gallery view') }}</label>
+			<label for="enable-gallery-layout">{{ t('photos', 'Display image gallery view') }}</label>
 		</p>
 	
 </template>

@@ -269,6 +269,7 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   beforeMount() {
+    this.resetState();
     this.getContent();
   },
 
@@ -321,8 +322,11 @@ __webpack_require__.r(__webpack_exports__);
           this.done = true;
         }
 
-        this.$store.dispatch('updateTimeline', files);
-        this.$store.dispatch('appendFiles', files);
+        if (this.timeline.length <= this.page * numberOfImagesPerBatch) {
+          this.$store.dispatch('updateTimeline', files);
+          this.$store.dispatch('appendFiles', files);
+        }
+
         this.page += 1;
 
         if (doReturn) {
@@ -345,6 +349,7 @@ __webpack_require__.r(__webpack_exports__);
         } // cancelled request, moving on...
 
 
+        this.$store.dispatch('resetTimeline');
         console.error('Error fetching timeline', error);
         return Promise.resolve(true);
       } finally {
@@ -363,8 +368,7 @@ __webpack_require__.r(__webpack_exports__);
       this.error = null;
       this.page = 0;
       this.lastSection = '';
-      this.$emit('update:loading', true);
-      this.$refs.virtualgrid.resetGrid();
+      this.$emit('update:loading', true); //this.$refs.virtualgrid.resetGrid()
     },
 
     getFormatedDate(string, format) {
@@ -910,4 +914,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=f2d4c2c4daaa67352a86
+//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=321dacd6475b9a7bca54

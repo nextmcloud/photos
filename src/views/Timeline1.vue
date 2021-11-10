@@ -31,7 +31,7 @@
         <div v-if="item.id.includes('title')">
           <Separator :items="item" />
         </div>
-        <div v-else>
+        <div v-else class="abc">
           <!-- {{ (file1 = item) }} -->
           <Gallery :item="item" />
         </div>
@@ -101,18 +101,12 @@ export default {
 
   data() {
     return {
-      fileData: Object,
       count: 0,
       cancelRequest: null,
       done: false,
       error: null,
       page: 0,
       lastSection: "",
-      fieldArray: [],
-      widthData: 1,
-      height: "",
-      file1: Object,
-      width_main: 0,
       loaderComponent: Loader,
     };
   },
@@ -123,9 +117,12 @@ export default {
 
     // list of loaded medias
     fileList() {
-      return this.timeline
-        .map((fileId) => this.files[fileId])
-        .filter((file) => !!file);
+      // return this.timeline
+      //   .map((fileId) => this.files[fileId])
+      //   .filter((file) => !!file);
+      const newTimeline = [...new Set(this.timeline)];
+      console.log("new timeline (filelist) : "+      newTimeline);
+        return newTimeline.map((fileId) => this.files[fileId])
     },
 
     checkSpace() {
@@ -143,7 +140,7 @@ export default {
 
     // list of displayed content in the grid (titles + medias)
     contentList() {
-      const fieldArray = [];
+      //const fieldArray = [];
       /** The goal of this flat map is to return an array of images separated by titles (months)
        * ie: [{month1}, {image1}, {image2}, {month2}, {image3}, {image4}, {image5}]
        * First we get the current month+year of the image
@@ -154,6 +151,8 @@ export default {
        * In our case injected could be an image/video (aka file) or a title (year/month)
        * Note2: titles are rendered full width and images are rendered on 1 column and 256x256 ratio
        */
+
+      console.log("content list"+ this.fileList);
       var finalData = this.fileList.flatMap((galleryFile, index) => {
         const finalArray = [];
 
@@ -193,15 +192,18 @@ export default {
       var j = -1;
       var k = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
+      var classExists = leftContainer.classList;
+      console.log(classExists);
       var windowWidth = document.documentElement.clientWidth;
       //var originalMainWindow = windowWidth - leftContainer.offsetWidth;
       if (windowWidth <= 1024) {
         var originalMainWindow = windowWidth;
       } else {
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+        
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth ;
       }
       var gap = 2;
-      var max_height = 200;
+      var max_height = 150;
       var rowWidth = 0;
       var totalRowWidth = originalMainWindow;
       for (var i = 0; i < finalData.length; i++) {
@@ -210,46 +212,49 @@ export default {
             tempArray1[j] = tempArray;
             j = 0;
             tempArray = [];
+            rowWidth=0;
           }
           j++;
         } else {
+           
           finalData[i].injected.width = this.aspectRatio(
             finalData[i].injected.height,
             finalData[i].injected.width,
-            200,
+            150,
             0
           );
 
-  
-          if (finalData[i].injected.height > 200) {
+       
+          if (finalData[i].injected.height > 150) {
             finalData[i].injected.height = max_height;
           }
 
           rowWidth += finalData[i].injected.width +4;
-          console.log(
-            "file ID :" +
-              finalData[i].id +
-              "image resize  Width:" +
-              finalData[i].injected.width +
-              " image resize Height:" +
-              finalData[i].injected.height
-          );
+          // console.log(
+          //   "file ID :" +
+          //     finalData[i].id +
+          //     "image resize  Width:" +
+          //     finalData[i].injected.width +
+          //     " image resize Height:" +
+          //     finalData[i].injected.height
+          // );
+    
           if(rowWidth < totalRowWidth){
             tempArray.push(finalData[i]);
           }
           
           if (rowWidth >= totalRowWidth) {
-            console.log("I am in adjustment");
-
+           // console.log("I am in adjustment");
+        
             tempArray2 = this.adjustHeight(tempArray);
-            console.log(tempArray2);
+            //console.log(tempArray2);
             tempArray = [];
             tempArray.push(finalData[i]);
             rowWidth = finalData[i].injected.width;;
           }
         }
       }
-
+      
       return finalData;
     },
     // is current folder empty?
@@ -274,20 +279,23 @@ export default {
   beforeMount() {
     this.resetState();
     this.getContent();
-    //this.resetState();
+    this.resetState();
   },
 
   created() {
     this.resetState();
+     console.log(JSON.stringify(this.files) + "files data");
+      console.log(this.timeline+" timeline");
     //this.getContent();
   },
   mounted() {
     window.addEventListener("resize", this.windowResize);
     this.$nextTick(function () {
       window.addEventListener("scroll", this.onScroll);
-      //  this.onScroll(); // needed for initial loading on page
+        this.onScroll(); // needed for initial loading on page
     });
   },
+ 
 
   beforeDestroy() {
     // cancel any pending requests
@@ -308,14 +316,24 @@ export default {
     //   // Any code to be executed when the window is scrolled
     //   this.getContent();
     // },
-
+   async onScroll(){
+     //
+     var wrapper = document.getElementById("app-content-vue");
+     var content =  document.getElementsByClassName("main-container")[0];
+    if(wrapper.scrollTop+wrapper.offsetHeight > content.offsetHeight) {
+     
+       await this.getContent();
+    }
+   
+    },
     windowResize() {
       var leftContainer = document.getElementById("app-navigation-vue");
+
       var windowWidth = document.documentElement.clientWidth;
-      if (windowWidth < 760) {
+      //if (windowWidth < 1024) {
         this.resetState();
         this.getContent();
-      }
+      //}
     },
 
     randomIntFromInterval(min, max) {
@@ -337,7 +355,7 @@ export default {
       for (var i = 0; i < fileArray.length; i++) {
           totalImageWidth+= fileArray[i].injected.width;       
       }
-      var HeightRatio = totalImageWidth/200;
+      var HeightRatio = totalImageWidth/150;
       var NewHieght =  mainWindow/HeightRatio;
       NewHieght = NewHieght-4;
        for (var i = 0; i < fileArray.length; i++) {
@@ -363,27 +381,27 @@ export default {
       }
 
       var gap = 2;
-      var max_height = 200;
+      var max_height = 150;
       var array_length = 0;
       array_length = fileArray.length;
-      console.log("array length: " + array_length);
+    //  console.log("array length: " + array_length);
       var multiplyGap = 2 * array_length;
-      console.log("array multiplyGap: " + multiplyGap);
+      //console.log("array multiplyGap: " + multiplyGap);
       mainWindow = mainWindow - multiplyGap;
-      console.log("array mainWindow: " + mainWindow);
-      var height = 200; //this.randomIntFromInterval(150, 230);
+      //console.log("array mainWindow: " + mainWindow);
+      var height = 150; //this.randomIntFromInterval(150, 230);
       var maxWidth = Math.round(Math.ceil(mainWindow / array_length));
 
-      console.log("maxWidth" + maxWidth);
-      console.log(" mainWindow:  " + mainWindow + " maxWidth" + maxWidth);
+      // console.log("maxWidth" + maxWidth);
+      // console.log(" mainWindow:  " + mainWindow + " maxWidth" + maxWidth);
 
       for (var i = 0; i < fileArray.length; i++) {
         if (windowWidth > 768 && array_length == 1) {
-          console.log("FileName: " + fileArray[i].injected.filename);
-          fileArray[i].injected.height = 200;
+          //console.log("FileName: " + fileArray[i].injected.filename);
+          fileArray[i].injected.height = 150;
           fileArray[i].injected.width = fileArray[i].injected.width;
         } else {
-          fileArray[i].injected.height = 200;
+          fileArray[i].injected.height = 150;
           fileArray[i].injected.width = maxWidth - 8;
         }
       }
@@ -460,14 +478,14 @@ export default {
       repeat = 0
     ) {
       for (var i = 0; i < fileObjects.length; i++) {
-        console.log(
-          " width : " +
-            fileObjects[i].width +
-            " remaining : " +
-            remainingWindow +
-            " original : " +
-            originalWindow
-        );
+        // console.log(
+        //   " width : " +
+        //     fileObjects[i].width +
+        //     " remaining : " +
+        //     remainingWindow +
+        //     " original : " +
+        //     originalWindow
+        // );
 
         if (remainingWindow > 1 && remainingWindow < 50) {
           fileObjects[i].height = 185 - repeat;
@@ -513,17 +531,17 @@ export default {
           );
         }
 
-        console.log("=====================");
+        // console.log("=====================");
       }
       var sum = 0;
       for (var i = 0; i < fileObjects.length; i++) {
         sum += fileObjects[i].width;
       }
-      console.log("sum " + sum);
+      // console.log("sum " + sum);
       if (sum > originalWindow) {
         repeat += 1;
         var mainWindow = sum - originalWindow;
-        console.log("inner : " + mainWindow + " repeat" + repeat);
+        //console.log("inner : " + mainWindow + " repeat" + repeat);
         // fileObjects = this.repeatAspectRatio(
         //   mainWindow,
         //   fileObjects,
@@ -551,7 +569,7 @@ export default {
         files[i].width = this.aspectRatio(
           files[i].height,
           files[i].width,
-          200,
+          150,
           0
         );
         mainWindow = mainWindow - files[i].width;
@@ -604,7 +622,7 @@ export default {
         // }
       }
       obj1 = obj;
-      console.log(arr1);
+      //console.log(arr1);
       return arr1;
     },
     async getImageHeight(src) {
@@ -625,8 +643,9 @@ export default {
       });
     },
     async getContent(doReturn) {
-      this.resetState();
+      //this.resetState();
       if (this.done) {
+        this.$emit("update:loading", false);
         return Promise.resolve(true);
       }
 
@@ -646,13 +665,14 @@ export default {
       const numberOfImagesPerBatch = 20 * 5; // loading 5 rows
 
       try {
+          
         // Load next batch of images
         const files = await request(this.onlyFavorites, {
           page: this.page,
           perPage: numberOfImagesPerBatch,
           mimesType: this.mimesType,
         });
-        console.log(files.length);
+        //console.log("FILES DATAA" + files);
         // If we get less files than requested that means we got to the end
         if (files.length !== numberOfImagesPerBatch) {
           this.done = true;
@@ -674,7 +694,7 @@ export default {
           );
           files[i].height = z;
         }
-        console.log(files.length);
+        //console.log(files.length);
         this.$store.dispatch("updateTimeline", files);
         this.$store.dispatch("appendFiles", files);
         this.page += 1;
@@ -710,6 +730,9 @@ export default {
      */
     resetState() {
       this.$store.dispatch("resetTimeline");
+      this.$store.dispatch("resetFiles");
+      console.log(JSON.stringify(this.files) + "files data");
+      console.log(this.timeline+" timeline");
       this.done = false;
       this.error = null;
       this.page = 0;
@@ -724,8 +747,17 @@ export default {
   },
 };
 </script>
-
+<style>
+div {
+  line-height: 0.01 !important;
+}
+</style>
 <style scoped>
+* {
+  margin :0;
+ }
+
+
 .container {
   width: auto;
 }
@@ -756,6 +788,11 @@ export default {
 .footer-replace{
   height: 64px;
 }
+
+.abc {
+  line-height: 0.25;
+}
+
 @media only screen and (max-width: 768px) {
   body {
     background-color: lightblue;
