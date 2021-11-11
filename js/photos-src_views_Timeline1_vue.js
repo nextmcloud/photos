@@ -527,13 +527,14 @@ __webpack_require__.r(__webpack_exports__);
       var k = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      console.log(classExists);
-      var windowWidth = document.documentElement.clientWidth; //var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); // document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
+      //var originalMainWindow = windowWidth - leftContainer.offsetWidth;
 
-      if (windowWidth <= 1024) {
+      if (windowWidth <= 1024 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = windowWidth;
       } else {
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth - 120;
       }
 
       var gap = 2;
@@ -625,6 +626,7 @@ __webpack_require__.r(__webpack_exports__);
       window.addEventListener("scroll", this.onScroll);
       this.onScroll(); // needed for initial loading on page
     });
+    window.addEventListener("click", this.checkClickSource);
   },
 
   beforeDestroy() {
@@ -642,10 +644,15 @@ __webpack_require__.r(__webpack_exports__);
      * @param {boolean} doReturn Returns a Promise with the list instead of a boolean
      * @return {Promise<boolean>} Returns a Promise with a boolean that stops infinite loading
      */
-    // handleScroll(event) {
-    //   // Any code to be executed when the window is scrolled
-    //   this.getContent();
-    // },
+    checkClickSource(event) {
+      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));
+
+      if (event.target.className === "app-navigation-toggle" && windowWidth > 1024) {
+        this.windowResize();
+      }
+    },
+
     async onScroll() {
       //
       var wrapper = document.getElementById("app-content-vue");
@@ -670,27 +677,37 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     adjustHeight(fileArray) {
+      debugger;
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
-      var windowWidth = document.documentElement.clientWidth;
-
-      if (windowWidth <= 1024) {
-        var mainWindow = windowWidth - fileArray.length * 4;
-      } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 5;
-      }
+      var classExists = leftContainer.classList;
+      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); // document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
 
       for (var i = 0; i < fileArray.length; i++) {
         totalImageWidth += fileArray[i].injected.width;
       }
 
-      var HeightRatio = totalImageWidth / 150;
-      var NewHieght = mainWindow / HeightRatio;
-      NewHieght = NewHieght - 4;
+      var heightRatio = totalImageWidth / 150;
+      var newHieght; // mainWindow/HeightRatio;
+
+      if (windowWidth <= 1024) {
+        var mainWindow = windowWidth - fileArray.length * 4;
+        newHieght = mainWindow / heightRatio;
+        newHieght = newHieght - 3;
+      } else if (windowWidth >= 1024 && classExists.contains('app-navigation--close')) {
+        var mainWindow = windowWidth - fileArray.length * 4 - 120;
+        newHieght = mainWindow / heightRatio;
+        newHieght = newHieght - 1;
+      } else {
+        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 5 - 120;
+        newHieght = mainWindow / heightRatio;
+        newHieght = newHieght;
+      }
 
       for (var i = 0; i < fileArray.length; i++) {
-        fileArray[i].injected.width = this.aspectRatio(fileArray[i].injected.height, fileArray[i].injected.width, NewHieght, 0);
-        fileArray[i].injected.height = NewHieght;
+        fileArray[i].injected.width = this.aspectRatio(fileArray[i].injected.height, fileArray[i].injected.width, newHieght, 0);
+        fileArray[i].injected.height = newHieght;
       }
 
       return fileArray;
@@ -698,12 +715,13 @@ __webpack_require__.r(__webpack_exports__);
 
     adjustHeightWidth(fileArray) {
       var leftContainer = document.getElementById("app-navigation-vue");
-      var windowWidth = document.documentElement.clientWidth;
+      var windowWidth = document.getElementById("content-vue").clientWidth;
+      ; //document.documentElement.clientWidth;
 
-      if (windowWidth < 768) {
-        var mainWindow = windowWidth - fileArray.length * 4;
+      if (windowWidth < 1024) {
+        var mainWindow = windowWidth - fileArray.length * 4 - 120;
       } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 4;
+        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 4 - 120;
       }
 
       var gap = 2;
@@ -1092,7 +1110,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\ndiv[data-v-15c1b052] {\n  line-height: 0 !important;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\ndiv[data-v-15c1b052] {\n  line-height: 0 !important;\n}\n.item[data-v-15c1b052] {\n  position: relative;\n}\n.icon-video-white[data-v-15c1b052] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%);\n  z-index: 20;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1116,7 +1134,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\ndiv {\n  line-height: 0.01 !important;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\ndiv {\n  line-height: 0.01 !important;\n}\n@media  only screen and (max-width: 1236px ) {\n.content {\n    width: 100% !important;\n}\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1140,7 +1158,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*[data-v-3f501974] {\n  margin :0;\n}\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 64px;\n}\n.abc[data-v-3f501974] {\n  line-height: 0.25;\n}\n@media only screen and (max-width: 768px) {\nbody[data-v-3f501974] {\n    background-color: lightblue;\n}\n  /* ----------- iPad Pro ----------- */\n/* Portrait and Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Portrait */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: portrait) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: landscape) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*[data-v-3f501974] {\n  margin :0;\n}\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n  padding: 0 60px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n  position: relative;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 64px;\n}\n.abc[data-v-3f501974] {\n  line-height: 0.25;\n}\n@media only screen and (max-width: 1024px) {\n.main-container[data-v-3f501974] {\n\n  padding: 0;\n}\n}\n  /* ----------- iPad Pro ----------- */\n/* Portrait and Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Portrait */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: portrait) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: landscape) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n.icon-video-white[data-v-3f501974] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%);\n  z-index: 20;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1902,4 +1920,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=ccc399e6ee44870db486
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=f4501158a913ac86dcce

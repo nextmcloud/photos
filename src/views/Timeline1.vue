@@ -193,14 +193,14 @@ export default {
       var k = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      console.log(classExists);
-      var windowWidth = document.documentElement.clientWidth;
+      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));// document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
       //var originalMainWindow = windowWidth - leftContainer.offsetWidth;
-      if (windowWidth <= 1024) {
+      if (windowWidth <= 1024 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = windowWidth;
       } else {
         
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth ;
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth  -120;
       }
       var gap = 2;
       var max_height = 150;
@@ -293,7 +293,9 @@ export default {
     this.$nextTick(function () {
       window.addEventListener("scroll", this.onScroll);
         this.onScroll(); // needed for initial loading on page
+        
     });
+    window.addEventListener("click", this.checkClickSource);
   },
  
 
@@ -312,10 +314,16 @@ export default {
      * @param {boolean} doReturn Returns a Promise with the list instead of a boolean
      * @return {Promise<boolean>} Returns a Promise with a boolean that stops infinite loading
      */
-    // handleScroll(event) {
-    //   // Any code to be executed when the window is scrolled
-    //   this.getContent();
-    // },
+
+
+  checkClickSource(event){
+      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));
+    if(event.target.className==="app-navigation-toggle" && windowWidth > 1024){
+      this.windowResize();
+    }
+  },
+
    async onScroll(){
      //
      var wrapper = document.getElementById("app-content-vue");
@@ -342,42 +350,56 @@ export default {
     },
 
     adjustHeight(fileArray){
-
+      debugger;
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
-      var windowWidth = document.documentElement.clientWidth;
-      if (windowWidth <= 1024) {
-        var mainWindow = windowWidth - (fileArray.length*4);
-      } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5);
-      }
-      
+       var classExists = leftContainer.classList;
+      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));// document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
+     
       for (var i = 0; i < fileArray.length; i++) {
           totalImageWidth+= fileArray[i].injected.width;       
       }
-      var HeightRatio = totalImageWidth/150;
-      var NewHieght =  mainWindow/HeightRatio;
-      NewHieght = NewHieght-4;
+      var heightRatio = totalImageWidth/150;
+      var newHieght ;// mainWindow/HeightRatio;
+      
+      
+      if (windowWidth <= 1024) {
+        var mainWindow = windowWidth - (fileArray.length*4);
+        newHieght = mainWindow/heightRatio;
+        newHieght = newHieght-3;
+      } else if (windowWidth >= 1024 && classExists.contains('app-navigation--close')) {
+        var mainWindow = windowWidth - (fileArray.length*4) -120;
+        newHieght = mainWindow/heightRatio;
+        newHieght = newHieght-1;
+      } else {
+        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5) -120;
+        newHieght = mainWindow/heightRatio;
+        newHieght = newHieght;
+      }
+
+     
+     
        for (var i = 0; i < fileArray.length; i++) {
 
           fileArray[i].injected.width = this.aspectRatio(
             fileArray[i].injected.height,
             fileArray[i].injected.width,
-            NewHieght,
+            newHieght,
             0
           );
-          fileArray[i].injected.height = NewHieght;
+          fileArray[i].injected.height = newHieght;
         }
       return fileArray;
     },
 
     adjustHeightWidth(fileArray) {
       var leftContainer = document.getElementById("app-navigation-vue");
-      var windowWidth = document.documentElement.clientWidth;
-      if (windowWidth < 768) {
-        var mainWindow = windowWidth - (fileArray.length*4);
+      var windowWidth =  document.getElementById("content-vue").clientWidth;;//document.documentElement.clientWidth;
+      if (windowWidth < 1024) {
+        var mainWindow = windowWidth - (fileArray.length*4) -120;
       } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*4);
+        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*4) -120;
       }
 
       var gap = 2;
@@ -746,10 +768,19 @@ export default {
     },
   },
 };
+
+
 </script>
 <style>
 div {
   line-height: 0.01 !important;
+}
+@media  only screen and (max-width: 1236px ) {
+.content {
+    width: 100% !important;
+
+  }
+
 }
 </style>
 <style scoped>
@@ -769,11 +800,13 @@ div {
   flex-wrap: wrap;
   width: 100%;
   margin: 0 4px;
+  padding: 0 60px;
 }
 
 .item {
   width: auto;
   margin: 2px;
+  position: relative;
 }
 
 .title-item {
@@ -793,10 +826,14 @@ div {
   line-height: 0.25;
 }
 
-@media only screen and (max-width: 768px) {
-  body {
-    background-color: lightblue;
-  }
+
+
+@media only screen and (max-width: 1024px) {
+.main-container {
+
+  padding: 0;
+}
+}
   /* ----------- iPad Pro ----------- */
 /* Portrait and Landscape */
 @media only screen 
@@ -821,5 +858,14 @@ div {
   and (-webkit-min-device-pixel-ratio: 1.5) {
 
 }
+
+
+.icon-video-white {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%);
+  z-index: 20;
 }
 </style>
+

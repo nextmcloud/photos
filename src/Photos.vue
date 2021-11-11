@@ -71,6 +71,7 @@
       </template>
     </AppNavigation>
     <AppContent :class="{ 'icon-loading': loading }">
+      <div class='br-place-holder'> </div>
       <router-view v-show="!loading" :loading.sync="loading" />
 
       <!-- svg img loading placeholder (linked to the File component) -->
@@ -154,14 +155,24 @@ export default {
   },
 };
 </script>
+<style>
+
+
+.br-place-holder {
+  height: 48px;
+}
+</style>
 <style lang="scss" scoped>
 .app-content {
   display: flex;
   flex-grow: 1;
   flex-direction: column;
+  	z-index: 0 !important;
 }
 
 .app-navigation__photos::v-deep .app-navigation-entry-icon.icon-photos {
   background-size: 20px;
 }
+
 </style>
+
