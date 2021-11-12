@@ -22,7 +22,6 @@
 
 <template>
   <Content app-name="photos">
-    <div class="container-fixed"> 
     <AppNavigation>
       <template #list>
         <AppNavigationItem
@@ -90,9 +89,7 @@
       <!-- eslint-disable-next-line vue/no-v-html (because it's an SVG file) -->
       <span class="hidden-visually" role="none" v-html="videoplaceholder" />
     </AppContent>
-    </div>
   </Content>
-
 </template>
 
 <script>

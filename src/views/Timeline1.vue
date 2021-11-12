@@ -58,7 +58,7 @@ import Navigation from "../components/Navigation";
 import Loader from "../components/Loader";
 
 import cancelableRequest from "../utils/CancelableRequest";
-import { allMimes } from "../services/AllowedMimes";
+import { imageMimes,videoMimes,allMimes } from "../services/AllowedMimes";
 import UserConfig from "../mixins/UserConfig";
 
 export default {
@@ -85,6 +85,7 @@ export default {
       type: Boolean,
       default: false,
     },
+
     mimesType: {
       type: Array,
       default: () => allMimes,
@@ -127,6 +128,7 @@ export default {
 
     checkSpace() {
       //check remaining space
+      $('html, body').animate({scrollTop: jQuery('#content-vue').position().top - 40}, 'slow');
     },
     src() {
       return (
@@ -186,25 +188,28 @@ export default {
         });
         return finalArray;
       });
-      debugger;
       var tempArray = [];
       var tempArray1 = [];
       var tempArray2 = [];
       var j = -1;
       var k = 0;
+      var max_height = 150;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
       const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
-      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));// document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
-      //var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));//
+      if(windowWidth <768){
+         max_height =100;
+      }
       if (windowWidth <= 1024 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = windowWidth;
+       
       } else {
         
         var originalMainWindow = windowWidth - leftContainer.offsetWidth  -120;
       }
       var gap = 2;
-      var max_height = 150;
+      
       var rowWidth = 0;
       var totalRowWidth = originalMainWindow;
       for (var i = 0; i < finalData.length; i++) {
@@ -221,12 +226,12 @@ export default {
           finalData[i].injected.width = this.aspectRatio(
             finalData[i].injected.height,
             finalData[i].injected.width,
-            150,
+            max_height,
             0
           );
 
        
-          if (finalData[i].injected.height > 150) {
+          if (finalData[i].injected.height > max_height) {
             finalData[i].injected.height = max_height;
           }
 
@@ -243,11 +248,11 @@ export default {
           if(rowWidth < totalRowWidth){
             tempArray.push(finalData[i]);
           }
-          
+          //debugger;
           if (rowWidth >= totalRowWidth) {
            // console.log("I am in adjustment");
         
-            tempArray2 = this.adjustHeight(tempArray);
+            tempArray2 = this.adjustHeight(tempArray,max_height);
             //console.log(tempArray2);
             tempArray = [];
             tempArray.push(finalData[i]);
@@ -274,7 +279,7 @@ export default {
       // reset component
       this.resetState();
       await this.getContent();
-     // this.$emit("update:loading", false);
+      this.$emit("update:loading", false);
     },
   },
 
@@ -289,14 +294,17 @@ export default {
      console.log(JSON.stringify(this.files) + "files data");
       console.log(this.timeline+" timeline");
     this.getContent();
+      $('html, body').animate({scrollTop: jQuery('#content-vue').position().top + 5}, 100);
+
   },
   mounted() {
+    
     window.addEventListener("resize", this.windowResize);
     this.$nextTick(function () {
-      window.addEventListener("scroll", this.onScroll);
-        this.onScroll(); // needed for initial loading on page
-        
+      this.mimes = this.mimesType;
+        window.addEventListener("scroll", this.onScroll);        
      });
+     
     window.addEventListener("click", this.checkClickSource);
   },
  
@@ -351,7 +359,7 @@ export default {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
 
-    adjustHeight(fileArray){
+    adjustHeight(fileArray,maxHeight){
       
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
@@ -362,7 +370,7 @@ export default {
       for (var i = 0; i < fileArray.length; i++) {
           totalImageWidth+= fileArray[i].injected.width;       
       }
-      var heightRatio = totalImageWidth/150;
+      var heightRatio = totalImageWidth/maxHeight;
       var newHieght ;// mainWindow/HeightRatio;
       
       
@@ -667,6 +675,16 @@ export default {
       });
     },
     async getContent(doReturn) {
+      let mimes ;
+      if(this.$route.name=="gallerypotos"){
+					mimes  = imageMimes;
+      }
+      else if(this.$route.name=="videogallery"){
+					mimes  = videoMimes;
+      }
+      else{
+        mimes = allMimes;
+      }
       //this.resetState();
       if (this.done) {
        // this.$emit("update:loading", false);
@@ -689,12 +707,12 @@ export default {
       const numberOfImagesPerBatch = 12 * 5; // loading 5 rows
 
       try {
-          
+
         // Load next batch of images
         const files = await request(this.onlyFavorites, {
           page: this.page,
           perPage: numberOfImagesPerBatch,
-          mimesType: this.mimesType,
+          mimesType: mimes,
         });
         //console.log("FILES DATAA" + files);
         // If we get less files than requested that means we got to the end

@@ -465,7 +465,11 @@ __webpack_require__.r(__webpack_exports__);
       return newTimeline.map(fileId => this.files[fileId]);
     },
 
-    checkSpace() {//check remaining space
+    checkSpace() {
+      //check remaining space
+      $('html, body').animate({
+        scrollTop: jQuery('#content-vue').position().top - 40
+      }, 'slow');
     },
 
     src() {
@@ -521,17 +525,20 @@ __webpack_require__.r(__webpack_exports__);
         });
         return finalArray;
       });
-      debugger;
       var tempArray = [];
       var tempArray1 = [];
       var tempArray2 = [];
       var j = -1;
       var k = 0;
+      var max_height = 150;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
       const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
-      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); // document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
-      //var originalMainWindow = windowWidth - leftContainer.offsetWidth;
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); //
+
+      if (windowWidth < 768) {
+        max_height = 100;
+      }
 
       if (windowWidth <= 1024 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = windowWidth;
@@ -540,7 +547,6 @@ __webpack_require__.r(__webpack_exports__);
       }
 
       var gap = 2;
-      var max_height = 150;
       var rowWidth = 0;
       var totalRowWidth = originalMainWindow;
 
@@ -555,9 +561,9 @@ __webpack_require__.r(__webpack_exports__);
 
           j++;
         } else {
-          finalData[i].injected.width = this.aspectRatio(finalData[i].injected.height, finalData[i].injected.width, 150, 0);
+          finalData[i].injected.width = this.aspectRatio(finalData[i].injected.height, finalData[i].injected.width, max_height, 0);
 
-          if (finalData[i].injected.height > 150) {
+          if (finalData[i].injected.height > max_height) {
             finalData[i].injected.height = max_height;
           }
 
@@ -572,11 +578,12 @@ __webpack_require__.r(__webpack_exports__);
 
           if (rowWidth < totalRowWidth) {
             tempArray.push(finalData[i]);
-          }
+          } //debugger;
+
 
           if (rowWidth >= totalRowWidth) {
             // console.log("I am in adjustment");
-            tempArray2 = this.adjustHeight(tempArray); //console.log(tempArray2);
+            tempArray2 = this.adjustHeight(tempArray, max_height); //console.log(tempArray2);
 
             tempArray = [];
             tempArray.push(finalData[i]);
@@ -605,7 +612,8 @@ __webpack_require__.r(__webpack_exports__);
     async mimesType() {
       // reset component
       this.resetState();
-      await this.getContent(); // this.$emit("update:loading", false);
+      await this.getContent();
+      this.$emit("update:loading", false);
     }
 
   },
@@ -620,13 +628,16 @@ __webpack_require__.r(__webpack_exports__);
     console.log(JSON.stringify(this.files) + "files data");
     console.log(this.timeline + " timeline");
     this.getContent();
+    $('html, body').animate({
+      scrollTop: jQuery('#content-vue').position().top + 5
+    }, 100);
   },
 
   mounted() {
     window.addEventListener("resize", this.windowResize);
     this.$nextTick(function () {
+      this.mimes = this.mimesType;
       window.addEventListener("scroll", this.onScroll);
-      this.onScroll(); // needed for initial loading on page
     });
     window.addEventListener("click", this.checkClickSource);
   },
@@ -678,7 +689,7 @@ __webpack_require__.r(__webpack_exports__);
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
 
-    adjustHeight(fileArray) {
+    adjustHeight(fileArray, maxHeight) {
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
@@ -689,7 +700,7 @@ __webpack_require__.r(__webpack_exports__);
         totalImageWidth += fileArray[i].injected.width;
       }
 
-      var heightRatio = totalImageWidth / 150;
+      var heightRatio = totalImageWidth / maxHeight;
       var newHieght; // mainWindow/HeightRatio;
 
       if (windowWidth <= 1024) {
@@ -941,7 +952,17 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     async getContent(doReturn) {
-      //this.resetState();
+      let mimes;
+
+      if (this.$route.name == "gallerypotos") {
+        mimes = _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_12__.imageMimes;
+      } else if (this.$route.name == "videogallery") {
+        mimes = _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_12__.videoMimes;
+      } else {
+        mimes = _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_12__.allMimes;
+      } //this.resetState();
+
+
       if (this.done) {
         // this.$emit("update:loading", false);
         return Promise.resolve(true);
@@ -970,7 +991,7 @@ __webpack_require__.r(__webpack_exports__);
         const files = await request(this.onlyFavorites, {
           page: this.page,
           perPage: numberOfImagesPerBatch,
-          mimesType: this.mimesType
+          mimesType: mimes
         }); //console.log("FILES DATAA" + files);
         // If we get less files than requested that means we got to the end
 
@@ -1923,4 +1944,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=c3383a3cea2a61ea982a
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=bd0b546ce5859289f926
