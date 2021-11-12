@@ -25,7 +25,7 @@ import Vue from 'vue'
 
 import isMapsInstalled from '../services/IsMapsInstalled'
 import areTagsInstalled from '../services/AreTagsInstalled'
-import { videoMimes } from '../services/AllowedMimes'
+import { imageMimes,videoMimes } from '../services/AllowedMimes'
 
 const Albums = () => import('../views/Albums')
 const Tags = () => import('../views/Tags')
@@ -68,7 +68,7 @@ export default new Router({
 		{
 			path: '/gallery',
 			component: Timeline1,
-			name: 'timeline1',
+			name: 'photogallery',
 			props: route => ({
 				rootTitle: t('photos', 'Your gallery'),
 			}),
@@ -97,6 +97,24 @@ export default new Router({
 			}),
 		},
 		{
+			path: '/images',
+			component: Timeline,
+			name: 'images',
+			props: route => ({
+				rootTitle: t('photos', 'Your videos'),
+				mimesType: imageMimes,
+			}),
+		},
+		{
+			path: '/gallery/photos',
+			component: Timeline1,
+			name: 'gallerypotos',
+			props: route => ({
+				rootTitle: t('photos', 'Your videos'),
+				mimesType: imageMimes,
+			}),
+		},
+		{
 			path: '/videos',
 			component: Timeline,
 			name: 'videos',
@@ -106,9 +124,27 @@ export default new Router({
 			}),
 		},
 		{
+			path: '/gallery/videos',
+			component: Timeline1,
+			name: 'videogallery',
+			props: route => ({
+				rootTitle: t('videos', 'Your videos'),
+				mimesType: videoMimes,
+			}),
+		},
+		{
 			path: '/favorites',
 			component: Timeline,
 			name: 'favorites',
+			props: route => ({
+				rootTitle: t('photos', 'Favorites'),
+				onlyFavorites: true,
+			}),
+		},
+		{
+			path: '/gallery/favorites',
+			component: Timeline1,
+			name: 'favoritesgallery',
 			props: route => ({
 				rootTitle: t('photos', 'Favorites'),
 				onlyFavorites: true,

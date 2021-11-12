@@ -22,10 +22,18 @@
 
 <template>
   <Content app-name="photos">
+    <div class="container-fixed"> 
     <AppNavigation>
       <template #list>
         <AppNavigationItem
           :to="{ name: 'timeline' }"
+          class="app-navigation__photos"
+          :title="t('photos', 'All media')"
+          icon="icon-yourphotos"
+          exact
+        />
+        <AppNavigationItem
+           to="/images"
           class="app-navigation__photos"
           :title="t('photos', 'Your photos')"
           icon="icon-yourphotos"
@@ -82,7 +90,9 @@
       <!-- eslint-disable-next-line vue/no-v-html (because it's an SVG file) -->
       <span class="hidden-visually" role="none" v-html="videoplaceholder" />
     </AppContent>
+    </div>
   </Content>
+
 </template>
 
 <script>

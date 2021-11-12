@@ -61,8 +61,17 @@ export default {
 			var oldVal = localStorage.getItem('photos:' +v)
 			if(oldVal==="true"){
 				console.log("route"+ this.$route.name);
-				if(this.$route.name!=="timeline1"){
+				if(this.$route.name=="timeline"){
 					this.$router.push('/gallery'); 	
+				}
+				if(this.$route.name=="videos"){
+					this.$router.push('/gallery/videos'); 	
+				}
+				if(this.$route.name=="images"){
+					this.$router.push('/gallery/photos'); 	
+				}
+				if(this.$route.name=="favorites"){
+					this.$router.push('/gallery/favorites'); 	
 				}
 				
 			}

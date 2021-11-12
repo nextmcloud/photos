@@ -235,7 +235,7 @@ export default {
 					perPage: numberOfImagesPerBatch,
 					mimesType: this.mimesType,
 				})
-
+				//debugger;
 				// If we get less files than requested that means we got to the end
 				if (files.length !== numberOfImagesPerBatch) {
 					this.done = true

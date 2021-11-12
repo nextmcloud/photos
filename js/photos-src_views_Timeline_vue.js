@@ -316,7 +316,8 @@ __webpack_require__.r(__webpack_exports__);
           page: this.page,
           perPage: numberOfImagesPerBatch,
           mimesType: this.mimesType
-        }); // If we get less files than requested that means we got to the end
+        }); //debugger;
+        // If we get less files than requested that means we got to the end
 
         if (files.length !== numberOfImagesPerBatch) {
           this.done = true;
@@ -914,4 +915,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=321dacd6475b9a7bca54
+//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=f74ef43c0b06bfbb9752

@@ -140,6 +140,7 @@ export default {
 
     // list of displayed content in the grid (titles + medias)
     contentList() {
+      //this.resetState();
       //const fieldArray = [];
       /** The goal of this flat map is to return an array of images separated by titles (months)
        * ie: [{month1}, {image1}, {image2}, {month2}, {image3}, {image4}, {image5}]
@@ -178,14 +179,14 @@ export default {
           id: `img-${galleryFile.fileid}`,
           injected: {
             ...galleryFile,
-            loadMore: this.getContent,
+            //loadMore: this.getContent,
             canLoop: false,
           },
           renderComponent: Gallery,
         });
         return finalArray;
       });
-
+      debugger;
       var tempArray = [];
       var tempArray1 = [];
       var tempArray2 = [];
@@ -266,27 +267,28 @@ export default {
   watch: {
     async onlyFavorites() {
       // reset component
-      this.resetState();
-      this.getContent();
+       this.resetState();
+       this.getContent();
     },
     async mimesType() {
       // reset component
       this.resetState();
-      this.getContent();
+      await this.getContent();
+     // this.$emit("update:loading", false);
     },
   },
 
   beforeMount() {
     this.resetState();
     this.getContent();
-    this.resetState();
+    // this.resetState();
   },
 
   created() {
     this.resetState();
      console.log(JSON.stringify(this.files) + "files data");
       console.log(this.timeline+" timeline");
-    //this.getContent();
+    this.getContent();
   },
   mounted() {
     window.addEventListener("resize", this.windowResize);
@@ -294,7 +296,7 @@ export default {
       window.addEventListener("scroll", this.onScroll);
         this.onScroll(); // needed for initial loading on page
         
-    });
+     });
     window.addEventListener("click", this.checkClickSource);
   },
  
@@ -350,7 +352,7 @@ export default {
     },
 
     adjustHeight(fileArray){
-      debugger;
+      
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
        var classExists = leftContainer.classList;
@@ -667,7 +669,7 @@ export default {
     async getContent(doReturn) {
       //this.resetState();
       if (this.done) {
-        this.$emit("update:loading", false);
+       // this.$emit("update:loading", false);
         return Promise.resolve(true);
       }
 
@@ -684,7 +686,7 @@ export default {
       // done loading even with errors
       const { request, cancel } = cancelableRequest(getPhotos);
       this.cancelRequest = cancel;
-      const numberOfImagesPerBatch = 20 * 5; // loading 5 rows
+      const numberOfImagesPerBatch = 12 * 5; // loading 5 rows
 
       try {
           
@@ -699,10 +701,11 @@ export default {
         if (files.length !== numberOfImagesPerBatch) {
           this.done = true;
         }
-
+        //debugger;
         var filesArray = [];
         for (var i = 0; i < files.length; i++) {
-          var y = await this.getImageWidth(
+          if(files[i].getcontenttype!="video/mp4"){
+            var y = await this.getImageWidth(
             "/index.php/core/preview?fileId=" +
               files[i].fileid +
               "&x=1000&y=1000&forceIcon=0&a=1"
@@ -715,16 +718,17 @@ export default {
               "&x=1000&y=1000&forceIcon=0&a=1"
           );
           files[i].height = z;
+          }
+          
         }
         //console.log(files.length);
         this.$store.dispatch("updateTimeline", files);
         this.$store.dispatch("appendFiles", files);
         this.page += 1;
         if (true) {
-          return Promise.resolve(files);
-        }
-
-        return Promise.resolve(false);
+					return Promise.resolve(files)
+				}
+       // return Promise.resolve(false);
       } catch (error) {
         if (error.response && error.response.status) {
           if (error.response.status === 404) {
@@ -745,6 +749,7 @@ export default {
         this.$emit("update:loading", false);
         this.cancelRequest = null;
       }
+      
     },
 
     /**

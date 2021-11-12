@@ -479,6 +479,7 @@ __webpack_require__.r(__webpack_exports__);
 
     // list of displayed content in the grid (titles + medias)
     contentList() {
+      //this.resetState();
       //const fieldArray = [];
 
       /** The goal of this flat map is to return an array of images separated by titles (months)
@@ -513,13 +514,14 @@ __webpack_require__.r(__webpack_exports__);
         finalArray.push({
           id: "img-".concat(galleryFile.fileid),
           injected: { ...galleryFile,
-            loadMore: this.getContent,
+            //loadMore: this.getContent,
             canLoop: false
           },
           renderComponent: _components_Gallery__WEBPACK_IMPORTED_MODULE_7__.default
         });
         return finalArray;
       });
+      debugger;
       var tempArray = [];
       var tempArray1 = [];
       var tempArray2 = [];
@@ -603,21 +605,21 @@ __webpack_require__.r(__webpack_exports__);
     async mimesType() {
       // reset component
       this.resetState();
-      this.getContent();
+      await this.getContent(); // this.$emit("update:loading", false);
     }
 
   },
 
   beforeMount() {
     this.resetState();
-    this.getContent();
-    this.resetState();
+    this.getContent(); // this.resetState();
   },
 
   created() {
     this.resetState();
     console.log(JSON.stringify(this.files) + "files data");
-    console.log(this.timeline + " timeline"); //this.getContent();
+    console.log(this.timeline + " timeline");
+    this.getContent();
   },
 
   mounted() {
@@ -677,7 +679,6 @@ __webpack_require__.r(__webpack_exports__);
     },
 
     adjustHeight(fileArray) {
-      debugger;
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
@@ -942,7 +943,7 @@ __webpack_require__.r(__webpack_exports__);
     async getContent(doReturn) {
       //this.resetState();
       if (this.done) {
-        this.$emit("update:loading", false);
+        // this.$emit("update:loading", false);
         return Promise.resolve(true);
       } // cancel any pending requests
 
@@ -962,7 +963,7 @@ __webpack_require__.r(__webpack_exports__);
         cancel
       } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_11__.default)(_services_PhotoSearch__WEBPACK_IMPORTED_MODULE_1__.default);
       this.cancelRequest = cancel;
-      const numberOfImagesPerBatch = 20 * 5; // loading 5 rows
+      const numberOfImagesPerBatch = 12 * 5; // loading 5 rows
 
       try {
         // Load next batch of images
@@ -975,15 +976,18 @@ __webpack_require__.r(__webpack_exports__);
 
         if (files.length !== numberOfImagesPerBatch) {
           this.done = true;
-        }
+        } //debugger;
+
 
         var filesArray = [];
 
         for (var i = 0; i < files.length; i++) {
-          var y = await this.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-          files[i].width = y;
-          var z = await this.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-          files[i].height = z;
+          if (files[i].getcontenttype != "video/mp4") {
+            var y = await this.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+            files[i].width = y;
+            var z = await this.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+            files[i].height = z;
+          }
         } //console.log(files.length);
 
 
@@ -993,9 +997,8 @@ __webpack_require__.r(__webpack_exports__);
 
         if (true) {
           return Promise.resolve(files);
-        }
+        } // return Promise.resolve(false);
 
-        return Promise.resolve(false);
       } catch (error) {
         if (error.response && error.response.status) {
           if (error.response.status === 404) {
@@ -1920,4 +1923,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=f4501158a913ac86dcce
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=c3383a3cea2a61ea982a
