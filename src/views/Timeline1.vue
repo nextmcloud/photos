@@ -155,7 +155,7 @@ export default {
        * Note2: titles are rendered full width and images are rendered on 1 column and 256x256 ratio
        */
 
-      console.log("content list"+ this.fileList);
+      //console.log("content list"+ this.fileList);
       var finalData = this.fileList.flatMap((galleryFile, index) => {
         const finalArray = [];
 
@@ -196,7 +196,8 @@ export default {
       var max_height = 150;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      let isAppNavigationHidden = classExists.contains('app-navigation--close');
+      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
       var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));//
       if(windowWidth <768){
          max_height =100;
@@ -206,7 +207,7 @@ export default {
        
       } else {
         
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth  -120;
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth  -30;
       }
       var gap = 2;
       
@@ -248,7 +249,7 @@ export default {
           if(rowWidth < totalRowWidth){
             tempArray.push(finalData[i]);
           }
-          //debugger;
+          
           if (rowWidth >= totalRowWidth) {
            // console.log("I am in adjustment");
         
@@ -291,8 +292,8 @@ export default {
 
   created() {
     this.resetState();
-     console.log(JSON.stringify(this.files) + "files data");
-      console.log(this.timeline+" timeline");
+    //  console.log(JSON.stringify(this.files) + "files data");
+    //   console.log(this.timeline+" timeline");
     this.getContent();
       $('html, body').animate({scrollTop: jQuery('#content-vue').position().top + 5}, 100);
 
@@ -364,7 +365,7 @@ export default {
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
        var classExists = leftContainer.classList;
-      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
       var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));// document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
      
       for (var i = 0; i < fileArray.length; i++) {
@@ -379,11 +380,11 @@ export default {
         newHieght = mainWindow/heightRatio;
         newHieght = newHieght-3;
       } else if (windowWidth >= 1024 && classExists.contains('app-navigation--close')) {
-        var mainWindow = windowWidth - (fileArray.length*4) -120;
+        var mainWindow = windowWidth - (fileArray.length*4)-30;
         newHieght = mainWindow/heightRatio;
         newHieght = newHieght-1;
       } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5) -120;
+        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5)-30;
         newHieght = mainWindow/heightRatio;
         newHieght = newHieght;
       }
@@ -719,10 +720,10 @@ export default {
         if (files.length !== numberOfImagesPerBatch) {
           this.done = true;
         }
-        //debugger;
+        
         var filesArray = [];
         for (var i = 0; i < files.length; i++) {
-          if(files[i].getcontenttype!="video/mp4"){
+          //if(files[i].getcontenttype!="video/mp4"){
             var y = await this.getImageWidth(
             "/index.php/core/preview?fileId=" +
               files[i].fileid +
@@ -736,7 +737,7 @@ export default {
               "&x=1000&y=1000&forceIcon=0&a=1"
           );
           files[i].height = z;
-          }
+         // }
           
         }
         //console.log(files.length);
@@ -776,8 +777,8 @@ export default {
     resetState() {
       this.$store.dispatch("resetTimeline");
       this.$store.dispatch("resetFiles");
-      console.log(JSON.stringify(this.files) + "files data");
-      console.log(this.timeline+" timeline");
+      // console.log(JSON.stringify(this.files) + "files data");
+      // console.log(this.timeline+" timeline");
       this.done = false;
       this.error = null;
       this.page = 0;
@@ -823,7 +824,6 @@ div {
   flex-wrap: wrap;
   width: 100%;
   margin: 0 4px;
-  padding: 0 60px;
 }
 
 .item {

@@ -22,25 +22,26 @@
 
 <template>
   <Content app-name="photos">
+    <div class="container-fixed" id="mainDivDesign"> 
     <AppNavigation>
       <template #list>
         <AppNavigationItem
           :to="{ name: 'timeline' }"
           class="app-navigation__photos"
-          :title="t('photos', 'All media')"
+          :title="t('photos', 'All Media')"
           icon="icon-yourphotos"
           exact
         />
         <AppNavigationItem
            to="/images"
           class="app-navigation__photos"
-          :title="t('photos', 'Your photos')"
+          :title="t('photos', 'My photos')"
           icon="icon-yourphotos"
           exact
         />
         <AppNavigationItem
           to="/videos"
-          :title="t('photos', 'Your videos')"
+          :title="t('photos', 'My videos')"
           icon="icon-video"
         />
         <AppNavigationItem
@@ -50,12 +51,12 @@
         />
         <AppNavigationItem
           :to="{ name: 'albums' }"
-          :title="t('photos', 'Your folders')"
+          :title="t('photos', 'My folders')"
           icon="icon-files-dark"
         />
         <AppNavigationItem
           :to="{ name: 'shared' }"
-          :title="t('photos', 'Shared with you')"
+          :title="t('photos', 'Shared with me')"
           icon="icon-share"
         />
         <AppNavigationItem
@@ -77,7 +78,7 @@
         </AppNavigationSettings>
       </template>
     </AppNavigation>
-    <AppContent :class="{ 'icon-loading': loading }">
+    <AppContent  :class="isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show'">
       <div class='br-place-holder'> </div>
       <router-view v-show="!loading" :loading.sync="loading" />
 
@@ -89,6 +90,7 @@
       <!-- eslint-disable-next-line vue/no-v-html (because it's an SVG file) -->
       <span class="hidden-visually" role="none" v-html="videoplaceholder" />
     </AppContent>
+    </div>
   </Content>
 </template>
 
@@ -126,6 +128,7 @@ export default {
       imgplaceholder,
       videoplaceholder,
       areTagsInstalled,
+      isAppNavigationHidden:false,
       showLocationMenuEntry:
         getCurrentUser() === null
           ? false
@@ -153,6 +156,13 @@ export default {
     }
   },
 
+  updated(){
+    var leftContainer = document.getElementById("app-navigation-vue");
+    console.log(this.isAppNavigationHidden);
+    var classExists = leftContainer.classList;
+    this.isAppNavigationHidden = classExists && classExists.contains('app-navigation--close');
+    console.log(this.isAppNavigationHidden);
+  },
   beforeDestroy() {
     window.removeEventListener("load", () => {
       navigator.serviceWorker.register(
@@ -175,6 +185,14 @@ export default {
   flex-grow: 1;
   flex-direction: column;
   	z-index: 0 !important;
+}
+
+.left-menu-hide{
+margin-left: none !important;
+}
+
+.left-menu-show{
+margin-left: 320px;
 }
 
 .app-navigation__photos::v-deep .app-navigation-entry-icon.icon-photos {

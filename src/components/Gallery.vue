@@ -116,16 +116,5 @@ export default {
 div {
   line-height: 0 !important;
 }
-.item {
-  position: relative;
-  
-}
 
-.icon-video-white {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%);
-  z-index: 20;
-}
 </style>

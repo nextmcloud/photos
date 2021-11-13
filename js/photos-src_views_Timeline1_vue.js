@@ -496,7 +496,7 @@ __webpack_require__.r(__webpack_exports__);
        * In our case injected could be an image/video (aka file) or a title (year/month)
        * Note2: titles are rendered full width and images are rendered on 1 column and 256x256 ratio
        */
-      console.log("content list" + this.fileList);
+      //console.log("content list"+ this.fileList);
       var finalData = this.fileList.flatMap((galleryFile, index) => {
         const finalArray = [];
         const currentSection = this.getFormatedDate(galleryFile.lastmod, "YYYY MMMM");
@@ -533,7 +533,8 @@ __webpack_require__.r(__webpack_exports__);
       var max_height = 150;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      let isAppNavigationHidden = classExists.contains('app-navigation--close');
+      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
       var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); //
 
       if (windowWidth < 768) {
@@ -543,7 +544,7 @@ __webpack_require__.r(__webpack_exports__);
       if (windowWidth <= 1024 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = windowWidth;
       } else {
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth - 120;
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth - 30;
       }
 
       var gap = 2;
@@ -578,8 +579,7 @@ __webpack_require__.r(__webpack_exports__);
 
           if (rowWidth < totalRowWidth) {
             tempArray.push(finalData[i]);
-          } //debugger;
-
+          }
 
           if (rowWidth >= totalRowWidth) {
             // console.log("I am in adjustment");
@@ -624,9 +624,9 @@ __webpack_require__.r(__webpack_exports__);
   },
 
   created() {
-    this.resetState();
-    console.log(JSON.stringify(this.files) + "files data");
-    console.log(this.timeline + " timeline");
+    this.resetState(); //  console.log(JSON.stringify(this.files) + "files data");
+    //   console.log(this.timeline+" timeline");
+
     this.getContent();
     $('html, body').animate({
       scrollTop: jQuery('#content-vue').position().top + 5
@@ -693,7 +693,7 @@ __webpack_require__.r(__webpack_exports__);
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
+      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
       var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); // document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
 
       for (var i = 0; i < fileArray.length; i++) {
@@ -708,11 +708,11 @@ __webpack_require__.r(__webpack_exports__);
         newHieght = mainWindow / heightRatio;
         newHieght = newHieght - 3;
       } else if (windowWidth >= 1024 && classExists.contains('app-navigation--close')) {
-        var mainWindow = windowWidth - fileArray.length * 4 - 120;
+        var mainWindow = windowWidth - fileArray.length * 4 - 30;
         newHieght = mainWindow / heightRatio;
         newHieght = newHieght - 1;
       } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 5 - 120;
+        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 5 - 30;
         newHieght = mainWindow / heightRatio;
         newHieght = newHieght;
       }
@@ -997,18 +997,16 @@ __webpack_require__.r(__webpack_exports__);
 
         if (files.length !== numberOfImagesPerBatch) {
           this.done = true;
-        } //debugger;
-
+        }
 
         var filesArray = [];
 
         for (var i = 0; i < files.length; i++) {
-          if (files[i].getcontenttype != "video/mp4") {
-            var y = await this.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-            files[i].width = y;
-            var z = await this.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-            files[i].height = z;
-          }
+          //if(files[i].getcontenttype!="video/mp4"){
+          var y = await this.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+          files[i].width = y;
+          var z = await this.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+          files[i].height = z; // }
         } //console.log(files.length);
 
 
@@ -1049,9 +1047,9 @@ __webpack_require__.r(__webpack_exports__);
      */
     resetState() {
       this.$store.dispatch("resetTimeline");
-      this.$store.dispatch("resetFiles");
-      console.log(JSON.stringify(this.files) + "files data");
-      console.log(this.timeline + " timeline");
+      this.$store.dispatch("resetFiles"); // console.log(JSON.stringify(this.files) + "files data");
+      // console.log(this.timeline+" timeline");
+
       this.done = false;
       this.error = null;
       this.page = 0;
@@ -1134,7 +1132,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\ndiv[data-v-15c1b052] {\n  line-height: 0 !important;\n}\n.item[data-v-15c1b052] {\n  position: relative;\n}\n.icon-video-white[data-v-15c1b052] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%);\n  z-index: 20;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\ndiv[data-v-15c1b052] {\n  line-height: 0 !important;\n}\n\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1182,7 +1180,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*[data-v-3f501974] {\n  margin :0;\n}\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n  padding: 0 60px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n  position: relative;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 64px;\n}\n.abc[data-v-3f501974] {\n  line-height: 0.25;\n}\n@media only screen and (max-width: 1024px) {\n.main-container[data-v-3f501974] {\n\n  padding: 0;\n}\n}\n  /* ----------- iPad Pro ----------- */\n/* Portrait and Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Portrait */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: portrait) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: landscape) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n.icon-video-white[data-v-3f501974] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%);\n  z-index: 20;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*[data-v-3f501974] {\n  margin :0;\n}\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n  position: relative;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 64px;\n}\n.abc[data-v-3f501974] {\n  line-height: 0.25;\n}\n@media only screen and (max-width: 1024px) {\n.main-container[data-v-3f501974] {\n\n  padding: 0;\n}\n}\n  /* ----------- iPad Pro ----------- */\n/* Portrait and Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Portrait */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: portrait) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: landscape) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n.icon-video-white[data-v-3f501974] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%);\n  z-index: 20;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1944,4 +1942,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=bd0b546ce5859289f926
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=51a27ac0e00463a0a104

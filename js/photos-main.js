@@ -6170,6 +6170,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -6201,6 +6203,7 @@ __webpack_require__.r(__webpack_exports__);
       imgplaceholder: _assets_image_svg__WEBPACK_IMPORTED_MODULE_9__.default,
       videoplaceholder: _assets_video_svg__WEBPACK_IMPORTED_MODULE_10__.default,
       areTagsInstalled: _services_AreTagsInstalled__WEBPACK_IMPORTED_MODULE_12__.default,
+      isAppNavigationHidden: false,
       showLocationMenuEntry: (0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_0__.getCurrentUser)() === null ? false : (0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_0__.getCurrentUser)().isAdmin || _services_IsMapsInstalled__WEBPACK_IMPORTED_MODULE_11__.default
     };
   },
@@ -6220,6 +6223,14 @@ __webpack_require__.r(__webpack_exports__);
     } else {
       console.debug("Service Worker is not enabled on this browser.");
     }
+  },
+
+  updated() {
+    var leftContainer = document.getElementById("app-navigation-vue");
+    console.log(this.isAppNavigationHidden);
+    var classExists = leftContainer.classList;
+    this.isAppNavigationHidden = classExists && classExists.contains('app-navigation--close');
+    console.log(this.isAppNavigationHidden);
   },
 
   beforeDestroy() {
@@ -15217,7 +15228,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.left-menu-hide[data-v-32e4913a] {\n  margin-left: none !important;\n}\n.left-menu-show[data-v-32e4913a] {\n  margin-left: 320px;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -37040,154 +37051,160 @@ var render = function() {
   var _vm = this
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
-  return _c(
-    "Content",
-    { attrs: { "app-name": "photos" } },
-    [
-      _c("AppNavigation", {
-        scopedSlots: _vm._u([
-          {
-            key: "list",
-            fn: function() {
-              return [
-                _c("AppNavigationItem", {
-                  staticClass: "app-navigation__photos",
-                  attrs: {
-                    to: { name: "timeline" },
-                    title: _vm.t("photos", "All media"),
-                    icon: "icon-yourphotos",
-                    exact: ""
-                  }
-                }),
-                _vm._v(" "),
-                _c("AppNavigationItem", {
-                  staticClass: "app-navigation__photos",
-                  attrs: {
-                    to: "/images",
-                    title: _vm.t("photos", "Your photos"),
-                    icon: "icon-yourphotos",
-                    exact: ""
-                  }
-                }),
-                _vm._v(" "),
-                _c("AppNavigationItem", {
-                  attrs: {
-                    to: "/videos",
-                    title: _vm.t("photos", "Your videos"),
-                    icon: "icon-video"
-                  }
-                }),
-                _vm._v(" "),
-                _c("AppNavigationItem", {
-                  attrs: {
-                    to: "/favorites",
-                    title: _vm.t("photos", "Favorites"),
-                    icon: "icon-favorite"
-                  }
-                }),
-                _vm._v(" "),
-                _c("AppNavigationItem", {
-                  attrs: {
-                    to: { name: "albums" },
-                    title: _vm.t("photos", "Your folders"),
-                    icon: "icon-files-dark"
-                  }
-                }),
-                _vm._v(" "),
-                _c("AppNavigationItem", {
-                  attrs: {
-                    to: { name: "shared" },
-                    title: _vm.t("photos", "Shared with you"),
-                    icon: "icon-share"
-                  }
-                }),
-                _vm._v(" "),
-                _vm.areTagsInstalled
-                  ? _c("AppNavigationItem", {
-                      attrs: {
-                        to: { name: "tags" },
-                        title: _vm.t("photos", "Tagged photos"),
-                        icon: "icon-tag"
-                      }
-                    })
-                  : _vm._e(),
-                _vm._v(" "),
-                _vm.showLocationMenuEntry
-                  ? _c("AppNavigationItem", {
-                      attrs: {
-                        to: { name: "maps" },
-                        title: _vm.t("photos", "Locations"),
-                        icon: "icon-address"
-                      }
-                    })
-                  : _vm._e()
-              ]
+  return _c("Content", { attrs: { "app-name": "photos" } }, [
+    _c(
+      "div",
+      { staticClass: "container-fixed", attrs: { id: "mainDivDesign" } },
+      [
+        _c("AppNavigation", {
+          scopedSlots: _vm._u([
+            {
+              key: "list",
+              fn: function() {
+                return [
+                  _c("AppNavigationItem", {
+                    staticClass: "app-navigation__photos",
+                    attrs: {
+                      to: { name: "timeline" },
+                      title: _vm.t("photos", "All Media"),
+                      icon: "icon-yourphotos",
+                      exact: ""
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("AppNavigationItem", {
+                    staticClass: "app-navigation__photos",
+                    attrs: {
+                      to: "/images",
+                      title: _vm.t("photos", "My photos"),
+                      icon: "icon-yourphotos",
+                      exact: ""
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("AppNavigationItem", {
+                    attrs: {
+                      to: "/videos",
+                      title: _vm.t("photos", "My videos"),
+                      icon: "icon-video"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("AppNavigationItem", {
+                    attrs: {
+                      to: "/favorites",
+                      title: _vm.t("photos", "Favorites"),
+                      icon: "icon-favorite"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("AppNavigationItem", {
+                    attrs: {
+                      to: { name: "albums" },
+                      title: _vm.t("photos", "My folders"),
+                      icon: "icon-files-dark"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _c("AppNavigationItem", {
+                    attrs: {
+                      to: { name: "shared" },
+                      title: _vm.t("photos", "Shared with me"),
+                      icon: "icon-share"
+                    }
+                  }),
+                  _vm._v(" "),
+                  _vm.areTagsInstalled
+                    ? _c("AppNavigationItem", {
+                        attrs: {
+                          to: { name: "tags" },
+                          title: _vm.t("photos", "Tagged photos"),
+                          icon: "icon-tag"
+                        }
+                      })
+                    : _vm._e(),
+                  _vm._v(" "),
+                  _vm.showLocationMenuEntry
+                    ? _c("AppNavigationItem", {
+                        attrs: {
+                          to: { name: "maps" },
+                          title: _vm.t("photos", "Locations"),
+                          icon: "icon-address"
+                        }
+                      })
+                    : _vm._e()
+                ]
+              },
+              proxy: true
             },
-            proxy: true
-          },
-          {
-            key: "footer",
-            fn: function() {
-              return [
-                _c(
-                  "AppNavigationSettings",
-                  { attrs: { title: _vm.t("photos", "Settings") } },
-                  [_c("SettingsView")],
-                  1
-                )
-              ]
-            },
-            proxy: true
-          }
-        ])
-      }),
-      _vm._v(" "),
-      _c(
-        "AppContent",
-        { class: { "icon-loading": _vm.loading } },
-        [
-          _c("div", { staticClass: "br-place-holder" }),
-          _vm._v(" "),
-          _c("router-view", {
-            directives: [
-              {
-                name: "show",
-                rawName: "v-show",
-                value: !_vm.loading,
-                expression: "!loading"
-              }
-            ],
-            attrs: { loading: _vm.loading },
-            on: {
-              "update:loading": function($event) {
-                _vm.loading = $event
-              }
+            {
+              key: "footer",
+              fn: function() {
+                return [
+                  _c(
+                    "AppNavigationSettings",
+                    { attrs: { title: _vm.t("photos", "Settings") } },
+                    [_c("SettingsView")],
+                    1
+                  )
+                ]
+              },
+              proxy: true
             }
-          }),
-          _vm._v(" "),
-          _c("span", {
-            staticClass: "hidden-visually",
-            attrs: { role: "none" },
-            domProps: { innerHTML: _vm._s(_vm.svgplaceholder) }
-          }),
-          _vm._v(" "),
-          _c("span", {
-            staticClass: "hidden-visually",
-            attrs: { role: "none" },
-            domProps: { innerHTML: _vm._s(_vm.imgplaceholder) }
-          }),
-          _vm._v(" "),
-          _c("span", {
-            staticClass: "hidden-visually",
-            attrs: { role: "none" },
-            domProps: { innerHTML: _vm._s(_vm.videoplaceholder) }
-          })
-        ],
-        1
-      )
-    ],
-    1
-  )
+          ])
+        }),
+        _vm._v(" "),
+        _c(
+          "AppContent",
+          {
+            class: _vm.isAppNavigationHidden
+              ? "left-menu-hide"
+              : "left-menu-show"
+          },
+          [
+            _c("div", { staticClass: "br-place-holder" }),
+            _vm._v(" "),
+            _c("router-view", {
+              directives: [
+                {
+                  name: "show",
+                  rawName: "v-show",
+                  value: !_vm.loading,
+                  expression: "!loading"
+                }
+              ],
+              attrs: { loading: _vm.loading },
+              on: {
+                "update:loading": function($event) {
+                  _vm.loading = $event
+                }
+              }
+            }),
+            _vm._v(" "),
+            _c("span", {
+              staticClass: "hidden-visually",
+              attrs: { role: "none" },
+              domProps: { innerHTML: _vm._s(_vm.svgplaceholder) }
+            }),
+            _vm._v(" "),
+            _c("span", {
+              staticClass: "hidden-visually",
+              attrs: { role: "none" },
+              domProps: { innerHTML: _vm._s(_vm.imgplaceholder) }
+            }),
+            _vm._v(" "),
+            _c("span", {
+              staticClass: "hidden-visually",
+              attrs: { role: "none" },
+              domProps: { innerHTML: _vm._s(_vm.videoplaceholder) }
+            })
+          ],
+          1
+        )
+      ],
+      1
+    )
+  ])
 }
 var staticRenderFns = []
 render._withStripped = true
@@ -50599,7 +50616,7 @@ module.exports = function whichTypedArray(value) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"23e634838c2fa871f9e6","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"60887132eca01981fd3c","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"cc940a94aa96c40fcbbd","src_views_Albums_vue":"c85508466a8ea35d81a8","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"5cfb86fdc1f3c908f824","src_patchedRequest_js-src_views_Tags_vue":"35cfe47aea0fe40f19df","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"f1ad1b950e4f0423d792","src_views_Timeline_vue":"f74ef43c0b06bfbb9752","src_views_Timeline1_vue":"bd0b546ce5859289f926","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"23e634838c2fa871f9e6","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"60887132eca01981fd3c","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"cc940a94aa96c40fcbbd","src_views_Albums_vue":"c85508466a8ea35d81a8","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"5cfb86fdc1f3c908f824","src_patchedRequest_js-src_views_Tags_vue":"35cfe47aea0fe40f19df","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"f1ad1b950e4f0423d792","src_views_Timeline_vue":"f74ef43c0b06bfbb9752","src_views_Timeline1_vue":"51a27ac0e00463a0a104","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -50869,4 +50886,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=01a9ce949ad2368252ff
+//# sourceMappingURL=photos-main.js.map?v=cb6047d8de5d96cddb3d
