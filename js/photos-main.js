@@ -15228,7 +15228,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.left-menu-hide[data-v-32e4913a] {\n  margin-left: none !important;\n}\n.left-menu-show[data-v-32e4913a] {\n  margin-left: 320px;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -50886,4 +50886,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=cb6047d8de5d96cddb3d
+//# sourceMappingURL=photos-main.js.map?v=8c7f5fd529aa0e62c85d

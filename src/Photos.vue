@@ -187,14 +187,6 @@ export default {
   	z-index: 0 !important;
 }
 
-.left-menu-hide{
-margin-left: none !important;
-}
-
-.left-menu-show{
-margin-left: 320px;
-}
-
 .app-navigation__photos::v-deep .app-navigation-entry-icon.icon-photos {
   background-size: 20px;
 }
