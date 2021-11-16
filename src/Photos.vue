@@ -49,11 +49,11 @@
           :title="t('photos', 'Favorites')"
           icon="icon-favorite"
         />
-        <AppNavigationItem
+        <!-- <AppNavigationItem
           :to="{ name: 'albums' }"
           :title="t('photos', 'My folders')"
           icon="icon-files-dark"
-        />
+        /> -->
         <AppNavigationItem
           :to="{ name: 'shared' }"
           :title="t('photos', 'Shared with me')"

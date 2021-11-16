@@ -1002,11 +1002,12 @@ __webpack_require__.r(__webpack_exports__);
         var filesArray = [];
 
         for (var i = 0; i < files.length; i++) {
-          //if(files[i].getcontenttype!="video/mp4"){
-          var y = await this.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-          files[i].width = y;
-          var z = await this.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-          files[i].height = z; // }
+          if (files[i].getcontenttype != "video/mp4") {
+            var y = await this.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+            files[i].width = y;
+            var z = await this.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+            files[i].height = z;
+          }
         } //console.log(files.length);
 
 
@@ -1942,4 +1943,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=51a27ac0e00463a0a104
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=e313d6d20fbef526ede3
