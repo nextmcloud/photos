@@ -26,15 +26,21 @@
     <AppNavigation>
       <template #list>
         <AppNavigationItem
+          to="/favorites"
+          :title="t('photos', 'Favorites')"
+          icon="icon-favorite"
+        />
+
+        <AppNavigationItem
           :to="{ name: 'timeline' }"
-          class="app-navigation__photos"
+          class="app-navigation__photos allmedia"
           :title="t('photos', 'All Media')"
           icon="icon-yourphotos"
           exact
         />
         <AppNavigationItem
            to="/images"
-          class="app-navigation__photos"
+          class="app-navigation__photos allphotos"
           :title="t('photos', 'My photos')"
           icon="icon-yourphotos"
           exact
@@ -44,16 +50,12 @@
           :title="t('photos', 'My videos')"
           icon="icon-video"
         />
+        
         <AppNavigationItem
-          to="/favorites"
-          :title="t('photos', 'Favorites')"
-          icon="icon-favorite"
-        />
-        <!-- <AppNavigationItem
           :to="{ name: 'albums' }"
           :title="t('photos', 'My folders')"
           icon="icon-files-dark"
-        /> -->
+        />
         <AppNavigationItem
           :to="{ name: 'shared' }"
           :title="t('photos', 'Shared with me')"
