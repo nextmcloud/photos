@@ -43139,21 +43139,21 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c("AppNavigationItem", {
-                    staticClass: "app-navigation__photos allmedia",
+                    staticClass: "app-navigation__photos ",
                     attrs: {
                       to: { name: "timeline" },
                       title: _vm.t("photos", "All Media"),
-                      icon: "icon-yourphotos",
+                      icon: "icon-yourphotos allmedia",
                       exact: ""
                     }
                   }),
                   _vm._v(" "),
                   _c("AppNavigationItem", {
-                    staticClass: "app-navigation__photos allphotos",
+                    staticClass: "app-navigation__photos ",
                     attrs: {
                       to: "/images",
                       title: _vm.t("photos", "My photos"),
-                      icon: "icon-yourphotos",
+                      icon: "icon-yourphotos allphotos",
                       exact: ""
                     }
                   }),
@@ -57170,4 +57170,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=c64b74e0c2e22b04d55c
+//# sourceMappingURL=photos-main.js.map?v=b0c8fb66ba26f525bedf

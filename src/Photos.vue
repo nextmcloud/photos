@@ -33,16 +33,16 @@
 
         <AppNavigationItem
           :to="{ name: 'timeline' }"
-          class="app-navigation__photos allmedia"
+          class="app-navigation__photos "
           :title="t('photos', 'All Media')"
-          icon="icon-yourphotos"
+          icon="icon-yourphotos allmedia"
           exact
         />
         <AppNavigationItem
            to="/images"
-          class="app-navigation__photos allphotos"
+          class="app-navigation__photos "
           :title="t('photos', 'My photos')"
-          icon="icon-yourphotos"
+          icon="icon-yourphotos allphotos"
           exact
         />
         <AppNavigationItem
