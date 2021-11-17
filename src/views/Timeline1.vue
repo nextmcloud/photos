@@ -723,7 +723,7 @@ export default {
         
         var filesArray = [];
         for (var i = 0; i < files.length; i++) {
-          if(files[i].getcontenttype!="video/mp4"){
+          //if(files[i].getcontenttype!="video/mp4"){
             var y = await this.getImageWidth(
             "/index.php/core/preview?fileId=" +
               files[i].fileid +
@@ -737,7 +737,7 @@ export default {
               "&x=1000&y=1000&forceIcon=0&a=1"
           );
           files[i].height = z;
-          }
+          //}
           
         }
         //console.log(files.length);

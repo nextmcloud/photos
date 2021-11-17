@@ -1132,34 +1132,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
               case 15:
                 if (!(i < files.length)) {
-                  _context6.next = 28;
+                  _context6.next = 27;
                   break;
                 }
 
-                if (!(files[i].getcontenttype != "video/mp4")) {
-                  _context6.next = 25;
-                  break;
-                }
-
-                _context6.next = 19;
+                _context6.next = 18;
                 return _this6.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
 
-              case 19:
+              case 18:
                 y = _context6.sent;
                 files[i].width = y;
-                _context6.next = 23;
+                _context6.next = 22;
                 return _this6.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
 
-              case 23:
+              case 22:
                 z = _context6.sent;
-                files[i].height = z;
+                files[i].height = z; //}
 
-              case 25:
+              case 24:
                 i++;
                 _context6.next = 15;
                 break;
 
-              case 28:
+              case 27:
                 //console.log(files.length);
                 _this6.$store.dispatch("updateTimeline", files);
 
@@ -1171,12 +1166,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 return _context6.abrupt("return", Promise.resolve(files));
 
-              case 33:
-                _context6.next = 40;
+              case 32:
+                _context6.next = 39;
                 break;
 
-              case 35:
-                _context6.prev = 35;
+              case 34:
+                _context6.prev = 34;
                 _context6.t0 = _context6["catch"](8);
 
                 if (_context6.t0.response && _context6.t0.response.status) {
@@ -1196,21 +1191,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 console.error("Error fetching timeline", _context6.t0);
                 return _context6.abrupt("return", Promise.resolve(true));
 
-              case 40:
-                _context6.prev = 40;
+              case 39:
+                _context6.prev = 39;
 
                 // done loading even with errors
                 _this6.$emit("update:loading", false);
 
                 _this6.cancelRequest = null;
-                return _context6.finish(40);
+                return _context6.finish(39);
 
-              case 44:
+              case 43:
               case "end":
                 return _context6.stop();
             }
           }
-        }, _callee6, null, [[8, 35, 40, 44]]);
+        }, _callee6, null, [[8, 34, 39, 43]]);
       }))();
     },
 
@@ -2096,4 +2091,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=b506cbd83670f0950f23
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=0a1cfd57d58338610701
