@@ -84,7 +84,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return this.item.injected.width;
     },
     src: function src() {
-      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 1000, "&y=", 1000, "&a=1&v=").concat(this.item.injected.etag));
+      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 600, "&y=", 600, "&a=1&v=").concat(this.item.injected.etag));
     }
   },
   mounted: function mounted() {// window.addEventListener("resize", this.handleResize);
@@ -502,9 +502,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // return this.timeline
       //   .map((fileId) => this.files[fileId])
       //   .filter((file) => !!file);
-      var newTimeline = _toConsumableArray(new Set(this.timeline));
+      var newTimeline = _toConsumableArray(new Set(this.timeline)); //console.log("new timeline (filelist) : "+      newTimeline);
 
-      console.log("new timeline (filelist) : " + newTimeline);
+
       return newTimeline.map(function (fileId) {
         return _this.files[fileId];
       });
@@ -574,7 +574,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var tempArray2 = [];
       var j = -1;
       var k = 0;
-      var max_height = 150;
+      var max_height = 200;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
       var isAppNavigationHidden = classExists.contains('app-navigation--close');
@@ -582,15 +582,19 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); //
 
       if (windowWidth < 768) {
-        max_height = 100;
+        max_height = 150;
       }
 
-      if (windowWidth <= 1024 || classExists.contains('app-navigation--close')) {
+      if (windowWidth < 1024 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = windowWidth;
+      } else if (windowWidth >= 1024 && windowWidth < 1299) {
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth - 30;
       } else {
         var originalMainWindow = windowWidth - leftContainer.offsetWidth - 30;
       }
 
+      console.log("main width: " + originalMainWindow);
+      console.log("windowWidth : " + windowWidth);
       var gap = 2;
       var rowWidth = 0;
       var totalRowWidth = originalMainWindow;
@@ -693,6 +697,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   },
   beforeMount: function beforeMount() {
+    this.$emit("update:loading", true);
     this.resetState();
     this.getContent(); // this.resetState();
   },
@@ -729,9 +734,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
      */
     checkClickSource: function checkClickSource(event) {
       var comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
-      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));
+      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); //alert(event.target);
 
-      if (event.target.className === "app-navigation-toggle" && windowWidth > 1024) {
+      var contentVue = document.getElementById("app-navigation-vue");
+      console.log(contentVue.className);
+
+      if (contentVue.className == "app-navigation app-navigation--close" && windowWidth > 1000) {
         this.windowResize();
       }
     },
@@ -749,14 +757,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 content = document.getElementsByClassName("main-container")[0];
 
                 if (!(wrapper.scrollTop + wrapper.offsetHeight > content.offsetHeight)) {
-                  _context3.next = 5;
+                  _context3.next = 6;
                   break;
                 }
 
-                _context3.next = 5;
+                _this5.$emit("update:loading", true);
+
+                _context3.next = 6;
                 return _this5.getContent();
 
-              case 5:
+              case 6:
               case "end":
                 return _context3.stop();
             }
@@ -1088,13 +1098,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
 
                 if (!_this6.done) {
-                  _context6.next = 3;
+                  _context6.next = 4;
                   break;
                 }
 
+                _this6.$emit("update:loading", false);
+
                 return _context6.abrupt("return", Promise.resolve(true));
 
-              case 3:
+              case 4:
                 // cancel any pending requests
                 if (_this6.cancelRequest) {
                   _this6.cancelRequest("Changed view");
@@ -1108,17 +1120,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_11__["default"])(_services_PhotoSearch__WEBPACK_IMPORTED_MODULE_1__["default"]), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
                 _this6.cancelRequest = cancel;
-                numberOfImagesPerBatch = 12 * 5; // loading 5 rows
+                numberOfImagesPerBatch = 5 * 6; // loading 5 rows
 
-                _context6.prev = 8;
-                _context6.next = 11;
+                _context6.prev = 9;
+                _context6.next = 12;
                 return request(_this6.onlyFavorites, {
                   page: _this6.page,
                   perPage: numberOfImagesPerBatch,
                   mimesType: mimes
                 });
 
-              case 11:
+              case 12:
                 files = _context6.sent;
 
                 //console.log("FILES DATAA" + files);
@@ -1130,31 +1142,31 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 filesArray = [];
                 i = 0;
 
-              case 15:
+              case 16:
                 if (!(i < files.length)) {
-                  _context6.next = 27;
+                  _context6.next = 28;
                   break;
                 }
 
-                _context6.next = 18;
+                _context6.next = 19;
                 return _this6.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
 
-              case 18:
+              case 19:
                 y = _context6.sent;
                 files[i].width = y;
-                _context6.next = 22;
+                _context6.next = 23;
                 return _this6.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
 
-              case 22:
+              case 23:
                 z = _context6.sent;
                 files[i].height = z; //}
 
-              case 24:
+              case 25:
                 i++;
-                _context6.next = 15;
+                _context6.next = 16;
                 break;
 
-              case 27:
+              case 28:
                 //console.log(files.length);
                 _this6.$store.dispatch("updateTimeline", files);
 
@@ -1166,13 +1178,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 return _context6.abrupt("return", Promise.resolve(files));
 
-              case 32:
-                _context6.next = 39;
+              case 33:
+                _context6.next = 40;
                 break;
 
-              case 34:
-                _context6.prev = 34;
-                _context6.t0 = _context6["catch"](8);
+              case 35:
+                _context6.prev = 35;
+                _context6.t0 = _context6["catch"](9);
 
                 if (_context6.t0.response && _context6.t0.response.status) {
                   if (_context6.t0.response.status === 404) {
@@ -1191,21 +1203,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 console.error("Error fetching timeline", _context6.t0);
                 return _context6.abrupt("return", Promise.resolve(true));
 
-              case 39:
-                _context6.prev = 39;
+              case 40:
+                _context6.prev = 40;
 
                 // done loading even with errors
                 _this6.$emit("update:loading", false);
 
                 _this6.cancelRequest = null;
-                return _context6.finish(39);
+                return _context6.finish(40);
 
-              case 43:
+              case 44:
               case "end":
                 return _context6.stop();
             }
           }
-        }, _callee6, null, [[8, 34, 39, 43]]);
+        }, _callee6, null, [[9, 35, 40, 44]]);
       }))();
     },
 
@@ -2091,4 +2103,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=0a1cfd57d58338610701
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=3bd5bbe664658fa38340

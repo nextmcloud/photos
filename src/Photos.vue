@@ -33,7 +33,7 @@
 
         <AppNavigationItem
           :to="{ name: 'timeline' }"
-          class="app-navigation__photos "
+          class="app-navigation__allmedia "
           :title="t('photos', 'All Media')"
           icon="icon-yourphotos allmedia"
           exact
@@ -80,8 +80,8 @@
         </AppNavigationSettings>
       </template>
     </AppNavigation>
-    <AppContent  :class="isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show'">
-      <div class='br-place-holder'> </div>
+    <AppContent  :class="[{ 'icon-loading': loading },isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show']" >
+      <div class='br-place-holder' > </div>
       <router-view v-show="!loading" :loading.sync="loading" />
 
       <!-- svg img loading placeholder (linked to the File component) -->

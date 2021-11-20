@@ -122,7 +122,7 @@ export default {
       //   .map((fileId) => this.files[fileId])
       //   .filter((file) => !!file);
       const newTimeline = [...new Set(this.timeline)];
-      console.log("new timeline (filelist) : "+      newTimeline);
+      //console.log("new timeline (filelist) : "+      newTimeline);
         return newTimeline.map((fileId) => this.files[fileId])
     },
 
@@ -193,22 +193,27 @@ export default {
       var tempArray2 = [];
       var j = -1;
       var k = 0;
-      var max_height = 150;
+      var max_height = 200;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
       let isAppNavigationHidden = classExists.contains('app-navigation--close');
       const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
       var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));//
       if(windowWidth <768){
-         max_height =100;
+         max_height =150;
       }
-      if (windowWidth <= 1024 || classExists.contains('app-navigation--close')) {
+      if (windowWidth < 1024 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = windowWidth;
        
-      } else {
-        
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth  -30;
       }
+      else if (windowWidth >= 1024 && windowWidth <1299 ) {
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth -30;
+      }  
+      else {
+        var originalMainWindow = windowWidth - leftContainer.offsetWidth -30;
+      }
+      console.log("main width: "+ originalMainWindow);
+      console.log("windowWidth : "+ windowWidth);
       var gap = 2;
       
       var rowWidth = 0;
@@ -285,6 +290,7 @@ export default {
   },
 
   beforeMount() {
+      this.$emit("update:loading", true);
     this.resetState();
     this.getContent();
     // this.resetState();
@@ -330,7 +336,10 @@ export default {
   checkClickSource(event){
       const comuptedStyle = window.getComputedStyle(document.getElementById("content-vue"));
       var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));
-    if(event.target.className==="app-navigation-toggle" && windowWidth > 1024){
+      //alert(event.target);
+      var contentVue = document.getElementById("app-navigation-vue");
+      console.log(contentVue.className);
+    if(contentVue.className=="app-navigation app-navigation--close" && windowWidth > 1000){
       this.windowResize();
     }
   },
@@ -340,14 +349,13 @@ export default {
      var wrapper = document.getElementById("app-content-vue");
      var content =  document.getElementsByClassName("main-container")[0];
     if(wrapper.scrollTop+wrapper.offsetHeight > content.offsetHeight) {
-     
+       this.$emit("update:loading", true);
        await this.getContent();
     }
    
     },
     windowResize() {
       var leftContainer = document.getElementById("app-navigation-vue");
-
       var windowWidth = document.documentElement.clientWidth;
       //if (windowWidth < 1024) {
         this.resetState();
@@ -688,7 +696,7 @@ export default {
       }
       //this.resetState();
       if (this.done) {
-       // this.$emit("update:loading", false);
+        this.$emit("update:loading", false);
         return Promise.resolve(true);
       }
 
@@ -705,7 +713,7 @@ export default {
       // done loading even with errors
       const { request, cancel } = cancelableRequest(getPhotos);
       this.cancelRequest = cancel;
-      const numberOfImagesPerBatch = 12 * 5; // loading 5 rows
+      const numberOfImagesPerBatch = 5 * 6; // loading 5 rows
 
       try {
 

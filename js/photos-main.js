@@ -43139,7 +43139,7 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c("AppNavigationItem", {
-                    staticClass: "app-navigation__photos ",
+                    staticClass: "app-navigation__allmedia ",
                     attrs: {
                       to: { name: "timeline" },
                       title: _vm.t("photos", "All Media"),
@@ -43225,9 +43225,10 @@ var render = function() {
         _c(
           "AppContent",
           {
-            class: _vm.isAppNavigationHidden
-              ? "left-menu-hide"
-              : "left-menu-show"
+            class: [
+              { "icon-loading": _vm.loading },
+              _vm.isAppNavigationHidden ? "left-menu-hide" : "left-menu-show"
+            ]
           },
           [
             _c("div", { staticClass: "br-place-holder" }),
@@ -56896,7 +56897,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"27062e03daa2620bef23","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"342b955293f376ad6e29","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"99595e3c44c265780214","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"0187a96499b44cd6bdd8","src_views_Albums_vue":"ba875596f4f402e37736","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"359fae97bb988fe974c0","src_patchedRequest_js-src_views_Tags_vue":"083af9990ae471278c03","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"6820f27dac7c94986374","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"8b1d8949d306349500d9","src_views_Timeline_vue":"5de7161b322495653ec6","src_views_Timeline1_vue":"0a1cfd57d58338610701","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"27062e03daa2620bef23","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"342b955293f376ad6e29","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"99595e3c44c265780214","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"0187a96499b44cd6bdd8","src_views_Albums_vue":"ba875596f4f402e37736","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"359fae97bb988fe974c0","src_patchedRequest_js-src_views_Tags_vue":"083af9990ae471278c03","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"6820f27dac7c94986374","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"8b1d8949d306349500d9","src_views_Timeline_vue":"5de7161b322495653ec6","src_views_Timeline1_vue":"3bd5bbe664658fa38340","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -57170,4 +57171,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=f1239dd0837f96328130
+//# sourceMappingURL=photos-main.js.map?v=f4600f4b2f78fd5d2503

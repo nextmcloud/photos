@@ -75,7 +75,7 @@ export default {
       return generateUrl(
         `/core/preview?fileId=${
           this.item.injected.fileid
-        }&x=${1000}&y=${1000}&a=1&v=${this.item.injected.etag}`
+        }&x=${600}&y=${600}&a=1&v=${this.item.injected.etag}`
       );
     },
   },
