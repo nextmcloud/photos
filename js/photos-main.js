@@ -11522,6 +11522,7 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
 
 
 
@@ -11849,7 +11850,8 @@ var eventName = 'photos:user-config-changed';
       var oldVal = localStorage.getItem('photos:' + setting);
       console.log(oldVal); // Current session save setting
 
-      localStorage.setItem('photos:' + setting, value); // Visible elements update setting
+      localStorage.setItem('photos:' + setting, value);
+      window.dispatchEvent(new Event('storage')); // Visible elements update setting
 
       (0,_nextcloud_event_bus__WEBPACK_IMPORTED_MODULE_0__.emit)(eventName, {
         setting: setting,
@@ -11857,10 +11859,11 @@ var eventName = 'photos:user-config-changed';
       });
 
       if (value) {
-        console.log("aaaa" + value);
-        this.$router.push('/gallery');
-      } else {
-        this.$router.push('/');
+        if (this.$route.name !== "albums") {
+          console.log("aaaa" + value);
+          this.$router.push('/gallery');
+        }
+      } else {//this.$router.push('/'); 
       }
     },
     updateSetting: function updateSetting(setting) {
@@ -43159,6 +43162,7 @@ var render = function() {
                   }),
                   _vm._v(" "),
                   _c("AppNavigationItem", {
+                    staticClass: "myvideos",
                     attrs: {
                       to: "/videos",
                       title: _vm.t("photos", "My videos"),
@@ -56897,7 +56901,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"27062e03daa2620bef23","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"342b955293f376ad6e29","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"99595e3c44c265780214","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"0187a96499b44cd6bdd8","src_views_Albums_vue":"ba875596f4f402e37736","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"359fae97bb988fe974c0","src_patchedRequest_js-src_views_Tags_vue":"083af9990ae471278c03","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"6820f27dac7c94986374","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"8b1d8949d306349500d9","src_views_Timeline_vue":"5de7161b322495653ec6","src_views_Timeline1_vue":"3bd5bbe664658fa38340","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"27062e03daa2620bef23","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"342b955293f376ad6e29","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"99595e3c44c265780214","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"0187a96499b44cd6bdd8","src_views_Albums_vue":"6f838a01a76c8693c8df","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"359fae97bb988fe974c0","src_patchedRequest_js-src_views_Tags_vue":"083af9990ae471278c03","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"6820f27dac7c94986374","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"a2f3182f17e0c2efd57b","src_views_Timeline_vue":"76a42bb6e74f784fa14a","src_views_Timeline1_vue":"1d89291059c86f4e59cf","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -57171,4 +57175,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=f4600f4b2f78fd5d2503
+//# sourceMappingURL=photos-main.js.map?v=fad10a677c0f1729a9a7

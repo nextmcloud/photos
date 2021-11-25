@@ -88,14 +88,18 @@ export default {
 			console.log(oldVal);
 			// Current session save setting
 			localStorage.setItem('photos:' + setting, value)
+			window.dispatchEvent(new Event('storage'));
 			// Visible elements update setting
 			emit(eventName, { setting, value })
 			if(value){
-				console.log("aaaa"+ value);
-				this.$router.push('/gallery'); 
+				if(this.$route.name!=="albums"){
+					console.log("aaaa"+ value);
+					this.$router.push('/gallery');
+				}
+				 
 			}
 			else{
-				this.$router.push('/'); 
+				//this.$router.push('/'); 
 			}
 			
 		},

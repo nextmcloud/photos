@@ -314,6 +314,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   beforeDestroy: function beforeDestroy() {
     // cancel any pending requests
+    window.removeEventListener("click", this.checkClickSource);
+    document.removeEventListener("scroll", this.onScroll);
+
     if (this.cancelRequest) {
       this.cancelRequest('Changed view');
     }
@@ -972,4 +975,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=5de7161b322495653ec6
+//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=76a42bb6e74f784fa14a

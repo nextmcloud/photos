@@ -196,6 +196,8 @@ export default {
 
 	beforeDestroy() {
 		// cancel any pending requests
+		window.removeEventListener("click", this.checkClickSource);
+		document.removeEventListener("scroll", this.onScroll); 
 		if (this.cancelRequest) {
 			this.cancelRequest('Changed view')
 		}

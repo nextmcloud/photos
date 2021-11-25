@@ -21,6 +21,7 @@
     <EmptyContent v-if="isEmpty" illustration-name="empty">
       {{ t("photos", "No photos in here") }}
     </EmptyContent>
+    <div class="main-container-wrapper" >
     <div class="main-container">
       <div
         v-for="item in this.contentList"
@@ -36,8 +37,13 @@
           <Gallery :item="item" />
         </div>
       </div>
+     
+    </div>    
+     <div class="loader-class"><Loader v-if="isLoading" /></div>
+     <div class="footer-replace">  </div>
+
     </div>
-     <div class="footer-replace"> </div>
+
   </div>
  
 </template>
@@ -68,6 +74,7 @@ export default {
     Navigation,
     Gallery,
     Separator,
+    Loader,
   },
   render(h) {
     return h(
@@ -109,6 +116,7 @@ export default {
       page: 0,
       lastSection: "",
       loaderComponent: Loader,
+      isLoading:true,
     };
   },
 
@@ -118,11 +126,7 @@ export default {
 
     // list of loaded medias
     fileList() {
-      // return this.timeline
-      //   .map((fileId) => this.files[fileId])
-      //   .filter((file) => !!file);
       const newTimeline = [...new Set(this.timeline)];
-      //console.log("new timeline (filelist) : "+      newTimeline);
         return newTimeline.map((fileId) => this.files[fileId])
     },
 
@@ -142,8 +146,6 @@ export default {
 
     // list of displayed content in the grid (titles + medias)
     contentList() {
-      //this.resetState();
-      //const fieldArray = [];
       /** The goal of this flat map is to return an array of images separated by titles (months)
        * ie: [{month1}, {image1}, {image2}, {month2}, {image3}, {image4}, {image5}]
        * First we get the current month+year of the image
@@ -192,28 +194,30 @@ export default {
       var tempArray1 = [];
       var tempArray2 = [];
       var j = -1;
-      var k = 0;
       var max_height = 200;
+
+      
       var leftContainer = document.getElementById("app-navigation-vue");
-      var classExists = leftContainer.classList;
-      let isAppNavigationHidden = classExists.contains('app-navigation--close');
-      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
-      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));//
-      if(windowWidth <768){
-         max_height =150;
-      }
-      if (windowWidth < 1024 || classExists.contains('app-navigation--close')) {
-        var originalMainWindow = windowWidth;
-       
-      }
-      else if (windowWidth >= 1024 && windowWidth <1299 ) {
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth -30;
-      }  
-      else {
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth -30;
-      }
-      console.log("main width: "+ originalMainWindow);
-      console.log("windowWidth : "+ windowWidth);
+			var classExists = leftContainer.classList;
+			const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
+			var windowWidth = document.getElementById("content-vue").offsetWidth;//  parseInt(comuptedStyle.getPropertyValue('width'));//
+			if(windowWidth <768){
+				max_height =150;
+			}
+			if (windowWidth <1025 || classExists.contains('app-navigation--close')) {
+				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width'));
+			
+			}
+			else if (windowWidth >= 1025 && windowWidth <1299 ) {
+				console.log("inner 1024 : ");
+				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth -44;
+			}  
+			else {
+				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth -30-44;
+			}
+			console.log("main width: "+ originalMainWindow);
+			console.log("windowWidth : "+ parseInt(comuptedStyle.getPropertyValue('width')));
+			
       var gap = 2;
       
       var rowWidth = 0;
@@ -259,7 +263,7 @@ export default {
            // console.log("I am in adjustment");
         
             tempArray2 = this.adjustHeight(tempArray,max_height);
-            //console.log(tempArray2);
+            console.log(tempArray2);
             tempArray = [];
             tempArray.push(finalData[i]);
             rowWidth = finalData[i].injected.width;;
@@ -292,7 +296,7 @@ export default {
   beforeMount() {
       this.$emit("update:loading", true);
     this.resetState();
-    this.getContent();
+    //this.getContent();
     // this.resetState();
   },
 
@@ -309,7 +313,7 @@ export default {
     window.addEventListener("resize", this.windowResize);
     this.$nextTick(function () {
       this.mimes = this.mimesType;
-        window.addEventListener("scroll", this.onScroll);        
+        document.addEventListener("scroll", this.onScroll);        
      });
      
     window.addEventListener("click", this.checkClickSource);
@@ -317,6 +321,8 @@ export default {
  
 
   beforeDestroy() {
+      window.removeEventListener("click", this.checkClickSource);
+      document.removeEventListener("scroll", this.onScroll); 
     // cancel any pending requests
     if (this.cancelRequest) {
       this.cancelRequest("Changed view");
@@ -345,12 +351,16 @@ export default {
   },
 
    async onScroll(){
-     //
-     var wrapper = document.getElementById("app-content-vue");
-     var content =  document.getElementsByClassName("main-container")[0];
-    if(wrapper.scrollTop+wrapper.offsetHeight > content.offsetHeight) {
-       this.$emit("update:loading", true);
-       await this.getContent();
+     var wrapper = document.getElementById("content-vue");
+     var footerReplace = document.getElementsByClassName("footer-replace")[0];
+     if((footerReplace.offsetTop + window.scrollY ) >= wrapper.scrollHeight) {
+      //debugger;
+      document.removeEventListener("scroll", this.onScroll); 
+      await this.getContent();
+      //this.getContent();
+      this.isLoading=false;
+      setTimeout(()=>{500,document.addEventListener("scroll", this.onScroll)});   
+       
     }
    
     },
@@ -370,46 +380,48 @@ export default {
 
     adjustHeight(fileArray,maxHeight){
       
-      var totalImageWidth = 0;
-      var leftContainer = document.getElementById("app-navigation-vue");
-       var classExists = leftContainer.classList;
-      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
-      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width'));// document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
-     
-      for (var i = 0; i < fileArray.length; i++) {
-          totalImageWidth+= fileArray[i].injected.width;       
-      }
-      var heightRatio = totalImageWidth/maxHeight;
-      var newHieght ;// mainWindow/HeightRatio;
-      
-      
-      if (windowWidth <= 1024) {
-        var mainWindow = windowWidth - (fileArray.length*4);
-        newHieght = mainWindow/heightRatio;
-        newHieght = newHieght-3;
-      } else if (windowWidth >= 1024 && classExists.contains('app-navigation--close')) {
-        var mainWindow = windowWidth - (fileArray.length*4)-30;
-        newHieght = mainWindow/heightRatio;
-        newHieght = newHieght-1;
-      } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - (fileArray.length*5)-30;
-        newHieght = mainWindow/heightRatio;
-        newHieght = newHieght;
-      }
+     var totalImageWidth = 0;
+			var leftContainer = document.getElementById("app-navigation-vue");
+			var classExists = leftContainer.classList;
+			const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
+			var windowWidth = document.getElementById("content-vue").offsetWidth// document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
+			
+			for (var i = 0; i < fileArray.length; i++) {
+				totalImageWidth+= fileArray[i].injected.width;       
+			}
+			var heightRatio = totalImageWidth/maxHeight;
+			var newHieght ;// mainWindow/HeightRatio;
+			
+			
+			//debugger;
+			if (windowWidth <= 1024) {
+				var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - (fileArray.length*4);
+				newHieght = mainWindow/heightRatio;
+				newHieght = newHieght-3;
+			}  
+			else if (windowWidth >= 1025 && classExists.contains('app-navigation--close')) {
+				var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - (fileArray.length*4) -44;
+				newHieght = mainWindow/heightRatio;
+				newHieght = newHieght-1;
+			} else {
+				var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - (fileArray.length*5) -44;
+				newHieght = mainWindow/heightRatio;
+				newHieght = newHieght;
+			}
 
-     
-     
-       for (var i = 0; i < fileArray.length; i++) {
+			
+			
+			for (var i = 0; i < fileArray.length; i++) {
 
-          fileArray[i].injected.width = this.aspectRatio(
-            fileArray[i].injected.height,
-            fileArray[i].injected.width,
-            newHieght,
-            0
-          );
-          fileArray[i].injected.height = newHieght;
-        }
-      return fileArray;
+				fileArray[i].injected.width = this.aspectRatio(
+					fileArray[i].injected.height,
+					fileArray[i].injected.width,
+					newHieght,
+					0
+				);
+				fileArray[i].injected.height = newHieght;
+				}
+		return fileArray;
     },
 
     adjustHeightWidth(fileArray) {
@@ -686,15 +698,14 @@ export default {
     async getContent(doReturn) {
       let mimes ;
       if(this.$route.name=="gallerypotos"){
-					mimes  = imageMimes;
+        	mimes  = imageMimes;
       }
       else if(this.$route.name=="videogallery"){
-					mimes  = videoMimes;
+          mimes  = videoMimes;
       }
       else{
         mimes = allMimes;
       }
-      //this.resetState();
       if (this.done) {
         this.$emit("update:loading", false);
         return Promise.resolve(true);
@@ -713,7 +724,7 @@ export default {
       // done loading even with errors
       const { request, cancel } = cancelableRequest(getPhotos);
       this.cancelRequest = cancel;
-      const numberOfImagesPerBatch = 5 * 6; // loading 5 rows
+      const numberOfImagesPerBatch = 5 * 7; // loading 5 rows
 
       try {
 
@@ -850,14 +861,16 @@ div {
   height: auto;
 }
 .footer-replace{
-  height: 64px;
+  height: 66px;
 }
 
 .abc {
   line-height: 0.25;
 }
 
-
+.main-container-wrapper{
+max-height: calc(100vh - 175px);
+}
 
 @media only screen and (max-width: 1024px) {
 .main-container {
@@ -897,6 +910,11 @@ div {
   left: 50%;
   transform: translate(-50%);
   z-index: 20;
+}
+
+.loader-class{
+      width: 100%;
+    display: block;
 }
 </style>
 

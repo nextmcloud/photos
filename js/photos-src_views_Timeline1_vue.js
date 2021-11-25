@@ -432,6 +432,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
 
 
 
@@ -453,7 +459,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     EmptyContent: _components_EmptyContent__WEBPACK_IMPORTED_MODULE_4__["default"],
     Navigation: _components_Navigation__WEBPACK_IMPORTED_MODULE_9__["default"],
     Gallery: _components_Gallery__WEBPACK_IMPORTED_MODULE_7__["default"],
-    Separator: _components_Separator__WEBPACK_IMPORTED_MODULE_8__["default"]
+    Separator: _components_Separator__WEBPACK_IMPORTED_MODULE_8__["default"],
+    Loader: _components_Loader__WEBPACK_IMPORTED_MODULE_10__["default"]
   },
   render: function render(h) {
     return h("span", "Name: ".concat(this.student.studentName, " RegNo: ").concat(this.student.studentRegNo, " Marcs: ").concat(this.student.cat1Marks));
@@ -491,7 +498,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       error: null,
       page: 0,
       lastSection: "",
-      loaderComponent: _components_Loader__WEBPACK_IMPORTED_MODULE_10__["default"]
+      loaderComponent: _components_Loader__WEBPACK_IMPORTED_MODULE_10__["default"],
+      isLoading: true
     };
   },
   computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_14__.mapGetters)(["files", "timeline"])), {}, {
@@ -499,11 +507,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     fileList: function fileList() {
       var _this = this;
 
-      // return this.timeline
-      //   .map((fileId) => this.files[fileId])
-      //   .filter((file) => !!file);
-      var newTimeline = _toConsumableArray(new Set(this.timeline)); //console.log("new timeline (filelist) : "+      newTimeline);
-
+      var newTimeline = _toConsumableArray(new Set(this.timeline));
 
       return newTimeline.map(function (fileId) {
         return _this.files[fileId];
@@ -525,9 +529,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     // list of displayed content in the grid (titles + medias)
     contentList: function contentList() {
       var _this2 = this;
-
-      //this.resetState();
-      //const fieldArray = [];
 
       /** The goal of this flat map is to return an array of images separated by titles (months)
        * ie: [{month1}, {image1}, {image2}, {month2}, {image3}, {image4}, {image5}]
@@ -573,28 +574,27 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var tempArray1 = [];
       var tempArray2 = [];
       var j = -1;
-      var k = 0;
       var max_height = 200;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      var isAppNavigationHidden = classExists.contains('app-navigation--close');
       var comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
-      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); //
+      var windowWidth = document.getElementById("content-vue").offsetWidth; //  parseInt(comuptedStyle.getPropertyValue('width'));//
 
       if (windowWidth < 768) {
         max_height = 150;
       }
 
-      if (windowWidth < 1024 || classExists.contains('app-navigation--close')) {
-        var originalMainWindow = windowWidth;
-      } else if (windowWidth >= 1024 && windowWidth < 1299) {
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth - 30;
+      if (windowWidth < 1025 || classExists.contains('app-navigation--close')) {
+        var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width'));
+      } else if (windowWidth >= 1025 && windowWidth < 1299) {
+        console.log("inner 1024 : ");
+        var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - 44;
       } else {
-        var originalMainWindow = windowWidth - leftContainer.offsetWidth - 30;
+        var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - 30 - 44;
       }
 
       console.log("main width: " + originalMainWindow);
-      console.log("windowWidth : " + windowWidth);
+      console.log("windowWidth : " + parseInt(comuptedStyle.getPropertyValue('width')));
       var gap = 2;
       var rowWidth = 0;
       var totalRowWidth = originalMainWindow;
@@ -631,8 +631,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
           if (rowWidth >= totalRowWidth) {
             // console.log("I am in adjustment");
-            tempArray2 = this.adjustHeight(tempArray, max_height); //console.log(tempArray2);
-
+            tempArray2 = this.adjustHeight(tempArray, max_height);
+            console.log(tempArray2);
             tempArray = [];
             tempArray.push(finalData[i]);
             rowWidth = finalData[i].injected.width;
@@ -698,8 +698,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   beforeMount: function beforeMount() {
     this.$emit("update:loading", true);
-    this.resetState();
-    this.getContent(); // this.resetState();
+    this.resetState(); //this.getContent();
+    // this.resetState();
   },
   created: function created() {
     this.resetState(); //  console.log(JSON.stringify(this.files) + "files data");
@@ -714,12 +714,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     window.addEventListener("resize", this.windowResize);
     this.$nextTick(function () {
       this.mimes = this.mimesType;
-      window.addEventListener("scroll", this.onScroll);
+      document.addEventListener("scroll", this.onScroll);
     });
     window.addEventListener("click", this.checkClickSource);
   },
   beforeDestroy: function beforeDestroy() {
-    // cancel any pending requests
+    window.removeEventListener("click", this.checkClickSource);
+    document.removeEventListener("scroll", this.onScroll); // cancel any pending requests
+
     if (this.cancelRequest) {
       this.cancelRequest("Changed view");
     }
@@ -747,26 +749,32 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this5 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-        var wrapper, content;
+        var wrapper, footerReplace;
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
-                //
-                wrapper = document.getElementById("app-content-vue");
-                content = document.getElementsByClassName("main-container")[0];
+                wrapper = document.getElementById("content-vue");
+                footerReplace = document.getElementsByClassName("footer-replace")[0];
 
-                if (!(wrapper.scrollTop + wrapper.offsetHeight > content.offsetHeight)) {
-                  _context3.next = 6;
+                if (!(footerReplace.offsetTop + window.scrollY >= wrapper.scrollHeight)) {
+                  _context3.next = 9;
                   break;
                 }
 
-                _this5.$emit("update:loading", true);
-
-                _context3.next = 6;
+                debugger;
+                document.removeEventListener("scroll", _this5.onScroll);
+                _context3.next = 7;
                 return _this5.getContent();
 
-              case 6:
+              case 7:
+                //this.getContent();
+                _this5.isLoading = false;
+                setTimeout(function () {
+                  500, document.addEventListener("scroll", _this5.onScroll);
+                });
+
+              case 9:
               case "end":
                 return _context3.stop();
             }
@@ -790,7 +798,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
       var comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
-      var windowWidth = parseInt(comuptedStyle.getPropertyValue('width')); // document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
+      var windowWidth = document.getElementById("content-vue").offsetWidth; // document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
 
       for (var i = 0; i < fileArray.length; i++) {
         totalImageWidth += fileArray[i].injected.width;
@@ -798,17 +806,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       var heightRatio = totalImageWidth / maxHeight;
       var newHieght; // mainWindow/HeightRatio;
+      //debugger;
 
       if (windowWidth <= 1024) {
-        var mainWindow = windowWidth - fileArray.length * 4;
+        var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - fileArray.length * 4;
         newHieght = mainWindow / heightRatio;
         newHieght = newHieght - 3;
-      } else if (windowWidth >= 1024 && classExists.contains('app-navigation--close')) {
-        var mainWindow = windowWidth - fileArray.length * 4 - 30;
+      } else if (windowWidth >= 1025 && classExists.contains('app-navigation--close')) {
+        var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - fileArray.length * 4 - 44;
         newHieght = mainWindow / heightRatio;
         newHieght = newHieght - 1;
       } else {
-        var mainWindow = windowWidth - leftContainer.offsetWidth - fileArray.length * 5 - 30;
+        var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - fileArray.length * 5 - 44;
         newHieght = mainWindow / heightRatio;
         newHieght = newHieght;
       }
@@ -1094,8 +1103,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   mimes = _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_12__.videoMimes;
                 } else {
                   mimes = _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_12__.allMimes;
-                } //this.resetState();
-
+                }
 
                 if (!_this6.done) {
                   _context6.next = 4;
@@ -1120,7 +1128,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_11__["default"])(_services_PhotoSearch__WEBPACK_IMPORTED_MODULE_1__["default"]), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
                 _this6.cancelRequest = cancel;
-                numberOfImagesPerBatch = 5 * 6; // loading 5 rows
+                numberOfImagesPerBatch = 5 * 7; // loading 5 rows
 
                 _context6.prev = 9;
                 _context6.next = 12;
@@ -1367,7 +1375,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n*[data-v-3f501974] {\n  margin :0;\n}\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n  position: relative;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 64px;\n}\n.abc[data-v-3f501974] {\n  line-height: 0.25;\n}\n@media only screen and (max-width: 1024px) {\n.main-container[data-v-3f501974] {\n\n  padding: 0;\n}\n}\n  /* ----------- iPad Pro ----------- */\n/* Portrait and Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Portrait */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: portrait) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: landscape) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n.icon-video-white[data-v-3f501974] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%);\n  z-index: 20;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n*[data-v-3f501974] {\n  margin :0;\n}\n.container[data-v-3f501974] {\n  width: auto;\n}\n.main-container[data-v-3f501974] {\n  display: flex;\n  justify-content: start;\n  flex-direction: row;\n  flex-wrap: wrap;\n  width: 100%;\n  margin: 0 4px;\n}\n.item[data-v-3f501974] {\n  width: auto;\n  margin: 2px;\n  position: relative;\n}\n.title-item[data-v-3f501974] {\n  height: 90px;\n  width: 100%;\n  margin: 4px;\n}\n.fullWidth[data-v-3f501974] {\n  width: 100%;\n  height: auto;\n}\n.footer-replace[data-v-3f501974]{\n  height: 66px;\n}\n.abc[data-v-3f501974] {\n  line-height: 0.25;\n}\n.main-container-wrapper[data-v-3f501974]{\nmax-height: calc(100vh - 175px);\n}\n@media only screen and (max-width: 1024px) {\n.main-container[data-v-3f501974] {\n\n  padding: 0;\n}\n}\n  /* ----------- iPad Pro ----------- */\n/* Portrait and Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Portrait */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: portrait) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n\n/* Landscape */\n@media only screen \n  and (min-width: 1024px) \n  and (max-height: 1366px) \n  and (orientation: landscape) \n  and (-webkit-min-device-pixel-ratio: 1.5) {\n}\n.icon-video-white[data-v-3f501974] {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%);\n  z-index: 20;\n}\n.loader-class[data-v-3f501974]{\n      width: 100%;\n    display: block;\n}\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -2059,37 +2067,46 @@ var render = function() {
               ])
             : _vm._e(),
           _vm._v(" "),
-          _c(
-            "div",
-            { staticClass: "main-container" },
-            _vm._l(this.contentList, function(item) {
-              return _c(
-                "div",
-                {
-                  key: item.fileid,
-                  staticClass: "item",
-                  class: { fullWidth: item.id.includes("title") }
-                },
-                [
-                  item.id.includes("title")
-                    ? _c(
-                        "div",
-                        [_c("Separator", { attrs: { items: item } })],
-                        1
-                      )
-                    : _c(
-                        "div",
-                        { staticClass: "abc" },
-                        [_c("Gallery", { attrs: { item: item } })],
-                        1
-                      )
-                ]
-              )
-            }),
-            0
-          ),
-          _vm._v(" "),
-          _c("div", { staticClass: "footer-replace" })
+          _c("div", { staticClass: "main-container-wrapper" }, [
+            _c(
+              "div",
+              { staticClass: "main-container" },
+              _vm._l(this.contentList, function(item) {
+                return _c(
+                  "div",
+                  {
+                    key: item.fileid,
+                    staticClass: "item",
+                    class: { fullWidth: item.id.includes("title") }
+                  },
+                  [
+                    item.id.includes("title")
+                      ? _c(
+                          "div",
+                          [_c("Separator", { attrs: { items: item } })],
+                          1
+                        )
+                      : _c(
+                          "div",
+                          { staticClass: "abc" },
+                          [_c("Gallery", { attrs: { item: item } })],
+                          1
+                        )
+                  ]
+                )
+              }),
+              0
+            ),
+            _vm._v(" "),
+            _c(
+              "div",
+              { staticClass: "loader-class" },
+              [_vm.isLoading ? _c("Loader") : _vm._e()],
+              1
+            ),
+            _vm._v(" "),
+            _c("div", { staticClass: "footer-replace" })
+          ])
         ],
         1
       )
@@ -2103,4 +2120,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=3bd5bbe664658fa38340
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=1d89291059c86f4e59cf

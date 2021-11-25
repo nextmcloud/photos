@@ -48,6 +48,7 @@
         <AppNavigationItem
           to="/videos"
           :title="t('photos', 'My videos')"
+          class="myvideos"
           icon="icon-video"
         />
         

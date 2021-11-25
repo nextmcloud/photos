@@ -4,7 +4,7 @@
  - @author John Molakvoæ <skjnldsv@protonmail.com>
  - @author Corentin Mors <medias@pixelswap.fr>
  -
- - @license GNU AGPL version 3 or any later version
+ - @license AGPL-3.0-or-later
  -
  - This program is free software: you can redistribute it and/or modify
  - it under the terms of the GNU Affero General Public License as
@@ -29,7 +29,7 @@
 	<EmptyContent v-else-if="error">
 		{{ t('photos', 'An error occurred') }}
 	</EmptyContent>
-
+	
 	<!-- Folder content -->
 	<div v-else-if="!loading">
 		<Navigation v-if="folder"
@@ -41,14 +41,39 @@
 		<EmptyContent v-if="isEmpty" key="emptycontent" illustration-name="empty">
 			{{ t('photos', 'No photos in here') }}
 		</EmptyContent>
-
+		
 		<div v-else class="grid-container">
+			<div v-if="isGalleryViewEnabled=='false' || !isGalleryViewEnabled">
 			<VirtualGrid
 				ref="virtualgrid"
 				:items="contentList"
 				:get-column-count="() => gridConfig.count"
 				:get-grid-gap="() => gridConfig.gap" />
+			</div>
+			<div v-else>
+				<div class="folders" v-if="contentList.folders.length">
+				<div class="list-title" >Folders</div>
+			<VirtualGrid
+				ref="virtualgrid"
+				:items="contentList.folders"
+				:get-column-count="() => gridConfig.count"
+				:get-grid-gap="() => gridConfig.gap" />
+			</div>
+			<div class="spacing-between" v-if="contentList.folders.length" />
+
+			<div class="files">
+				<div class="list-title"  >Files</div>
+				 <div class="main-container">
+					<div
+						v-for="item in contentList.files"
+						class="item"
+						:key="item.fileid">
+						<Gallery :item="item" />
+					</div>
+				</div>
+			</div>
 		</div>
+	</div>
 	</div>
 </template>
 
@@ -64,7 +89,7 @@ import File from '../components/File'
 import Navigation from '../components/Navigation'
 
 import GridConfigMixin from '../mixins/GridConfig'
-
+import Gallery from "../components/Gallery";
 import cancelableRequest from '../utils/CancelableRequest'
 
 export default {
@@ -73,6 +98,7 @@ export default {
 		VirtualGrid,
 		EmptyContent,
 		Navigation,
+		Gallery,
 	},
 	mixins: [GridConfigMixin],
 	props: {
@@ -98,6 +124,7 @@ export default {
 		return {
 			error: null,
 			cancelRequest: () => {},
+			isGalleryViewEnabled:localStorage.getItem('photos:galleryLayout')|| 'false',
 		}
 	},
 
@@ -143,6 +170,7 @@ export default {
 		},
 		contentList() {
 			const folders = this.folderList?.map((folder) => {
+				this.$emit("update:loading", true);
 				return {
 					id: `folder-${folder.fileid}`,
 					injected: {
@@ -169,8 +197,14 @@ export default {
 					renderComponent: File,
 				}
 			})
-
-			return [...(folders || []), ...(files || [])]
+			
+			if(this.isGalleryViewEnabled=='false'){
+					this.$emit("update:loading", false);
+				return [...(folders || []), ...(files || [])]
+			}
+			else{
+				return {"folders": folders,"files":this.processImages(files)}
+			}
 		},
 
 		// is current folder empty?
@@ -198,11 +232,33 @@ export default {
 		this.fetchFolderContent()
 	},
 
+	mounted(){
+		window.addEventListener("storage",(event)=>{this.isGalleryViewEnabled=localStorage.getItem('photos:galleryLayout'); });
+	},
 	beforeDestroy() {
 		this.cancelRequest('Changed view')
 	},
 
 	methods: {
+
+	async getImageHeight(src) {
+		return new Promise((resolve, reject) => {
+			let img = new Image();
+			img.onload = () => resolve(img.height);
+			img.onerror = reject;
+			img.src = src;
+		});
+    },
+
+    async getImageWidth(src) {
+		return new Promise((resolve, reject) => {
+			let img = new Image();
+			img.onload = () => resolve(img.width);
+			img.onerror = reject;
+			img.src = src;
+		});
+    },
+
 		async fetchFolderContent() {
 			// cancel any pending requests
 			this.cancelRequest('Changed folder')
@@ -224,6 +280,22 @@ export default {
 			try {
 				// get content and current folder info
 				const { folder, folders, files } = await request(this.path, { shared: this.showShared })
+				
+					 for (var i = 0; i < files.length; i++) {
+						var y = await this.getImageWidth(
+						"/index.php/core/preview?fileId=" +
+						files[i].fileid +
+						"&x=1000&y=1000&forceIcon=0&a=1"
+						);
+						files[i].width = y;
+
+						var z = await this.getImageHeight(
+							"/index.php/core/preview?fileId=" +
+							files[i].fileid +
+							"&x=1000&y=1000&forceIcon=0&a=1"
+						);
+						files[i].height = z;
+					}
 				this.$store.dispatch('addPath', { path: this.path, fileid: folder.fileid })
 				this.$store.dispatch('updateFolders', { fileid: folder.fileid, files, folders })
 				this.$store.dispatch('updateFiles', { folder, files, folders })
@@ -245,6 +317,115 @@ export default {
 				this.$emit('update:loading', false)
 			}
 		},
+
+		processImages(finalData){
+			
+			var tempArray = [];
+			var tempArray2 = [];
+			var j = -1;
+			var k = 0;
+			var max_height = 200;
+			var leftContainer = document.getElementById("app-navigation-vue");
+			var classExists = leftContainer.classList;
+			const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
+			var windowWidth = document.getElementById("content-vue").offsetWidth;//  parseInt(comuptedStyle.getPropertyValue('width'));//
+			if(windowWidth <768){
+				max_height =150;
+			}
+			if (windowWidth <1025 || classExists.contains('app-navigation--close')) {
+				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width'));
+			
+			}
+			else if (windowWidth >= 1025 && windowWidth <1299 ) {
+				console.log("inner 1024 : ");
+				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth -44;
+			}  
+			else {
+				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth -30-44;
+			}
+			console.log("main width: "+ originalMainWindow);
+			console.log("windowWidth : "+ parseInt(comuptedStyle.getPropertyValue('width')));
+			
+			var rowWidth = 0;
+			var totalRowWidth = originalMainWindow;
+			for (var i = 0; i < finalData.length; i++) {
+				finalData[i].injected.width = this.aspectRatio(
+					finalData[i].injected.height,
+					finalData[i].injected.width,
+					max_height,
+					0
+				);
+			
+				if (finalData[i].injected.height > max_height) {
+					finalData[i].injected.height = max_height;
+				}
+				rowWidth += finalData[i].injected.width +4;
+				if(rowWidth < totalRowWidth){
+					tempArray.push(finalData[i]);
+				}
+				
+				if (rowWidth >= totalRowWidth) {
+					tempArray2 = this.adjustHeight(tempArray,max_height);
+					console.log(tempArray2);
+					tempArray = [];
+					tempArray.push(finalData[i]);
+					rowWidth = finalData[i].injected.width;;
+				}
+				
+			}
+			this.$emit("update:loading", false);
+			return finalData;
+		},
+		adjustHeight(fileArray,maxHeight){
+      
+			var totalImageWidth = 0;
+			var leftContainer = document.getElementById("app-navigation-vue");
+			var classExists = leftContainer.classList;
+			const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
+			var windowWidth = document.getElementById("content-vue").offsetWidth// document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
+			
+			for (var i = 0; i < fileArray.length; i++) {
+				totalImageWidth+= fileArray[i].injected.width;       
+			}
+			var heightRatio = totalImageWidth/maxHeight;
+			var newHieght ;// mainWindow/HeightRatio;
+			
+			
+			//debugger;
+			if (windowWidth <= 1024) {
+				var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - (fileArray.length*4);
+				newHieght = mainWindow/heightRatio;
+				newHieght = newHieght-3;
+			}  
+			else if (windowWidth >= 1025 && classExists.contains('app-navigation--close')) {
+				var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - (fileArray.length*4) -44;
+				newHieght = mainWindow/heightRatio;
+				newHieght = newHieght-1;
+			} else {
+				var mainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - (fileArray.length*5) -44;
+				newHieght = mainWindow/heightRatio;
+				newHieght = newHieght;
+			}
+
+			
+			
+			for (var i = 0; i < fileArray.length; i++) {
+
+				fileArray[i].injected.width = this.aspectRatio(
+					fileArray[i].injected.height,
+					fileArray[i].injected.width,
+					newHieght,
+					0
+				);
+				fileArray[i].injected.height = newHieght;
+				}
+		return fileArray;
+		},
+		aspectRatio: function (height, width, requiredHeight, repeat = 0) {
+    	  	var height1 = requiredHeight;
+      		return Math.round((width/height)*height1);
+    },
+
 	},
 
 }
@@ -253,9 +434,42 @@ export default {
 <style lang="scss" scoped>
 @import '../mixins/GridSizes.scss';
 
-.grid-container {
-	@include grid-sizes using ($marginTop, $marginW) {
-		padding: 0px #{$marginW}px 256px #{$marginW}px;
-	}
+.spacing-between{
+  height: 64px;
 }
+
+.main-container {
+  display: flex;
+  justify-content: start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 4px;
+}
+
+.item {
+  width: auto;
+  margin: 2px;
+  position: relative;
+}
+
+.title-item {
+  height: 90px;
+  width: 100%;
+  margin: 4px;
+}
+.fullWidth {
+  width: 100%;
+  height: auto;
+}
+.footer-replace{
+  height: 64px;
+}
+.list-title{
+    line-height: 50px !important;
+	font-weight: bold;
+    font-size: 24px;
+    padding: 0 6px;
+}
+
 </style>

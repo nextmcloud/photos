@@ -42,7 +42,7 @@ export default async function(onlyFavorites = false, options = {}) {
 	// default function options
 	options = Object.assign({}, {
 		page: 0, // start at the first page
-		perPage: sizes.max.count * 10, // ten rows of the max width
+		perPage:  5 * 6, // ten rows of the max width
 		mimesType: allMimes, // all mimes types
 	}, options)
 
