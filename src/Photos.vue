@@ -159,6 +159,11 @@ export default {
     }
   },
 
+  mounted(){
+    if(!localStorage.getItem('photos:galleryLayout')){
+      localStorage.setItem('photos:galleryLayout','true');
+    }
+  },
   updated(){
     var leftContainer = document.getElementById("app-navigation-vue");
     console.log(this.isAppNavigationHidden);

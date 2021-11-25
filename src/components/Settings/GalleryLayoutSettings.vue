@@ -42,5 +42,8 @@ export default {
 	mixins: [
 		UserConfig,
 	],
+	data(){
+		return {galleryLayout:localStorage.getItem('photos:galleryLayout')=="true" ? true:false  }
+	}
 }
 </script>

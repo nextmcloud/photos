@@ -209,7 +209,7 @@ export default {
 			
 			}
 			else if (windowWidth >= 1025 && windowWidth <1299 ) {
-				console.log("inner 1024 : ");
+				console.log("inner 1024 : ");1025
 				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth -44;
 			}  
 			else {

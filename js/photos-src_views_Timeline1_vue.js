@@ -588,6 +588,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width'));
       } else if (windowWidth >= 1025 && windowWidth < 1299) {
         console.log("inner 1024 : ");
+        1025;
         var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - 44;
       } else {
         var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - 30 - 44;
@@ -758,23 +759,23 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 footerReplace = document.getElementsByClassName("footer-replace")[0];
 
                 if (!(footerReplace.offsetTop + window.scrollY >= wrapper.scrollHeight)) {
-                  _context3.next = 9;
+                  _context3.next = 8;
                   break;
                 }
 
-                debugger;
+                //debugger;
                 document.removeEventListener("scroll", _this5.onScroll);
-                _context3.next = 7;
+                _context3.next = 6;
                 return _this5.getContent();
 
-              case 7:
+              case 6:
                 //this.getContent();
                 _this5.isLoading = false;
                 setTimeout(function () {
                   500, document.addEventListener("scroll", _this5.onScroll);
                 });
 
-              case 9:
+              case 8:
               case "end":
                 return _context3.stop();
             }
@@ -2120,4 +2121,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=1d89291059c86f4e59cf
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=34ee1a89db41b327516f
