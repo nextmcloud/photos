@@ -11523,6 +11523,8 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
 
 
 
@@ -43108,6 +43110,154 @@ var render = function() {
             ]
           },
           [
+            _c(
+              "button",
+              {
+                staticClass:
+                  "action-item action-item--single app-navigation-toggle undefined undefined has-tooltip",
+                attrs: {
+                  "data-v-de7c02d6": "",
+                  "data-v-60a3c4f0": "",
+                  "data-v-36d636e7": "",
+                  rel: "noreferrer noopener",
+                  "aria-label": "",
+                  "aria-expanded": "true",
+                  "aria-controls": "app-navigation-vue",
+                  icon: "",
+                  "data-original-title": "",
+                  "aria-describedby": "tooltip_n6ey42tr3r"
+                }
+              },
+              [
+                _c(
+                  "span",
+                  {
+                    staticClass: "material-design-icon menu-icon",
+                    attrs: {
+                      "data-v-60a3c4f0": "",
+                      "aria-hidden": "true",
+                      "aria-label": "",
+                      role: "img"
+                    }
+                  },
+                  [
+                    _c(
+                      "svg",
+                      {
+                        staticClass: "material-design-icon__svg",
+                        attrs: {
+                          "data-v-60a3c4f0": "",
+                          "data-v-de7c02d6": "",
+                          fill: "currentColor",
+                          width: "24",
+                          height: "24",
+                          viewBox: "0 0 24 24"
+                        }
+                      },
+                      [
+                        _c("path", {
+                          attrs: {
+                            "data-v-60a3c4f0": "",
+                            "data-v-de7c02d6": "",
+                            d: "M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"
+                          }
+                        })
+                      ]
+                    )
+                  ]
+                ),
+                _vm._v(" "),
+                _c(
+                  "span",
+                  {
+                    attrs: {
+                      "data-v-de7c02d6": "",
+                      "aria-hidden": "true",
+                      hidden: "hidden"
+                    }
+                  },
+                  [
+                    _c(
+                      "li",
+                      {
+                        staticClass: "action",
+                        attrs: {
+                          "data-v-459b7561": "",
+                          "data-v-60a3c4f0": "",
+                          "aria-expanded": "true",
+                          "aria-controls": "app-navigation-vue",
+                          "data-v-de7c02d6": ""
+                        }
+                      },
+                      [
+                        _c(
+                          "button",
+                          {
+                            staticClass: "action-button focusable",
+                            attrs: {
+                              "data-v-459b7561": "",
+                              "aria-label": "",
+                              type: "button"
+                            }
+                          },
+                          [
+                            _c(
+                              "span",
+                              {
+                                staticClass: "material-design-icon menu-icon",
+                                attrs: {
+                                  "data-v-60a3c4f0": "",
+                                  "data-v-459b7561": "",
+                                  "aria-hidden": "true",
+                                  "aria-label": "",
+                                  role: "img"
+                                }
+                              },
+                              [
+                                _c(
+                                  "svg",
+                                  {
+                                    staticClass: "material-design-icon__svg",
+                                    attrs: {
+                                      "data-v-60a3c4f0": "",
+                                      "data-v-459b7561": "",
+                                      fill: "currentColor",
+                                      width: "24",
+                                      height: "24",
+                                      viewBox: "0 0 24 24"
+                                    }
+                                  },
+                                  [
+                                    _c("path", {
+                                      attrs: {
+                                        "data-v-60a3c4f0": "",
+                                        "data-v-459b7561": "",
+                                        d:
+                                          "M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"
+                                      }
+                                    })
+                                  ]
+                                )
+                              ]
+                            ),
+                            _vm._v(" "),
+                            _c(
+                              "span",
+                              {
+                                staticClass: "action-button__text",
+                                attrs: { "data-v-459b7561": "" }
+                              },
+                              [_vm._v("Close navigation")]
+                            )
+                          ]
+                        )
+                      ]
+                    )
+                  ]
+                )
+              ]
+            ),
+            _vm._v(" "),
             _c("router-view", {
               directives: [
                 {
@@ -56971,4 +57121,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=761ab843703bd08f7be7
+//# sourceMappingURL=photos-main.js.map?v=b2f329b4a2a5ccdb8d3e

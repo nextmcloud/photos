@@ -83,8 +83,10 @@
     </AppNavigation>
     <AppContent  :class="[{ 'icon-loading': loading },isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show']" >
       <!-- <div class='br-place-holder' > </div> -->
-      <router-view v-show="!loading" :loading.sync="loading" />
 
+      <button data-v-de7c02d6="" data-v-60a3c4f0="" data-v-36d636e7="" rel="noreferrer noopener" class="action-item action-item--single app-navigation-toggle undefined undefined has-tooltip" aria-label="" aria-expanded="true" aria-controls="app-navigation-vue" icon="" data-original-title="" aria-describedby="tooltip_n6ey42tr3r"><span data-v-60a3c4f0="" aria-hidden="true" aria-label="" role="img" class="material-design-icon menu-icon"><svg data-v-60a3c4f0="" data-v-de7c02d6="" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" class="material-design-icon__svg"><path data-v-60a3c4f0="" data-v-de7c02d6="" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"><!----></path></svg></span> <span data-v-de7c02d6="" aria-hidden="true" hidden="hidden"><li data-v-459b7561="" data-v-60a3c4f0="" class="action" aria-expanded="true" aria-controls="app-navigation-vue" data-v-de7c02d6=""><button data-v-459b7561="" aria-label="" type="button" class="action-button focusable"><span data-v-60a3c4f0="" data-v-459b7561="" aria-hidden="true" aria-label="" role="img" class="material-design-icon menu-icon"><svg data-v-60a3c4f0="" data-v-459b7561="" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" class="material-design-icon__svg"><path data-v-60a3c4f0="" data-v-459b7561="" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"><!----></path></svg></span> <span data-v-459b7561="" class="action-button__text">Close navigation</span> <!----></button></li></span></button>
+      <router-view v-show="!loading" :loading.sync="loading" />
+      
       <!-- svg img loading placeholder (linked to the File component) -->
       <!-- eslint-disable-next-line vue/no-v-html (because it's an SVG file) -->
       <span class="hidden-visually" role="none" v-html="svgplaceholder" />
