@@ -82,7 +82,7 @@
       </template>
     </AppNavigation>
     <AppContent  :class="[{ 'icon-loading': loading },isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show']" >
-      <div class='br-place-holder' > </div>
+      <!-- <div class='br-place-holder' > </div> -->
       <router-view v-show="!loading" :loading.sync="loading" />
 
       <!-- svg img loading placeholder (linked to the File component) -->
@@ -161,7 +161,7 @@ export default {
 
   mounted(){
     if(!localStorage.getItem('photos:galleryLayout')){
-      localStorage.setItem('photos:galleryLayout','true');
+     // localStorage.setItem('photos:galleryLayout','true');
     }
   },
   updated(){

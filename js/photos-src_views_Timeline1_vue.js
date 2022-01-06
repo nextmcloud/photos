@@ -64,7 +64,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   computed: {
     davPath: function davPath() {
-      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 1000, "&y=", 1000, "&a=0&v=").concat(this.item.injected.etag));
+      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 250, "&y=", 250, "&a=0&v=").concat(this.item.injected.etag));
     },
     ariaUuid: function ariaUuid() {
       return "image-".concat(this.item.injected.fileid);
@@ -84,7 +84,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return this.item.injected.width;
     },
     src: function src() {
-      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 600, "&y=", 600, "&a=1&v=").concat(this.item.injected.etag));
+      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 250, "&y=", 250, "&a=1&v=").concat(this.item.injected.etag));
     }
   },
   mounted: function mounted() {// window.addEventListener("resize", this.handleResize);
@@ -1158,13 +1158,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 }
 
                 _context6.next = 19;
-                return _this6.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+                return _this6.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=250&y=250&forceIcon=0&a=1");
 
               case 19:
                 y = _context6.sent;
                 files[i].width = y;
                 _context6.next = 23;
-                return _this6.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
+                return _this6.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=250&y=250&forceIcon=0&a=1");
 
               case 23:
                 z = _context6.sent;
@@ -2121,4 +2121,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=34ee1a89db41b327516f
+//# sourceMappingURL=photos-src_views_Timeline1_vue.js.map?v=10b951e037c3c66c4f55

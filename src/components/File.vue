@@ -22,7 +22,7 @@
 
 <template>
 	<a :class="{
-			'file--cropped': croppedLayout,
+			'file--cropped': croppedLayout
 		}"
 		class="file"
 		:href="davPath"
@@ -129,33 +129,26 @@ export default {
 
 <style lang="scss" scoped>
 @import '../mixins/FileFolder.scss';
-
 .transition-group {
 	display: contents;
 }
-
 .icon-video-white {
 	position: absolute;
 	top: 10px;
 	right: 10px;
-	z-index: 5;
+	z-index: 20;
 }
-
 img {
 	position: absolute;
 	width: 100%;
 	height: 100%;
 	z-index: 10;
-
 	color: transparent; // should be diplayed on error
-
 	object-fit: contain;
-
 	.file--cropped & {
 		object-fit: cover;
 	}
 }
-
 svg {
 	position: absolute;
 	width: 70%;

@@ -51,7 +51,7 @@ export default {
       return generateUrl(
         `/core/preview?fileId=${
           this.item.injected.fileid
-        }&x=${1000}&y=${1000}&a=0&v=${this.item.injected.etag}`
+        }&x=${250}&y=${250}&a=0&v=${this.item.injected.etag}`
       );
     },
     ariaUuid() {
@@ -75,7 +75,7 @@ export default {
       return generateUrl(
         `/core/preview?fileId=${
           this.item.injected.fileid
-        }&x=${600}&y=${600}&a=1&v=${this.item.injected.etag}`
+        }&x=${250}&y=${250}&a=1&v=${this.item.injected.etag}`
       );
     },
   },

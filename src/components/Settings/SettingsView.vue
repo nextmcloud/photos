@@ -24,19 +24,19 @@
 	<div class="section">
 		<h2>{{ t('photos', 'View') }}</h2>
 			<CroppedLayoutSettings />	
-			<GalleryLayoutSettings />			
+			<!-- <GalleryLayoutSettings />			 -->
 	</div>
 </template>
 
 <script>
 import CroppedLayoutSettings from './CroppedLayoutSettings'
-import GalleryLayoutSettings from './GalleryLayoutSettings'
+//import GalleryLayoutSettings from './GalleryLayoutSettings'
 
 export default {
 	name: 'SettingsView',
 	components: {
 		CroppedLayoutSettings,
-		GalleryLayoutSettings,
+		// GalleryLayoutSettings,
 		
 	},
 }

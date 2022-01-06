@@ -44,13 +44,23 @@
 		
 		<div v-else class="grid-container">
 			<div v-if="isGalleryViewEnabled=='false' || !isGalleryViewEnabled">
+				<div class="folders" v-if="contentList.folders.length">
+				<div class="list-title" >Folders</div>
 			<VirtualGrid
 				ref="virtualgrid"
-				:items="contentList"
+				:items="contentList.folders"
+				:get-column-count="() => gridConfig.count"
+				:get-grid-gap="() => gridConfig.gap" />
+			</div>
+			<div class="spacing-between" v-if="contentList.folders.length" />
+			<VirtualGrid
+				ref="virtualgrid"
+				:items="contentList.files"
 				:get-column-count="() => gridConfig.count"
 				:get-grid-gap="() => gridConfig.gap" />
 			</div>
 			<div v-else>
+
 				<div class="folders" v-if="contentList.folders.length">
 				<div class="list-title" >Folders</div>
 			<VirtualGrid
@@ -200,7 +210,8 @@ export default {
 			
 			if(this.isGalleryViewEnabled=='false'){
 					this.$emit("update:loading", false);
-				return [...(folders || []), ...(files || [])]
+				//return [...(folders || []), ...(files || [])]
+				return {"folders": folders,"files":(files)}
 			}
 			else{
 				return {"folders": folders,"files":this.processImages(files)}
@@ -281,21 +292,21 @@ export default {
 				// get content and current folder info
 				const { folder, folders, files } = await request(this.path, { shared: this.showShared })
 				
-					 for (var i = 0; i < files.length; i++) {
-						var y = await this.getImageWidth(
-						"/index.php/core/preview?fileId=" +
-						files[i].fileid +
-						"&x=1000&y=1000&forceIcon=0&a=1"
-						);
-						files[i].width = y;
+					//  for (var i = 0; i < files.length; i++) {
+					// 	var y = await this.getImageWidth(
+					// 	"/index.php/core/preview?fileId=" +
+					// 	files[i].fileid +
+					// 	"&x=1000&y=1000&forceIcon=0&a=1"
+					// 	);
+					// 	files[i].width = y;
 
-						var z = await this.getImageHeight(
-							"/index.php/core/preview?fileId=" +
-							files[i].fileid +
-							"&x=1000&y=1000&forceIcon=0&a=1"
-						);
-						files[i].height = z;
-					}
+					// 	var z = await this.getImageHeight(
+					// 		"/index.php/core/preview?fileId=" +
+					// 		files[i].fileid +
+					// 		"&x=1000&y=1000&forceIcon=0&a=1"
+					// 	);
+					// 	files[i].height = z;
+					// }
 				this.$store.dispatch('addPath', { path: this.path, fileid: folder.fileid })
 				this.$store.dispatch('updateFolders', { fileid: folder.fileid, files, folders })
 				this.$store.dispatch('updateFiles', { folder, files, folders })

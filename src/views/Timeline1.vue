@@ -746,14 +746,14 @@ export default {
             var y = await this.getImageWidth(
             "/index.php/core/preview?fileId=" +
               files[i].fileid +
-              "&x=1000&y=1000&forceIcon=0&a=1"
+              "&x=250&y=250&forceIcon=0&a=1"
           );
           files[i].width = y;
 
           var z = await this.getImageHeight(
             "/index.php/core/preview?fileId=" +
               files[i].fileid +
-              "&x=1000&y=1000&forceIcon=0&a=1"
+              "&x=250&y=250&forceIcon=0&a=1"
           );
           files[i].height = z;
           //}

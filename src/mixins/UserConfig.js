@@ -29,15 +29,15 @@ const eventName = 'photos:user-config-changed'
 export default {
 	data() {
 		const croppedLayoutLocalStorage = localStorage.getItem('photos:croppedLayout')
-		const galleryLayoutLocalStorage = localStorage.getItem('photos:galleryLayout')
+		//const galleryLayoutLocalStorage = localStorage.getItem('photos:galleryLayout')
 		return {
 			croppedLayout: croppedLayoutLocalStorage !== null
 				? croppedLayoutLocalStorage === 'true'
 				: loadState('photos', 'croppedLayout') === 'true',
 
-			galleryLayout: galleryLayoutLocalStorage !== null
-				? galleryLayoutLocalStorage === 'true'
-				: loadState('photos', 'galleryLayout') === 'true',
+			// galleryLayout: galleryLayoutLocalStorage !== null
+			// 	? galleryLayoutLocalStorage === 'true'
+			// 	: loadState('photos', 'galleryLayout') === 'true',
 			
 		}
 	},
@@ -59,22 +59,22 @@ export default {
 		checkLocalSettings(){
 			var v = "galleryLayout"
 			var oldVal = localStorage.getItem('photos:' +v)
-			if(oldVal==="true"){
-				console.log("route"+ this.$route.name);
-				if(this.$route.name=="timeline"){
-					this.$router.push('/gallery'); 	
-				}
-				if(this.$route.name=="videos"){
-					this.$router.push('/gallery/videos'); 	
-				}
-				if(this.$route.name=="images"){
-					this.$router.push('/gallery/photos'); 	
-				}
-				if(this.$route.name=="favorites"){
-					this.$router.push('/gallery/favorites'); 	
-				}
+			// if(oldVal==="true"){
+			// 	console.log("route"+ this.$route.name);
+			// 	if(this.$route.name=="timeline"){
+			// 		this.$router.push('/gallery'); 	
+			// 	}
+			// 	if(this.$route.name=="videos"){
+			// 		this.$router.push('/gallery/videos'); 	
+			// 	}
+			// 	if(this.$route.name=="images"){
+			// 		this.$router.push('/gallery/photos'); 	
+			// 	}
+			// 	if(this.$route.name=="favorites"){
+			// 		this.$router.push('/gallery/favorites'); 	
+			// 	}
 				
-			}
+			// }
 		},
 		
 		updateGallerySettings(setting){

@@ -269,7 +269,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   computed: {
     davPath: function davPath() {
-      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 1000, "&y=", 1000, "&a=0&v=").concat(this.item.injected.etag));
+      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 250, "&y=", 250, "&a=0&v=").concat(this.item.injected.etag));
     },
     ariaUuid: function ariaUuid() {
       return "image-".concat(this.item.injected.fileid);
@@ -289,7 +289,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       return this.item.injected.width;
     },
     src: function src() {
-      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 600, "&y=", 600, "&a=1&v=").concat(this.item.injected.etag));
+      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 250, "&y=", 250, "&a=1&v=").concat(this.item.injected.etag));
     }
   },
   mounted: function mounted() {// window.addEventListener("resize", this.handleResize);
@@ -368,24 +368,22 @@ function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
 
-function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _unsupportedIterableToArray(arr) || _nonIterableSpread(); }
-
-function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _iterableToArray(iter) { if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter); }
-
-function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) return _arrayLikeToArray(arr); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
 function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
 
 function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -578,8 +576,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       });
 
       if (this.isGalleryViewEnabled == 'false') {
-        this.$emit("update:loading", false);
-        return [].concat(_toConsumableArray(folders || []), _toConsumableArray(files || []));
+        this.$emit("update:loading", false); //return [...(folders || []), ...(files || [])]
+
+        return {
+          "folders": folders,
+          "files": files
+        };
       } else {
         return {
           "folders": folders,
@@ -689,7 +691,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var _this6 = this;
 
       return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-        var _cancelableRequest, request, cancel, _yield$request, folder, folders, files, i, y, z;
+        var _cancelableRequest, request, cancel, _yield$request, folder, folders, files;
 
         return regeneratorRuntime.wrap(function _callee4$(_context4) {
           while (1) {
@@ -721,33 +723,21 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                 folder = _yield$request.folder;
                 folders = _yield$request.folders;
                 files = _yield$request.files;
-                i = 0;
 
-              case 15:
-                if (!(i < files.length)) {
-                  _context4.next = 27;
-                  break;
-                }
-
-                _context4.next = 18;
-                return _this6.getImageWidth("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-
-              case 18:
-                y = _context4.sent;
-                files[i].width = y;
-                _context4.next = 22;
-                return _this6.getImageHeight("/index.php/core/preview?fileId=" + files[i].fileid + "&x=1000&y=1000&forceIcon=0&a=1");
-
-              case 22:
-                z = _context4.sent;
-                files[i].height = z;
-
-              case 24:
-                i++;
-                _context4.next = 15;
-                break;
-
-              case 27:
+                //  for (var i = 0; i < files.length; i++) {
+                // 	var y = await this.getImageWidth(
+                // 	"/index.php/core/preview?fileId=" +
+                // 	files[i].fileid +
+                // 	"&x=1000&y=1000&forceIcon=0&a=1"
+                // 	);
+                // 	files[i].width = y;
+                // 	var z = await this.getImageHeight(
+                // 		"/index.php/core/preview?fileId=" +
+                // 		files[i].fileid +
+                // 		"&x=1000&y=1000&forceIcon=0&a=1"
+                // 	);
+                // 	files[i].height = z;
+                // }
                 _this6.$store.dispatch('addPath', {
                   path: _this6.path,
                   fileid: folder.fileid
@@ -765,11 +755,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
                   folders: folders
                 });
 
-                _context4.next = 36;
+                _context4.next = 23;
                 break;
 
-              case 32:
-                _context4.prev = 32;
+              case 19:
+                _context4.prev = 19;
                 _context4.t0 = _context4["catch"](7);
 
                 if (_context4.t0.response && _context4.t0.response.status) {
@@ -788,20 +778,20 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 console.error('Error fetching album data', _context4.t0);
 
-              case 36:
-                _context4.prev = 36;
+              case 23:
+                _context4.prev = 23;
 
                 // done loading even with errors
                 _this6.$emit('update:loading', false);
 
-                return _context4.finish(36);
+                return _context4.finish(23);
 
-              case 39:
+              case 26:
               case "end":
                 return _context4.stop();
             }
           }
-        }, _callee4, null, [[7, 32, 36, 39]]);
+        }, _callee4, null, [[7, 19, 23, 26]]);
       }))();
     },
     processImages: function processImages(finalData) {
@@ -1609,10 +1599,40 @@ var render = function() {
                   ? _c(
                       "div",
                       [
+                        _vm.contentList.folders.length
+                          ? _c(
+                              "div",
+                              { staticClass: "folders" },
+                              [
+                                _c("div", { staticClass: "list-title" }, [
+                                  _vm._v("Folders")
+                                ]),
+                                _vm._v(" "),
+                                _c("VirtualGrid", {
+                                  ref: "virtualgrid",
+                                  attrs: {
+                                    items: _vm.contentList.folders,
+                                    "get-column-count": function() {
+                                      return _vm.gridConfig.count
+                                    },
+                                    "get-grid-gap": function() {
+                                      return _vm.gridConfig.gap
+                                    }
+                                  }
+                                })
+                              ],
+                              1
+                            )
+                          : _vm._e(),
+                        _vm._v(" "),
+                        _vm.contentList.folders.length
+                          ? _c("div", { staticClass: "spacing-between" })
+                          : _vm._e(),
+                        _vm._v(" "),
                         _c("VirtualGrid", {
                           ref: "virtualgrid",
                           attrs: {
-                            items: _vm.contentList,
+                            items: _vm.contentList.files,
                             "get-column-count": function() {
                               return _vm.gridConfig.count
                             },
@@ -1689,4 +1709,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=6f838a01a76c8693c8df
+//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=ae9f937e890e6432e6c8
