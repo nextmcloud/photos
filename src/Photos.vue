@@ -84,7 +84,6 @@
     <AppContent  :class="[{ 'icon-loading': loading },isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show']" >
       <!-- <div class='br-place-holder' > </div> -->
 
-      <button data-v-de7c02d6="" data-v-60a3c4f0="" data-v-36d636e7="" rel="noreferrer noopener" class="action-item action-item--single app-navigation-toggle undefined undefined has-tooltip" aria-label="" aria-expanded="true" aria-controls="app-navigation-vue" icon="" data-original-title="" aria-describedby="tooltip_n6ey42tr3r"><span data-v-60a3c4f0="" aria-hidden="true" aria-label="" role="img" class="material-design-icon menu-icon"><svg data-v-60a3c4f0="" data-v-de7c02d6="" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" class="material-design-icon__svg"><path data-v-60a3c4f0="" data-v-de7c02d6="" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"><!----></path></svg></span> <span data-v-de7c02d6="" aria-hidden="true" hidden="hidden"><li data-v-459b7561="" data-v-60a3c4f0="" class="action" aria-expanded="true" aria-controls="app-navigation-vue" data-v-de7c02d6=""><button data-v-459b7561="" aria-label="" type="button" class="action-button focusable"><span data-v-60a3c4f0="" data-v-459b7561="" aria-hidden="true" aria-label="" role="img" class="material-design-icon menu-icon"><svg data-v-60a3c4f0="" data-v-459b7561="" fill="currentColor" width="24" height="24" viewBox="0 0 24 24" class="material-design-icon__svg"><path data-v-60a3c4f0="" data-v-459b7561="" d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"><!----></path></svg></span> <span data-v-459b7561="" class="action-button__text">Close navigation</span> <!----></button></li></span></button>
       <router-view v-show="!loading" :loading.sync="loading" />
       
       <!-- svg img loading placeholder (linked to the File component) -->
@@ -162,6 +161,9 @@ export default {
   },
 
   mounted(){
+    const element = document.querySelector(".app-navigation-toggle");
+    element.addEventListener("click", this.CheckNavigationToggle);
+     window.addEventListener("resize", this.CheckNavigationToggle);
     if(!localStorage.getItem('photos:galleryLayout')){
      // localStorage.setItem('photos:galleryLayout','true');
     }
@@ -172,6 +174,9 @@ export default {
     var classExists = leftContainer.classList;
     this.isAppNavigationHidden = classExists && classExists.contains('app-navigation--close');
     console.log(this.isAppNavigationHidden);
+
+
+
   },
   beforeDestroy() {
     window.removeEventListener("load", () => {
@@ -180,6 +185,28 @@ export default {
       );
     });
   },
+  
+  methods:{
+
+      
+
+        CheckNavigationToggle: function(){
+          //app-content-vue
+            var leftContainer = document.getElementById("app-navigation-vue");
+            var classExists = leftContainer.classList;
+            this.isAppNavigationHidden = classExists.contains('app-navigation--close');
+            if(this.isAppNavigationHidden){
+              var app_content_vue = document.getElementById("app-content-vue");
+              app_content_vue.classList.remove("left-menu-show");
+              app_content_vue.classList.add("left-menu-hide");
+            }
+            else{
+              var app_content_vue = document.getElementById("app-content-vue");
+              app_content_vue.classList.remove("left-menu-hide");
+              app_content_vue.classList.add("left-menu-show");
+            }            
+        },
+  }
 };
 </script>
 <style>

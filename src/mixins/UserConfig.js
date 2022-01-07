@@ -93,7 +93,7 @@ export default {
 			emit(eventName, { setting, value })
 			if(value){
 				if(this.$route.name!=="albums"){
-					console.log("aaaa"+ value);
+					//console.log("aaaa"+ value);
 					this.$router.push('/gallery');
 				}
 				 

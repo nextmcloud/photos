@@ -11524,7 +11524,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
 
 
 
@@ -11576,6 +11575,10 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
+    var element = document.querySelector(".app-navigation-toggle");
+    element.addEventListener("click", this.CheckNavigationToggle);
+    window.addEventListener("resize", this.CheckNavigationToggle);
+
     if (!localStorage.getItem('photos:galleryLayout')) {// localStorage.setItem('photos:galleryLayout','true');
     }
   },
@@ -11590,6 +11593,24 @@ __webpack_require__.r(__webpack_exports__);
     window.removeEventListener("load", function () {
       navigator.serviceWorker.register((0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)("/apps/photos/service-worker.js"));
     });
+  },
+  methods: {
+    CheckNavigationToggle: function CheckNavigationToggle() {
+      //app-content-vue
+      var leftContainer = document.getElementById("app-navigation-vue");
+      var classExists = leftContainer.classList;
+      this.isAppNavigationHidden = classExists.contains('app-navigation--close');
+
+      if (this.isAppNavigationHidden) {
+        var app_content_vue = document.getElementById("app-content-vue");
+        app_content_vue.classList.remove("left-menu-show");
+        app_content_vue.classList.add("left-menu-hide");
+      } else {
+        var app_content_vue = document.getElementById("app-content-vue");
+        app_content_vue.classList.remove("left-menu-hide");
+        app_content_vue.classList.add("left-menu-show");
+      }
+    }
   }
 });
 
@@ -11806,7 +11827,7 @@ var eventName = 'photos:user-config-changed';
 
       if (value) {
         if (this.$route.name !== "albums") {
-          console.log("aaaa" + value);
+          //console.log("aaaa"+ value);
           this.$router.push('/gallery');
         }
       } else {
@@ -43110,154 +43131,6 @@ var render = function() {
             ]
           },
           [
-            _c(
-              "button",
-              {
-                staticClass:
-                  "action-item action-item--single app-navigation-toggle undefined undefined has-tooltip",
-                attrs: {
-                  "data-v-de7c02d6": "",
-                  "data-v-60a3c4f0": "",
-                  "data-v-36d636e7": "",
-                  rel: "noreferrer noopener",
-                  "aria-label": "",
-                  "aria-expanded": "true",
-                  "aria-controls": "app-navigation-vue",
-                  icon: "",
-                  "data-original-title": "",
-                  "aria-describedby": "tooltip_n6ey42tr3r"
-                }
-              },
-              [
-                _c(
-                  "span",
-                  {
-                    staticClass: "material-design-icon menu-icon",
-                    attrs: {
-                      "data-v-60a3c4f0": "",
-                      "aria-hidden": "true",
-                      "aria-label": "",
-                      role: "img"
-                    }
-                  },
-                  [
-                    _c(
-                      "svg",
-                      {
-                        staticClass: "material-design-icon__svg",
-                        attrs: {
-                          "data-v-60a3c4f0": "",
-                          "data-v-de7c02d6": "",
-                          fill: "currentColor",
-                          width: "24",
-                          height: "24",
-                          viewBox: "0 0 24 24"
-                        }
-                      },
-                      [
-                        _c("path", {
-                          attrs: {
-                            "data-v-60a3c4f0": "",
-                            "data-v-de7c02d6": "",
-                            d: "M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"
-                          }
-                        })
-                      ]
-                    )
-                  ]
-                ),
-                _vm._v(" "),
-                _c(
-                  "span",
-                  {
-                    attrs: {
-                      "data-v-de7c02d6": "",
-                      "aria-hidden": "true",
-                      hidden: "hidden"
-                    }
-                  },
-                  [
-                    _c(
-                      "li",
-                      {
-                        staticClass: "action",
-                        attrs: {
-                          "data-v-459b7561": "",
-                          "data-v-60a3c4f0": "",
-                          "aria-expanded": "true",
-                          "aria-controls": "app-navigation-vue",
-                          "data-v-de7c02d6": ""
-                        }
-                      },
-                      [
-                        _c(
-                          "button",
-                          {
-                            staticClass: "action-button focusable",
-                            attrs: {
-                              "data-v-459b7561": "",
-                              "aria-label": "",
-                              type: "button"
-                            }
-                          },
-                          [
-                            _c(
-                              "span",
-                              {
-                                staticClass: "material-design-icon menu-icon",
-                                attrs: {
-                                  "data-v-60a3c4f0": "",
-                                  "data-v-459b7561": "",
-                                  "aria-hidden": "true",
-                                  "aria-label": "",
-                                  role: "img"
-                                }
-                              },
-                              [
-                                _c(
-                                  "svg",
-                                  {
-                                    staticClass: "material-design-icon__svg",
-                                    attrs: {
-                                      "data-v-60a3c4f0": "",
-                                      "data-v-459b7561": "",
-                                      fill: "currentColor",
-                                      width: "24",
-                                      height: "24",
-                                      viewBox: "0 0 24 24"
-                                    }
-                                  },
-                                  [
-                                    _c("path", {
-                                      attrs: {
-                                        "data-v-60a3c4f0": "",
-                                        "data-v-459b7561": "",
-                                        d:
-                                          "M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z"
-                                      }
-                                    })
-                                  ]
-                                )
-                              ]
-                            ),
-                            _vm._v(" "),
-                            _c(
-                              "span",
-                              {
-                                staticClass: "action-button__text",
-                                attrs: { "data-v-459b7561": "" }
-                              },
-                              [_vm._v("Close navigation")]
-                            )
-                          ]
-                        )
-                      ]
-                    )
-                  ]
-                )
-              ]
-            ),
-            _vm._v(" "),
             _c("router-view", {
               directives: [
                 {
@@ -57121,4 +56994,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=b2f329b4a2a5ccdb8d3e
+//# sourceMappingURL=photos-main.js.map?v=20fcb8adbf6219cd8e0d
