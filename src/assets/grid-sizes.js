@@ -32,33 +32,27 @@ const gap = 8
  */
 module.exports = {
 	sizes: {
-		400: {
+		410: {
 			marginTop: 66, // same as grid-gap
 			marginW: gap, // same as grid-gap
-			count: 3,
+			count: 2,
 			gap,
 		},
 		700: {
 			marginTop: 66,
 			marginW: 8, // same as grid-gap
-			count: 4,
+			count: 3,
 			gap,
 		},
 		1024: {
 			marginTop: 66,
 			marginW: 44,
-			count: 5,
+			count: 4,
 			gap,
 		},
 		1280: {
 			marginTop: 66,
 			marginW: 44,
-			count: 4,
-			gap,
-		},
-		1440: {
-			marginTop: 88,
-			marginW: 66,
 			count: 5,
 			gap,
 		},
@@ -68,28 +62,11 @@ module.exports = {
 			count: 6,
 			gap,
 		},
-		2048: {
-			marginTop: 88,
-			marginW: 66,
-			count: 7,
-			gap,
-		},
-		2560: {
-			marginTop: 88,
-			marginW: 88,
-			count: 8,
-			gap,
-		},
-		3440: {
-			marginTop: 88,
-			marginW: 88,
-			count: 9,
-			gap,
-		},
+		
 		max: {
 			marginTop: 88,
 			marginW: 88,
-			count: 10,
+			count: 6,
 			gap,
 		},
 	},
