@@ -357,36 +357,30 @@ var gap = 8;
 
 module.exports = {
   sizes: {
-    400: {
+    410: {
       marginTop: 66,
       // same as grid-gap
       marginW: gap,
       // same as grid-gap
-      count: 3,
+      count: 2,
       gap: gap
     },
     700: {
       marginTop: 66,
       marginW: 8,
       // same as grid-gap
-      count: 4,
+      count: 3,
       gap: gap
     },
     1024: {
       marginTop: 66,
       marginW: 44,
-      count: 5,
+      count: 4,
       gap: gap
     },
     1280: {
       marginTop: 66,
       marginW: 44,
-      count: 4,
-      gap: gap
-    },
-    1440: {
-      marginTop: 88,
-      marginW: 66,
       count: 5,
       gap: gap
     },
@@ -396,28 +390,10 @@ module.exports = {
       count: 6,
       gap: gap
     },
-    2048: {
-      marginTop: 88,
-      marginW: 66,
-      count: 7,
-      gap: gap
-    },
-    2560: {
-      marginTop: 88,
-      marginW: 88,
-      count: 8,
-      gap: gap
-    },
-    3440: {
-      marginTop: 88,
-      marginW: 88,
-      count: 9,
-      gap: gap
-    },
     max: {
       marginTop: 88,
       marginW: 88,
-      count: 10,
+      count: 6,
       gap: gap
     }
   }
@@ -1000,4 +976,4 @@ module.exports = webpackAsyncContext;
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-14be7d.js.map?v=e17c01745326402432c0
+//# sourceMappingURL=photos-src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-14be7d.js.map?v=5a2a738598c3520c8efc

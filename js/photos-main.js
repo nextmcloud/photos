@@ -43080,27 +43080,7 @@ var render = function() {
                       title: _vm.t("photos", "Shared with me"),
                       icon: "icon-share"
                     }
-                  }),
-                  _vm._v(" "),
-                  _vm.areTagsInstalled
-                    ? _c("AppNavigationItem", {
-                        attrs: {
-                          to: { name: "tags" },
-                          title: _vm.t("photos", "Tagged photos"),
-                          icon: "icon-tag"
-                        }
-                      })
-                    : _vm._e(),
-                  _vm._v(" "),
-                  _vm.showLocationMenuEntry
-                    ? _c("AppNavigationItem", {
-                        attrs: {
-                          to: { name: "maps" },
-                          title: _vm.t("photos", "Locations"),
-                          icon: "icon-address"
-                        }
-                      })
-                    : _vm._e()
+                  })
                 ]
               },
               proxy: true
@@ -56720,7 +56700,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"27062e03daa2620bef23","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"342b955293f376ad6e29","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"b079ec5ffc8dafd7a119","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"0187a96499b44cd6bdd8","src_views_Albums_vue":"ae9f937e890e6432e6c8","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"359fae97bb988fe974c0","src_patchedRequest_js-src_views_Tags_vue":"083af9990ae471278c03","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"6820f27dac7c94986374","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"a2f3182f17e0c2efd57b","src_views_Timeline_vue":"76a42bb6e74f784fa14a","src_views_Timeline1_vue":"10b951e037c3c66c4f55","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"27062e03daa2620bef23","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"342b955293f376ad6e29","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"950ce101bd48d18b341f","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"0187a96499b44cd6bdd8","src_views_Albums_vue":"187a712bb0ff94deb258","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"359fae97bb988fe974c0","src_patchedRequest_js-src_views_Tags_vue":"a70fad9dda80188e77bf","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"6820f27dac7c94986374","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"a2f3182f17e0c2efd57b","src_views_Timeline_vue":"5789181bc0ee2ffde953","src_views_Timeline1_vue":"10b951e037c3c66c4f55","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -56994,4 +56974,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=20fcb8adbf6219cd8e0d
+//# sourceMappingURL=photos-main.js.map?v=3f972885f4b9bd4a90f2

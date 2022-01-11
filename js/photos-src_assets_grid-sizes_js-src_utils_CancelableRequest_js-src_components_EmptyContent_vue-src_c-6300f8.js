@@ -254,7 +254,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
   },
   computed: {
     davPath: function davPath() {
-      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateRemoteUrl)("dav/files/".concat((0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)().uid)) + this.item.injected.filename;
+      return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateRemoteUrl)("dav/files") + this.item.injected.filename;
     },
     ariaUuid: function ariaUuid() {
       return "image-".concat(this.item.injected.fileid);
@@ -524,36 +524,30 @@ var gap = 8;
 
 module.exports = {
   sizes: {
-    400: {
+    410: {
       marginTop: 66,
       // same as grid-gap
       marginW: gap,
       // same as grid-gap
-      count: 3,
+      count: 2,
       gap: gap
     },
     700: {
       marginTop: 66,
       marginW: 8,
       // same as grid-gap
-      count: 4,
+      count: 3,
       gap: gap
     },
     1024: {
       marginTop: 66,
       marginW: 44,
-      count: 5,
+      count: 4,
       gap: gap
     },
     1280: {
       marginTop: 66,
       marginW: 44,
-      count: 4,
-      gap: gap
-    },
-    1440: {
-      marginTop: 88,
-      marginW: 66,
       count: 5,
       gap: gap
     },
@@ -563,28 +557,10 @@ module.exports = {
       count: 6,
       gap: gap
     },
-    2048: {
-      marginTop: 88,
-      marginW: 66,
-      count: 7,
-      gap: gap
-    },
-    2560: {
-      marginTop: 88,
-      marginW: 88,
-      count: 8,
-      gap: gap
-    },
-    3440: {
-      marginTop: 88,
-      marginW: 88,
-      count: 9,
-      gap: gap
-    },
     max: {
       marginTop: 88,
       marginW: 88,
-      count: 10,
+      count: 6,
       gap: gap
     }
   }
@@ -766,7 +742,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n.icon-confirm[data-v-81440b78] {\n  -webkit-transform: rotate(180deg);\n          transform: rotate(180deg);\n}\n.photos-navigation[data-v-81440b78] {\n  display: flex;\n  position: block;\n  height: 44px;\n  padding: 0 40px;\n  align-items: center;\n  max-width: 100%;\n}\n.photos-navigation__title[data-v-81440b78] {\n  margin: 0;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.photos-navigation__share[data-v-81440b78] {\n  margin-left: 10px;\n}\n.photos-navigation__back[data-v-81440b78], .photos-navigation__share[data-v-81440b78] {\n  flex-grow: 0;\n  flex-shrink: 0;\n}\n@media (min-width: 0px) and (max-width: 400px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 400px) and (max-width: 700px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 700px) and (max-width: 1024px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1024px) and (max-width: 1280px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1280px) and (max-width: 1440px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 11px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 22px;\n}\n}\n@media (min-width: 1440px) and (max-width: 1600px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 11px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 22px;\n}\n}\n@media (min-width: 1600px) and (max-width: 2048px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 11px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 22px;\n}\n}\n@media (min-width: 2048px) and (max-width: 2560px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 22px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 44px;\n}\n}\n@media (min-width: 2560px) and (max-width: 3440px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 22px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 44px;\n}\n}\n@media (min-width: 3440px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 22px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 44px;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n.icon-confirm[data-v-81440b78] {\n  -webkit-transform: rotate(180deg);\n          transform: rotate(180deg);\n}\n.photos-navigation[data-v-81440b78] {\n  display: flex;\n  position: block;\n  height: 44px;\n  padding: 0 40px;\n  align-items: center;\n  max-width: 100%;\n}\n.photos-navigation__title[data-v-81440b78] {\n  margin: 0;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.photos-navigation__share[data-v-81440b78] {\n  margin-left: 10px;\n}\n.photos-navigation__back[data-v-81440b78], .photos-navigation__share[data-v-81440b78] {\n  flex-grow: 0;\n  flex-shrink: 0;\n}\n@media (min-width: 0px) and (max-width: 410px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 410px) and (max-width: 700px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 700px) and (max-width: 1024px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1024px) and (max-width: 1280px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1280px) and (max-width: 1600px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 11px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 22px;\n}\n}\n@media (min-width: 1600px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 22px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 44px;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1391,4 +1367,4 @@ module.exports = webpackAsyncContext;
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8.js.map?v=b079ec5ffc8dafd7a119
+//# sourceMappingURL=photos-src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8.js.map?v=950ce101bd48d18b341f

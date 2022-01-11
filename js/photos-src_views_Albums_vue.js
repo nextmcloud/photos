@@ -463,6 +463,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
 
 
 
@@ -1629,6 +1630,10 @@ var render = function() {
                           ? _c("div", { staticClass: "spacing-between" })
                           : _vm._e(),
                         _vm._v(" "),
+                        _c("div", { staticClass: "list-title" }, [
+                          _vm._v("Files")
+                        ]),
+                        _vm._v(" "),
                         _c("VirtualGrid", {
                           ref: "virtualgrid",
                           attrs: {
@@ -1709,4 +1714,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=ae9f937e890e6432e6c8
+//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=187a712bb0ff94deb258

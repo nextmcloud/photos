@@ -83,7 +83,7 @@ export default {
 
 	computed: {
 		davPath() {
-			return generateRemoteUrl(`dav/files/${getCurrentUser().uid}`) + this.item.injected.filename
+			return generateRemoteUrl(`dav/files`) + this.item.injected.filename
 		},
 		ariaUuid() {
 			return `image-${this.item.injected.fileid}`
