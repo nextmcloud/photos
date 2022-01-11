@@ -62,7 +62,7 @@
           :title="t('photos', 'Shared with me')"
           icon="icon-share"
         />
-        <AppNavigationItem
+        <!-- <AppNavigationItem
           v-if="areTagsInstalled"
           :to="{ name: 'tags' }"
           :title="t('photos', 'Tagged photos')"
@@ -73,7 +73,7 @@
           :to="{ name: 'maps' }"
           :title="t('photos', 'Locations')"
           icon="icon-address"
-        />
+        /> -->
       </template>
       <template #footer>
         <AppNavigationSettings :title="t('photos', 'Settings')">
