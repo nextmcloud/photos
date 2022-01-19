@@ -74,7 +74,7 @@ const logger = (() => {
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-const messages$1 = {
+const messages = {
   'invalid-value': ({
     paramName,
     validValueDescription,
@@ -354,7 +354,7 @@ const messages$1 = {
 */
 
 const generatorFunction = (code, details = {}) => {
-  const message = messages$1[code];
+  const message = messages[code];
 
   if (!message) {
     throw new Error(`Unable to find message for code '${code}'.`);
@@ -3331,7 +3331,7 @@ class Strategy {
   license that can be found in the LICENSE file or at
   https://opensource.org/licenses/MIT.
 */
-const messages = {
+const messages$1 = {
   strategyStart: (strategyName, request) => `Using ${strategyName} to respond to '${getFriendlyURL(request.url)}'`,
   printFinalResponse: response => {
     if (response) {
@@ -3412,13 +3412,13 @@ class CacheFirst extends Strategy {
     }
 
     {
-      logger.groupCollapsed(messages.strategyStart(this.constructor.name, request));
+      logger.groupCollapsed(messages$1.strategyStart(this.constructor.name, request));
 
       for (const log of logs) {
         logger.log(log);
       }
 
-      messages.printFinalResponse(response);
+      messages$1.printFinalResponse(response);
       logger.groupEnd();
     }
 
@@ -3470,6 +3470,7 @@ registerRoute(/^.*\/core\/preview\?fileId=.*/, new CacheFirst({
   "cacheName": "images",
   plugins: [new ExpirationPlugin({
     maxAgeSeconds: 604800,
-    maxEntries: 10000
+    maxEntries: 10000,
+    purgeOnQuotaError: true
   })]
 }), 'GET');

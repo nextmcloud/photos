@@ -15,7 +15,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _services_TaggedImages__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../services/TaggedImages */ "./src/services/TaggedImages.js");
 /* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
 /* harmony import */ var _FolderTagPreview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FolderTagPreview */ "./src/components/FolderTagPreview.vue");
-/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
+/* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -64,7 +64,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: 'Tag',
   components: {
-    FolderTagPreview: _FolderTagPreview__WEBPACK_IMPORTED_MODULE_2__["default"]
+    FolderTagPreview: _FolderTagPreview__WEBPACK_IMPORTED_MODULE_2__.default
   },
   inheritAttrs: false,
   props: {
@@ -111,7 +111,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           switch (_context.prev = _context.next) {
             case 0:
               // init cancellable request
-              _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__["default"])(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_0__["default"]), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
+              _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_0__.default), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
               _this2.cancelRequest = cancel;
               _context.prev = 2;
               _context.next = 5;
@@ -177,7 +177,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Navigation__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../components/Navigation */ "./src/components/Navigation.vue");
 /* harmony import */ var _mixins_GridConfig__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../mixins/GridConfig */ "./src/mixins/GridConfig.js");
 /* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
-/* provided dependency */ var console = __webpack_require__(/*! ./node_modules/console-browserify/index.js */ "./node_modules/console-browserify/index.js");
+/* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
 function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
 
 function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
@@ -255,10 +255,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   name: 'Tags',
   components: {
     VirtualGrid: (vue_virtual_grid__WEBPACK_IMPORTED_MODULE_0___default()),
-    EmptyContent: _components_EmptyContent__WEBPACK_IMPORTED_MODULE_3__["default"],
-    Navigation: _components_Navigation__WEBPACK_IMPORTED_MODULE_6__["default"]
+    EmptyContent: _components_EmptyContent__WEBPACK_IMPORTED_MODULE_3__.default,
+    Navigation: _components_Navigation__WEBPACK_IMPORTED_MODULE_6__.default
   },
-  mixins: [_mixins_GridConfig__WEBPACK_IMPORTED_MODULE_7__["default"]],
+  mixins: [_mixins_GridConfig__WEBPACK_IMPORTED_MODULE_7__.default],
   props: {
     rootTitle: {
       type: String,
@@ -320,7 +320,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             width: 256,
             height: 256,
             columnSpan: 1,
-            renderComponent: _components_Tag__WEBPACK_IMPORTED_MODULE_4__["default"]
+            renderComponent: _components_Tag__WEBPACK_IMPORTED_MODULE_4__.default
           }];
         });
       }
@@ -334,7 +334,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           width: 256,
           height: 256,
           columnSpan: 1,
-          renderComponent: _components_File__WEBPACK_IMPORTED_MODULE_5__["default"]
+          renderComponent: _components_File__WEBPACK_IMPORTED_MODULE_5__.default
         };
       });
     },
@@ -439,7 +439,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 _this6.error = null; // init cancellable request
 
-                _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__["default"])(_services_SystemTags__WEBPACK_IMPORTED_MODULE_1__["default"]), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
+                _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_SystemTags__WEBPACK_IMPORTED_MODULE_1__.default), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
                 _this6.cancelRequest = cancel;
                 _context3.prev = 6;
                 _context3.next = 9;
@@ -500,7 +500,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
                 _this7.error = null; // init cancellable request
 
-                _cancelableRequest2 = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__["default"])(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_2__["default"]), request = _cancelableRequest2.request, cancel = _cancelableRequest2.cancel;
+                _cancelableRequest2 = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_2__.default), request = _cancelableRequest2.request, cancel = _cancelableRequest2.cancel;
                 _this7.cancelRequest = cancel;
                 _context4.prev = 6;
                 _context4.next = 9;
@@ -645,7 +645,7 @@ __webpack_require__.r(__webpack_exports__);
  // force our axios
 
 var patcher = webdav__WEBPACK_IMPORTED_MODULE_0___default().getPatcher();
-patcher.patch('request', _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__["default"]); // init webdav client on default dav endpoint
+patcher.patch('request', _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__.default); // init webdav client on default dav endpoint
 
 var remote = (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_3__.generateRemoteUrl)('dav');
 var client = webdav__WEBPACK_IMPORTED_MODULE_0___default().createClient(remote);
@@ -756,7 +756,7 @@ function _ref() {
           case 0:
             options = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
             _context.next = 3;
-            return _DavClient__WEBPACK_IMPORTED_MODULE_0__["default"].getDirectoryContents('/systemtags/', Object.assign({}, {
+            return _DavClient__WEBPACK_IMPORTED_MODULE_0__.default.getDirectoryContents('/systemtags/', Object.assign({}, {
               data: "<?xml version=\"1.0\"?>\n\t\t\t<d:propfind  xmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t<oc:id />\n\t\t\t\t\t<oc:display-name />\n\t\t\t\t\t<oc:user-visible />\n\t\t\t\t\t<oc:user-assignable />\n\t\t\t\t\t<oc:can-assign />\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>",
               details: true
             }, options));
@@ -855,7 +855,7 @@ function _ref() {
             }, options);
             prefixPath = "/files/".concat((0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)().uid);
             _context.next = 5;
-            return _DavClient__WEBPACK_IMPORTED_MODULE_4__["default"].getDirectoryContents(prefixPath, options);
+            return _DavClient__WEBPACK_IMPORTED_MODULE_4__.default.getDirectoryContents(prefixPath, options);
 
           case 5:
             response = _context.sent;
@@ -864,14 +864,10 @@ function _ref() {
             }) // filter out unwanted mime because server REPORT service only support
             // hardcoded props and mime is not one of them
             // https://github.com/nextcloud/server/blob/5bf3d1bb384da56adbf205752be8f840aac3b0c5/apps/dav/lib/Connector/Sabre/FilesReportPlugin.php#L274
-            . // filter out unwanted mime because server REPORT service only support
-            // hardcoded props and mime is not one of them
-            // https://github.com/nextcloud/server/blob/5bf3d1bb384da56adbf205752be8f840aac3b0c5/apps/dav/lib/Connector/Sabre/FilesReportPlugin.php#L274
-            filter(function (file) {
-              return file.mime && _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__["default"].indexOf(file.mime) !== -1;
+            .filter(function (file) {
+              return file.mime && _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__.default.indexOf(file.mime) !== -1;
             }) // remove prefix path from full file path
-            . // remove prefix path from full file path
-            map(function (data) {
+            .map(function (data) {
               return Object.assign({}, data, {
                 filename: data.filename.replace(prefixPath, '')
               });
@@ -900,14 +896,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ __webpack_require__.d(__webpack_exports__, {
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/noSourceMaps.js */ "./node_modules/css-loader/dist/runtime/noSourceMaps.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0__);
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
-/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1__);
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../../node_modules/css-loader/dist/runtime/api.js */ "./node_modules/css-loader/dist/runtime/api.js");
+/* harmony import */ var _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0__);
 // Imports
 
-
-var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_1___default()((_node_modules_css_loader_dist_runtime_noSourceMaps_js__WEBPACK_IMPORTED_MODULE_0___default()));
+var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
 ___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n@media (min-width: 0px) and (max-width: 410px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 8px 256px 8px;\n}\n}\n@media (min-width: 410px) and (max-width: 700px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 8px 256px 8px;\n}\n}\n@media (min-width: 700px) and (max-width: 1024px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 44px 256px 44px;\n}\n}\n@media (min-width: 1024px) and (max-width: 1280px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 44px 256px 44px;\n}\n}\n@media (min-width: 1280px) and (max-width: 1600px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 66px 256px 66px;\n}\n}\n@media (min-width: 1600px) {\n.grid-container[data-v-730c32d3] {\n    padding: 0px 88px 256px 88px;\n}\n}", ""]);
 // Exports
@@ -938,11 +931,11 @@ var options = {};
 options.insert = "head";
 options.singleton = false;
 
-var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_1__["default"], options);
+var update = _node_modules_style_loader_dist_runtime_injectStylesIntoStyleTag_js__WEBPACK_IMPORTED_MODULE_0___default()(_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_1__.default, options);
 
 
 
-/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_1__["default"].locals || {});
+/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_css_loader_dist_cjs_js_node_modules_vue_loader_lib_loaders_stylePostLoader_js_node_modules_postcss_loader_dist_cjs_js_node_modules_sass_loader_dist_cjs_js_clonedRuleSet_2_0_rules_0_use_3_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_style_index_0_id_730c32d3_lang_scss_scoped_true___WEBPACK_IMPORTED_MODULE_1__.default.locals || {});
 
 /***/ }),
 
@@ -967,8 +960,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 ;
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__["default"])(
-  _Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_2__.default)(
+  _Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
   _Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__.render,
   _Tag_vue_vue_type_template_id_bb7ceecc___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
@@ -1008,8 +1001,8 @@ __webpack_require__.r(__webpack_exports__);
 
 /* normalize component */
 
-var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__["default"])(
-  _Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__["default"],
+var component = (0,_node_modules_vue_loader_lib_runtime_componentNormalizer_js__WEBPACK_IMPORTED_MODULE_3__.default)(
+  _Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_1__.default,
   _Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__.render,
   _Tags_vue_vue_type_template_id_730c32d3_scoped_true___WEBPACK_IMPORTED_MODULE_0__.staticRenderFns,
   false,
@@ -1038,7 +1031,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tag.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/components/Tag.vue?vue&type=script&lang=js&");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tag_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
 
 /***/ }),
 
@@ -1054,7 +1047,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! -!../../node_modules/babel-loader/lib/index.js!../../node_modules/vue-loader/lib/index.js??vue-loader-options!./Tags.vue?vue&type=script&lang=js& */ "./node_modules/babel-loader/lib/index.js!./node_modules/vue-loader/lib/index.js??vue-loader-options!./src/views/Tags.vue?vue&type=script&lang=js&");
- /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__["default"]); 
+ /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (_node_modules_babel_loader_lib_index_js_node_modules_vue_loader_lib_index_js_vue_loader_options_Tags_vue_vue_type_script_lang_js___WEBPACK_IMPORTED_MODULE_0__.default); 
 
 /***/ }),
 
@@ -1381,4 +1374,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_patchedRequest_js-src_views_Tags_vue.js.map?v=a70fad9dda80188e77bf
+//# sourceMappingURL=photos-src_patchedRequest_js-src_views_Tags_vue.js.map?v=dc3d0dcf401c2ec1ac18

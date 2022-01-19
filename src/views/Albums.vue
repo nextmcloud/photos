@@ -59,7 +59,9 @@
 				:items="contentList.files"
 				:get-column-count="() => gridConfig.count"
 				:get-grid-gap="() => gridConfig.gap" />
+					 <div class="footer-replace">  </div>
 			</div>
+			
 			<div v-else>
 
 				<div class="folders" v-if="contentList.folders.length">
@@ -86,6 +88,7 @@
 		</div>
 	</div>
 	</div>
+
 </template>
 
 <script>
@@ -475,7 +478,7 @@ export default {
   height: auto;
 }
 .footer-replace{
-  height: 64px;
+  height: 70px;
 }
 .list-title{
     line-height: 50px !important;
