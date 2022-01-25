@@ -54,6 +54,7 @@
 			</div>
 			<div class="spacing-between" v-if="contentList.folders.length" />
 			<div class="list-title"  >Files</div>
+			
 			<VirtualGrid
 				ref="virtualgrid"
 				:items="contentList.files"
