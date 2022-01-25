@@ -53,7 +53,7 @@
 				:get-grid-gap="() => gridConfig.gap" />
 			</div>
 			<div class="spacing-between" v-if="contentList.folders.length" />
-			<div class="list-title"  >Files</div>
+			<div class="list-title"  >Images</div>
 			
 			<VirtualGrid
 				ref="virtualgrid"
