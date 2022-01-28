@@ -450,6 +450,11 @@ export default {
 <style lang="scss" scoped>
 @import '../mixins/GridSizes.scss';
 
+.grid-container {
+	@include grid-sizes using ($marginTop, $marginW) {
+		padding: 0px #{$marginW}px 256px #{$marginW}px;
+	}
+}
 .spacing-between{
   height: 64px;
 }
