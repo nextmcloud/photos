@@ -53,6 +53,18 @@ module.exports = {
 		1280: {
 			marginTop: 66,
 			marginW: 44,
+			count: 4,
+			gap,
+		},
+		1350: {
+			marginTop: 66,
+			marginW: 44,
+			count: 5,
+			gap,
+		},
+		1520: {
+			marginTop: 66,
+			marginW: 44,
 			count: 5,
 			gap,
 		},
