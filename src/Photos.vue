@@ -76,7 +76,7 @@
         /> -->
       </template>
       <template #footer>
-        <AppNavigationSettings :title="t('photos', 'Settings')">
+        <AppNavigationSettings :title="t('photos', 'Display settings')">
           <SettingsView />
         </AppNavigationSettings>
       </template>

@@ -45,7 +45,7 @@
 		<div v-else class="grid-container">
 			<div v-if="isGalleryViewEnabled=='false' || !isGalleryViewEnabled">
 				<div class="folders" v-if="contentList.folders.length">
-				<div class="list-title" :title="t('photos', 'Folders')" >{{ t('photos', 'Folders') }}</div>
+				<div class="list-title" >{{ t('photos', 'Folders') }}</div>
 			<VirtualGrid
 				ref="virtualgrid"
 				:items="contentList.folders"
@@ -53,7 +53,7 @@
 				:get-grid-gap="() => gridConfig.gap" />
 			</div>
 			<div class="spacing-between" v-if="contentList.folders.length" />
-			<div class="list-title" :title="t('photos', 'Files')"  >{{t('photos', 'Files')}}</div>
+			<div class="list-title"  >{{t('photos', 'Files')}}</div>
 			
 			<VirtualGrid
 				ref="virtualgrid"

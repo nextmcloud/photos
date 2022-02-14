@@ -37163,7 +37163,7 @@ var render = function() {
                 return [
                   _c(
                     "AppNavigationSettings",
-                    { attrs: { title: _vm.t("photos", "Settings") } },
+                    { attrs: { title: _vm.t("photos", "Display settings") } },
                     [_c("SettingsView")],
                     1
                   )
@@ -37294,7 +37294,7 @@ var render = function() {
     }),
     _vm._v(" "),
     _c("label", { attrs: { for: "enable-cropped-layout" } }, [
-      _vm._v(_vm._s(_vm.t("photos", "Enable squared photos view")))
+      _vm._v(_vm._s(_vm.t("photos", "Crop image previews")))
     ])
   ])
 }
@@ -50560,7 +50560,7 @@ module.exports = function whichTypedArray(value) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"b864f39532d06fe1978a","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"24e02cfbe785198244b2","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"5c82a02beafbbc1b3162","src_views_Albums_vue":"13cf97dfd11ffc021124","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"6d70dfaab70f6911bae8","src_patchedRequest_js-src_views_Tags_vue":"799f3e5e0d5287b8feaf","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"b5db1bc0ddf4ad80ea3f","src_views_Timeline_vue":"578f30482a75884cb076","src_views_Timeline1_vue":"b335f5d5daf48e723c2a","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"b864f39532d06fe1978a","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"7f486e3044fc66d9b29b","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"5c82a02beafbbc1b3162","src_views_Albums_vue":"ee06f66198e394786d59","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"6d70dfaab70f6911bae8","src_patchedRequest_js-src_views_Tags_vue":"85ffff5f1436928275f8","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"b5db1bc0ddf4ad80ea3f","src_views_Timeline_vue":"de8fce7958c9d340a221","src_views_Timeline1_vue":"b335f5d5daf48e723c2a","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -50832,4 +50832,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=8c9c8eb0309858459c3f
+//# sourceMappingURL=photos-main.js.map?v=9965f1c0d27c5a70fbb3
