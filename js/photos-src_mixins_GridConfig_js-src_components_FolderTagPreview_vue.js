@@ -90,26 +90,28 @@ __webpack_require__.r(__webpack_exports__);
     },
     fileList: {
       type: Array,
-      default: function _default() {
-        return [];
-      }
+      default: () => []
     }
   },
-  data: function data() {
+
+  data() {
     return {
       loaded: false,
       failed: []
     };
   },
+
   computed: {
     // folder is empty
-    isEmpty: function isEmpty() {
+    isEmpty() {
       return this.previewList.length === 0;
     },
-    ariaUuid: function ariaUuid() {
+
+    ariaUuid() {
       return "folder-".concat(this.id);
     },
-    ariaLabel: function ariaLabel() {
+
+    ariaLabel() {
       return t('photos', 'Open the "{name}" sub-directory', {
         name: this.name
       });
@@ -119,12 +121,8 @@ __webpack_require__.r(__webpack_exports__);
      * Previews list without the failed ones
      * @returns {Object[]} the previews fileinfo
      */
-    previewList: function previewList() {
-      var _this = this;
-
-      return this.fileList.filter(function (file) {
-        return _this.failed.indexOf(file.fileid) === -1;
-      });
+    previewList() {
+      return this.fileList.filter(file => this.failed.indexOf(file.fileid) === -1);
     },
 
     /**
@@ -135,11 +133,11 @@ __webpack_require__.r(__webpack_exports__);
      * Which vue-router does not encode afterwards!
      * @returns {string}
      */
-    to: function to() {
+    to() {
       // always remove first slash, the router
       // manage it automatically
-      var regex = /^\/?(.+)/i;
-      var path = regex.exec(this.path)[1]; // apply to current route
+      const regex = /^\/?(.+)/i;
+      const path = regex.exec(this.path)[1]; // apply to current route
 
       return Object.assign({}, this.$route, {
         params: {
@@ -147,18 +145,23 @@ __webpack_require__.r(__webpack_exports__);
         }
       });
     }
+
   },
   methods: {
-    generateImgSrc: function generateImgSrc(_ref) {
-      var fileid = _ref.fileid,
-          etag = _ref.etag;
+    generateImgSrc({
+      fileid,
+      etag
+    }) {
       // use etag to force cache reload if file changed
       return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(fileid, "&x=", 256, "&y=", 256, "&a=true&v=").concat(etag));
     },
-    onPreviewFail: function onPreviewFail(_ref2) {
-      var fileid = _ref2.fileid;
+
+    onPreviewFail({
+      fileid
+    }) {
       this.failed.push(fileid);
     }
+
   }
 });
 
@@ -204,23 +207,24 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  data: function data() {
+  data() {
     return {
       gridConfig: {}
     };
   },
-  created: function created() {
-    var _this = this;
 
-    _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.$on('changed', function (val) {
-      _this.gridConfig = val;
+  created() {
+    _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.$on('changed', val => {
+      this.gridConfig = val;
     });
     console.debug("[".concat("photos", "]"), 'Grid config', Object.assign({}, _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.gridConfig));
     this.gridConfig = _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.gridConfig;
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.$off('changed', this.gridConfig);
   }
+
 });
 
 /***/ }),
@@ -263,31 +267,35 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vue__WEBPACK_IMPORTED_MODULE_1__.default({
-  data: function data() {
+  data() {
     return {
       gridConfig: _assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes.max
     };
   },
+
   watch: {
-    gridConfig: function gridConfig(val) {
+    gridConfig(val) {
       this.$emit('changed', val);
     }
+
   },
-  created: function created() {
+
+  created() {
     window.addEventListener('resize', this.handleWindowResize);
     this.handleWindowResize();
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     window.removeEventListener('resize', this.handleWindowResize);
   },
+
   methods: {
-    handleWindowResize: function handleWindowResize() {
+    handleWindowResize() {
       // find the first grid size that fit the current window width
-      var currentSize = Object.keys(_assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes).find(function (size) {
-        return size > document.documentElement.clientWidth;
-      });
+      const currentSize = Object.keys(_assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes).find(size => size > document.documentElement.clientWidth);
       this.gridConfig = _assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes[currentSize] || _assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes.max;
     }
+
   }
 }));
 
@@ -519,4 +527,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_mixins_GridConfig_js-src_components_FolderTagPreview_vue.js.map?v=5c82a02beafbbc1b3162
+//# sourceMappingURL=photos-src_mixins_GridConfig_js-src_components_FolderTagPreview_vue.js.map?v=c8246db411f374ff058a

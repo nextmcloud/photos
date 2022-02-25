@@ -16,16 +16,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
 /* harmony import */ var _FolderTagPreview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FolderTagPreview */ "./src/components/FolderTagPreview.vue");
 /* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -73,84 +63,60 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       required: true
     }
   },
-  data: function data() {
+
+  data() {
     return {
       cancelRequest: null
     };
   },
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapGetters)(['files', 'tags'])), {}, {
+
+  computed: { // global lists
+    ...(0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapGetters)(['files', 'tags']),
+
     // files list of the current folder
-    folderContent: function folderContent() {
+    folderContent() {
       return this.tags[this.item.injected.id].files;
     },
-    fileList: function fileList() {
-      var _this = this;
 
-      return this.folderContent ? this.folderContent.map(function (id) {
-        return _this.files[id];
-      }).filter(function (file) {
-        return !!file;
-      }).slice(0, 4) // only get the 4 first images
+    fileList() {
+      return this.folderContent ? this.folderContent.map(id => this.files[id]).filter(file => !!file).slice(0, 4) // only get the 4 first images
       : [];
     }
-  }),
-  beforeDestroy: function beforeDestroy() {
+
+  },
+
+  beforeDestroy() {
     // cancel any pending requests
     if (this.cancelRequest) {
       this.cancelRequest('Navigated away');
     }
   },
-  created: function created() {
-    var _this2 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      var _cancelableRequest, request, cancel, files;
+  async created() {
+    // init cancellable request
+    const {
+      request,
+      cancel
+    } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_0__.default);
+    this.cancelRequest = cancel;
 
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              // init cancellable request
-              _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_0__.default), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
-              _this2.cancelRequest = cancel;
-              _context.prev = 2;
-              _context.next = 5;
-              return request(_this2.item.injected.id);
-
-            case 5:
-              files = _context.sent;
-
-              _this2.$store.dispatch('updateTag', {
-                id: _this2.item.injected.id,
-                files: files
-              });
-
-              _this2.$store.dispatch('appendFiles', files);
-
-              _context.next = 13;
-              break;
-
-            case 10:
-              _context.prev = 10;
-              _context.t0 = _context["catch"](2);
-
-              if (_context.t0.response && _context.t0.response.status) {
-                console.error('Failed to get folder content', _this2.item.injected.id, _context.t0.response);
-              }
-
-            case 13:
-              _context.prev = 13;
-              _this2.cancelRequest = null;
-              return _context.finish(13);
-
-            case 16:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee, null, [[2, 10, 13, 16]]);
-    }))();
+    try {
+      // get data
+      const files = await request(this.item.injected.id);
+      this.$store.dispatch('updateTag', {
+        id: this.item.injected.id,
+        files
+      });
+      this.$store.dispatch('appendFiles', files);
+    } catch (error) {
+      if (error.response && error.response.status) {
+        console.error('Failed to get folder content', this.item.injected.id, error.response);
+      }
+    } finally {
+      this.cancelRequest = null;
+    }
   }
+
 });
 
 /***/ }),
@@ -178,16 +144,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_GridConfig__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../mixins/GridConfig */ "./src/mixins/GridConfig.js");
 /* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
 /* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -277,46 +233,43 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       default: true
     }
   },
-  data: function data() {
+
+  data() {
     return {
       error: null,
       cancelRequest: null
     };
   },
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_9__.mapGetters)(['files', 'tags', 'tagsNames'])), {}, {
+
+  computed: { // global lists
+    ...(0,vuex__WEBPACK_IMPORTED_MODULE_9__.mapGetters)(['files', 'tags', 'tagsNames']),
+
     // current tag id from current path
-    tagId: function tagId() {
+    tagId() {
       return this.$store.getters.tagId(this.path);
     },
+
     // current tag
-    tag: function tag() {
+    tag() {
       return this.tags[this.tagId];
     },
-    tagsList: function tagsList() {
-      var _this = this;
 
-      return Object.values(this.tagsNames).map(function (tagsId) {
-        return _this.tags[tagsId];
-      });
+    tagsList() {
+      return Object.values(this.tagsNames).map(tagsId => this.tags[tagsId]);
     },
+
     // files list of the current tag
-    fileList: function fileList() {
-      var _this2 = this;
-
-      return this.tag && this.tag.files.map(function (id) {
-        return _this2.files[id];
-      }).filter(function (file) {
-        return !!file;
-      });
+    fileList() {
+      return this.tag && this.tag.files.map(id => this.files[id]).filter(file => !!file);
     },
-    contentList: function contentList() {
-      var _this3 = this;
 
+    contentList() {
       if (this.isRoot) {
-        return this.tagsList.flatMap(function (tag) {
+        return this.tagsList.flatMap(tag => {
           return tag.id === '' ? [] : [{
             id: "tag-".concat(tag.id),
-            injected: _objectSpread({}, tag),
+            injected: { ...tag
+            },
             width: 256,
             height: 256,
             columnSpan: 1,
@@ -325,12 +278,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         });
       }
 
-      return this.fileList.map(function (file) {
+      return this.fileList.map(file => {
         return {
           id: "file-".concat(file.fileid),
-          injected: _objectSpread(_objectSpread({}, file), {}, {
-            list: _this3.fileList
-          }),
+          injected: { ...file,
+            list: this.fileList
+          },
           width: 256,
           height: 256,
           columnSpan: 1,
@@ -338,210 +291,127 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         };
       });
     },
-    isEmpty: function isEmpty() {
+
+    isEmpty() {
       if (this.isRoot) {
         return Object.keys(this.tagsNames).length === 0;
       }
 
       return this.fileList.length === 0;
     }
-  }),
-  watch: {
-    path: function path() {
-      var _this4 = this;
 
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                if (_this4.tagId) {
-                  _context.next = 3;
-                  break;
-                }
-
-                _context.next = 3;
-                return _this4.fetchRootContent();
-
-              case 3:
-                // if we're not in the root, we fetch the data
-                if (!_this4.isRoot) {
-                  _this4.fetchContent();
-                }
-
-              case 4:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee);
-      }))();
-    }
   },
-  beforeDestroy: function beforeDestroy() {
+  watch: {
+    async path() {
+      // if we don't have the tag in the store yet,
+      // we need to fetch the list first
+      if (!this.tagId) {
+        await this.fetchRootContent();
+      } // if we're not in the root, we fetch the data
+
+
+      if (!this.isRoot) {
+        this.fetchContent();
+      }
+    }
+
+  },
+
+  beforeDestroy() {
     // cancel any pending requests
     if (this.cancelRequest) {
       this.cancelRequest('Navigated away');
     }
   },
-  beforeMount: function beforeMount() {
-    var _this5 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-      return regeneratorRuntime.wrap(function _callee2$(_context2) {
-        while (1) {
-          switch (_context2.prev = _context2.next) {
-            case 0:
-              if (_this5.tagId) {
-                _context2.next = 3;
-                break;
-              }
-
-              _context2.next = 3;
-              return _this5.fetchRootContent();
-
-            case 3:
-              // if we're not in the root, we fetch the data
-              if (!_this5.isRoot) {
-                _this5.fetchContent();
-              }
-
-            case 4:
-            case "end":
-              return _context2.stop();
-          }
-        }
-      }, _callee2);
-    }))();
-  },
-  methods: {
-    fetchRootContent: function fetchRootContent() {
-      var _this6 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-        var _cancelableRequest, request, cancel, tags;
-
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                // cancel any pending requests
-                if (_this6.cancelRequest) {
-                  _this6.cancelRequest('Changed folder');
-                } // close any potential opened viewer
+  async beforeMount() {
+    // if we don't have the tag in the store yet,
+    // we need to fetch the list first
+    if (!this.tagId) {
+      await this.fetchRootContent();
+    } // if we're not in the root, we fetch the data
 
 
-                OCA.Viewer.close(); // if we don't already have some cached data let's show a loader
-
-                if (!_this6.tags[_this6.tagId]) {
-                  _this6.$emit('update:loading', true);
-                }
-
-                _this6.error = null; // init cancellable request
-
-                _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_SystemTags__WEBPACK_IMPORTED_MODULE_1__.default), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
-                _this6.cancelRequest = cancel;
-                _context3.prev = 6;
-                _context3.next = 9;
-                return request();
-
-              case 9:
-                tags = _context3.sent;
-
-                _this6.$store.dispatch('updateTags', tags);
-
-                _context3.next = 17;
-                break;
-
-              case 13:
-                _context3.prev = 13;
-                _context3.t0 = _context3["catch"](6);
-                console.error(_context3.t0);
-                _this6.error = true;
-
-              case 17:
-                _context3.prev = 17;
-
-                // done loading
-                _this6.$emit('update:loading', false);
-
-                _this6.cancelRequest = null;
-                return _context3.finish(17);
-
-              case 21:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3, null, [[6, 13, 17, 21]]);
-      }))();
-    },
-    fetchContent: function fetchContent() {
-      var _this7 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-        var _cancelableRequest2, request, cancel, files;
-
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                // cancel any pending requests
-                if (_this7.cancelRequest) {
-                  _this7.cancelRequest();
-                } // close any potential opened viewer
-
-
-                OCA.Viewer.close(); // if we don't already have some cached data let's show a loader
-
-                if (!_this7.tags[_this7.tagId]) {
-                  _this7.$emit('update:loading', true);
-                }
-
-                _this7.error = null; // init cancellable request
-
-                _cancelableRequest2 = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_2__.default), request = _cancelableRequest2.request, cancel = _cancelableRequest2.cancel;
-                _this7.cancelRequest = cancel;
-                _context4.prev = 6;
-                _context4.next = 9;
-                return request(_this7.tagId);
-
-              case 9:
-                files = _context4.sent;
-
-                _this7.$store.dispatch('updateTag', {
-                  id: _this7.tagId,
-                  files: files
-                });
-
-                _this7.$store.dispatch('appendFiles', files);
-
-                _context4.next = 18;
-                break;
-
-              case 14:
-                _context4.prev = 14;
-                _context4.t0 = _context4["catch"](6);
-                console.error(_context4.t0);
-                _this7.error = true;
-
-              case 18:
-                _context4.prev = 18;
-
-                // done loading
-                _this7.$emit('update:loading', false);
-
-                _this7.cancelRequest = null;
-                return _context4.finish(18);
-
-              case 22:
-              case "end":
-                return _context4.stop();
-            }
-          }
-        }, _callee4, null, [[6, 14, 18, 22]]);
-      }))();
+    if (!this.isRoot) {
+      this.fetchContent();
     }
+  },
+
+  methods: {
+    async fetchRootContent() {
+      // cancel any pending requests
+      if (this.cancelRequest) {
+        this.cancelRequest('Changed folder');
+      } // close any potential opened viewer
+
+
+      OCA.Viewer.close(); // if we don't already have some cached data let's show a loader
+
+      if (!this.tags[this.tagId]) {
+        this.$emit('update:loading', true);
+      }
+
+      this.error = null; // init cancellable request
+
+      const {
+        request,
+        cancel
+      } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_SystemTags__WEBPACK_IMPORTED_MODULE_1__.default);
+      this.cancelRequest = cancel;
+
+      try {
+        // fetch content
+        const tags = await request();
+        this.$store.dispatch('updateTags', tags);
+      } catch (error) {
+        console.error(error);
+        this.error = true;
+      } finally {
+        // done loading
+        this.$emit('update:loading', false);
+        this.cancelRequest = null;
+      }
+    },
+
+    async fetchContent() {
+      // cancel any pending requests
+      if (this.cancelRequest) {
+        this.cancelRequest();
+      } // close any potential opened viewer
+
+
+      OCA.Viewer.close(); // if we don't already have some cached data let's show a loader
+
+      if (!this.tags[this.tagId]) {
+        this.$emit('update:loading', true);
+      }
+
+      this.error = null; // init cancellable request
+
+      const {
+        request,
+        cancel
+      } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_TaggedImages__WEBPACK_IMPORTED_MODULE_2__.default);
+      this.cancelRequest = cancel;
+
+      try {
+        // get data
+        const files = await request(this.tagId);
+        this.$store.dispatch('updateTag', {
+          id: this.tagId,
+          files
+        });
+        this.$store.dispatch('appendFiles', files);
+      } catch (error) {
+        console.error(error);
+        this.error = true;
+      } finally {
+        // done loading
+        this.$emit('update:loading', false);
+        this.cancelRequest = null;
+      }
+    }
+
   }
 });
 
@@ -552,8 +422,6 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   !*** ./src/patchedRequest.js ***!
   \*******************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
-
-function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
@@ -576,15 +444,15 @@ function _typeof(obj) { "@babel/helpers - typeof"; if (typeof Symbol === "functi
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-var request = __webpack_require__(/*! webdav/dist/node/request */ "./node_modules/webdav/dist/node/request.js");
+const request = __webpack_require__(/*! webdav/dist/node/request */ "./node_modules/webdav/dist/node/request.js");
 
-var oldPrepareRequestOptions = request.prepareRequestOptions; // While we wait for official cancellable webdav requests
+const oldPrepareRequestOptions = request.prepareRequestOptions; // While we wait for official cancellable webdav requests
 // https://github.com/perry-mitchell/webdav-client/issues/179
 // let's properly forward our axios options through webdav to axios
 
 request.prepareRequestOptions = function (requestOptions, methodOptions) {
   // add our cancelToken support
-  if (methodOptions.cancelToken && _typeof(methodOptions.cancelToken) === 'object') {
+  if (methodOptions.cancelToken && typeof methodOptions.cancelToken === 'object') {
     requestOptions.cancelToken = methodOptions.cancelToken;
   } // exploit old method
 
@@ -644,12 +512,12 @@ __webpack_require__.r(__webpack_exports__);
 
  // force our axios
 
-var patcher = webdav__WEBPACK_IMPORTED_MODULE_0___default().getPatcher();
+const patcher = webdav__WEBPACK_IMPORTED_MODULE_0___default().getPatcher();
 patcher.patch('request', _nextcloud_axios__WEBPACK_IMPORTED_MODULE_1__.default); // init webdav client on default dav endpoint
 
-var remote = (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_3__.generateRemoteUrl)('dav');
-var client = webdav__WEBPACK_IMPORTED_MODULE_0___default().createClient(remote);
-var remotePath = url_parse__WEBPACK_IMPORTED_MODULE_2___default()(remote).pathname;
+const remote = (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_3__.generateRemoteUrl)('dav');
+const client = webdav__WEBPACK_IMPORTED_MODULE_0___default().createClient(remote);
+const remotePath = url_parse__WEBPACK_IMPORTED_MODULE_2___default()(remote).pathname;
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (client);
 
 /***/ }),
@@ -687,7 +555,7 @@ __webpack_require__.r(__webpack_exports__);
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  *
  */
-var props = "\n\t<oc:fileid />\n\t<d:getlastmodified />\n\t<d:getetag />\n\t<d:getcontenttype />\n\t<d:getcontentlength />\n\t<nc:has-preview />\n\t<oc:favorite />\n\t<d:resourcetype />";
+const props = "\n\t<oc:fileid />\n\t<d:getlastmodified />\n\t<d:getetag />\n\t<d:getcontenttype />\n\t<d:getcontentlength />\n\t<nc:has-preview />\n\t<oc:favorite />\n\t<d:resourcetype />";
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ("<?xml version=\"1.0\"?>\n\t\t\t<d:propfind xmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\"\n\t\t\t\txmlns:nc=\"http://nextcloud.org/ns\"\n\t\t\t\txmlns:ocs=\"http://open-collaboration-services.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t".concat(props, "\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>"));
 
@@ -706,10 +574,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */ });
 /* harmony import */ var _DavClient__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./DavClient */ "./src/services/DavClient.js");
 /* harmony import */ var _utils_fileUtils__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/fileUtils */ "./src/utils/fileUtils.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
@@ -741,40 +605,12 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @returns {Array} the file list
  */
 
-/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(_x) {
-  return _ref.apply(this, arguments);
-}
-
-function _ref() {
-  _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(path) {
-    var options,
-        response,
-        _args = arguments;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            options = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
-            _context.next = 3;
-            return _DavClient__WEBPACK_IMPORTED_MODULE_0__.default.getDirectoryContents('/systemtags/', Object.assign({}, {
-              data: "<?xml version=\"1.0\"?>\n\t\t\t<d:propfind  xmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t<oc:id />\n\t\t\t\t\t<oc:display-name />\n\t\t\t\t\t<oc:user-visible />\n\t\t\t\t\t<oc:user-assignable />\n\t\t\t\t\t<oc:can-assign />\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>",
-              details: true
-            }, options));
-
-          case 3:
-            response = _context.sent;
-            return _context.abrupt("return", response.data.map(function (data) {
-              return (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_1__.genFileInfo)(data);
-            }));
-
-          case 5:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _ref.apply(this, arguments);
+/* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(path, options = {}) {
+  const response = await _DavClient__WEBPACK_IMPORTED_MODULE_0__.default.getDirectoryContents('/systemtags/', Object.assign({}, {
+    data: "<?xml version=\"1.0\"?>\n\t\t\t<d:propfind  xmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t<oc:id />\n\t\t\t\t\t<oc:display-name />\n\t\t\t\t\t<oc:user-visible />\n\t\t\t\t\t<oc:user-assignable />\n\t\t\t\t\t<oc:can-assign />\n\t\t\t\t</d:prop>\n\t\t\t</d:propfind>",
+    details: true
+  }, options));
+  return response.data.map(data => (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_1__.genFileInfo)(data));
 }
 
 /***/ }),
@@ -795,10 +631,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _DavRequest__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./DavRequest */ "./src/services/DavRequest.js");
 /* harmony import */ var _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AllowedMimes */ "./src/services/AllowedMimes.js");
 /* harmony import */ var _DavClient__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DavClient */ "./src/services/DavClient.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
@@ -833,54 +665,21 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @returns {Array} the file list
  */
 
-/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__(_x) {
-  return _ref.apply(this, arguments);
-}
-
-function _ref() {
-  _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(id) {
-    var options,
-        prefixPath,
-        response,
-        _args = arguments;
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            options = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
-            options = Object.assign({
-              method: 'REPORT',
-              data: "<?xml version=\"1.0\"?>\n\t\t\t<oc:filter-files\n\t\t\t\txmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\"\n\t\t\t\txmlns:nc=\"http://nextcloud.org/ns\"\n\t\t\t\txmlns:ocs=\"http://open-collaboration-services.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t".concat(_DavRequest__WEBPACK_IMPORTED_MODULE_2__.props, "\n\t\t\t\t</d:prop>\n\t\t\t\t<oc:filter-rules>\n\t\t\t\t\t<oc:systemtag>").concat(id, "</oc:systemtag>\n\t\t\t\t</oc:filter-rules>\n\t\t\t</oc:filter-files>"),
-              details: true
-            }, options);
-            prefixPath = "/files/".concat((0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)().uid);
-            _context.next = 5;
-            return _DavClient__WEBPACK_IMPORTED_MODULE_4__.default.getDirectoryContents(prefixPath, options);
-
-          case 5:
-            response = _context.sent;
-            return _context.abrupt("return", response.data.map(function (data) {
-              return (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_0__.genFileInfo)(data);
-            }) // filter out unwanted mime because server REPORT service only support
-            // hardcoded props and mime is not one of them
-            // https://github.com/nextcloud/server/blob/5bf3d1bb384da56adbf205752be8f840aac3b0c5/apps/dav/lib/Connector/Sabre/FilesReportPlugin.php#L274
-            .filter(function (file) {
-              return file.mime && _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__.default.indexOf(file.mime) !== -1;
-            }) // remove prefix path from full file path
-            .map(function (data) {
-              return Object.assign({}, data, {
-                filename: data.filename.replace(prefixPath, '')
-              });
-            }));
-
-          case 7:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
+/* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(id, options = {}) {
+  options = Object.assign({
+    method: 'REPORT',
+    data: "<?xml version=\"1.0\"?>\n\t\t\t<oc:filter-files\n\t\t\t\txmlns:d=\"DAV:\"\n\t\t\t\txmlns:oc=\"http://owncloud.org/ns\"\n\t\t\t\txmlns:nc=\"http://nextcloud.org/ns\"\n\t\t\t\txmlns:ocs=\"http://open-collaboration-services.org/ns\">\n\t\t\t\t<d:prop>\n\t\t\t\t\t".concat(_DavRequest__WEBPACK_IMPORTED_MODULE_2__.props, "\n\t\t\t\t</d:prop>\n\t\t\t\t<oc:filter-rules>\n\t\t\t\t\t<oc:systemtag>").concat(id, "</oc:systemtag>\n\t\t\t\t</oc:filter-rules>\n\t\t\t</oc:filter-files>"),
+    details: true
+  }, options);
+  const prefixPath = "/files/".concat((0,_nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__.getCurrentUser)().uid);
+  const response = await _DavClient__WEBPACK_IMPORTED_MODULE_4__.default.getDirectoryContents(prefixPath, options);
+  return response.data.map(data => (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_0__.genFileInfo)(data)) // filter out unwanted mime because server REPORT service only support
+  // hardcoded props and mime is not one of them
+  // https://github.com/nextcloud/server/blob/5bf3d1bb384da56adbf205752be8f840aac3b0c5/apps/dav/lib/Connector/Sabre/FilesReportPlugin.php#L274
+  .filter(file => file.mime && _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__.default.indexOf(file.mime) !== -1) // remove prefix path from full file path
+  .map(data => Object.assign({}, data, {
+    filename: data.filename.replace(prefixPath, '')
   }));
-  return _ref.apply(this, arguments);
 }
 
 /***/ }),
@@ -1374,4 +1173,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_patchedRequest_js-src_views_Tags_vue.js.map?v=85ffff5f1436928275f8
+//# sourceMappingURL=photos-src_patchedRequest_js-src_views_Tags_vue.js.map?v=be35b89500ba39ea7a2b

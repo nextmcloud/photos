@@ -16,16 +16,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
 /* harmony import */ var _FolderTagPreview__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./FolderTagPreview */ "./src/components/FolderTagPreview.vue");
 /* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -72,29 +62,30 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       required: true
     }
   },
-  data: function data() {
+
+  data() {
     return {
       cancelRequest: null,
       previewFolder: this.item.injected.fileid
     };
   },
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapGetters)(['files', 'folders'])), {}, {
+
+  computed: { // global lists
+    ...(0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapGetters)(['files', 'folders']),
+
     // files list of the current folder
-    folderContent: function folderContent() {
+    folderContent() {
       return this.folders[this.item.injected.fileid];
     },
-    previewFiles: function previewFiles() {
-      var _this = this;
 
-      var previewFolderContent = this.folders[this.previewFolder];
-      var previewFiles = previewFolderContent ? previewFolderContent.map(function (id) {
-        return _this.files[id];
-      }).slice(0, 4) // only get the 4 first images
+    previewFiles() {
+      const previewFolderContent = this.folders[this.previewFolder];
+      const previewFiles = previewFolderContent ? previewFolderContent.map(id => this.files[id]).slice(0, 4) // only get the 4 first images
       : []; // If we didn't found any previews in the folder we try the next subfolder
       // We limit to one subfolder for performance concerns
 
       if (previewFiles.length === 0 && this.files[this.previewFolder].folders && this.previewFolder === this.item.injected.fileid) {
-        var firstChildFolder = this.files[this.previewFolder].folders[0];
+        const firstChildFolder = this.files[this.previewFolder].folders[0];
         this.updatePreviewFolder(firstChildFolder);
 
         if (!this.folders[this.previewFolder]) {
@@ -104,103 +95,64 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return previewFiles;
     }
-  }),
-  created: function created() {
-    var _this2 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              if (_this2.folderContent) {
-                _context.next = 3;
-                break;
-              }
-
-              _context.next = 3;
-              return _this2.getFolderData(_this2.item.injected.filename);
-
-            case 3:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }))();
   },
-  beforeDestroy: function beforeDestroy() {
+
+  async created() {
+    if (!this.folderContent) {
+      await this.getFolderData(this.item.injected.filename);
+    }
+  },
+
+  beforeDestroy() {
     // cancel any pending requests
     if (this.cancelRequest) {
       this.cancelRequest('Navigated away');
     }
   },
+
   methods: {
-    getFolderData: function getFolderData(filename) {
-      var _this3 = this;
+    async getFolderData(filename) {
+      // init cancellable request
+      const {
+        request,
+        cancel
+      } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__.default)(_services_AlbumContent__WEBPACK_IMPORTED_MODULE_0__.default);
+      this.cancelRequest = cancel;
 
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        var _cancelableRequest, request, cancel, _yield$request, folder, folders, files;
+      try {
+        // get data
+        const {
+          folder,
+          folders,
+          files
+        } = await request(filename, {
+          shared: this.item.injected.showShared
+        });
+        this.$store.dispatch('updateFolders', {
+          fileid: folder.fileid,
+          files,
+          folders
+        });
+        this.$store.dispatch('updateFiles', {
+          folder,
+          files,
+          folders
+        });
+      } catch (error) {
+        if (error.response && error.response.status) {
+          console.error('Failed to get folder content', filename, error.response);
+        } // else we just cancelled the request
 
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                // init cancellable request
-                _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_1__.default)(_services_AlbumContent__WEBPACK_IMPORTED_MODULE_0__.default), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
-                _this3.cancelRequest = cancel;
-                _context2.prev = 2;
-                _context2.next = 5;
-                return request(filename, {
-                  shared: _this3.item.injected.showShared
-                });
-
-              case 5:
-                _yield$request = _context2.sent;
-                folder = _yield$request.folder;
-                folders = _yield$request.folders;
-                files = _yield$request.files;
-
-                _this3.$store.dispatch('updateFolders', {
-                  fileid: folder.fileid,
-                  files: files,
-                  folders: folders
-                });
-
-                _this3.$store.dispatch('updateFiles', {
-                  folder: folder,
-                  files: files,
-                  folders: folders
-                });
-
-                _context2.next = 16;
-                break;
-
-              case 13:
-                _context2.prev = 13;
-                _context2.t0 = _context2["catch"](2);
-
-                if (_context2.t0.response && _context2.t0.response.status) {
-                  console.error('Failed to get folder content', filename, _context2.t0.response);
-                } // else we just cancelled the request
-
-
-              case 16:
-                _context2.prev = 16;
-                _this3.cancelRequest = null;
-                return _context2.finish(16);
-
-              case 19:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2, null, [[2, 13, 16, 19]]);
-      }))();
+      } finally {
+        this.cancelRequest = null;
+      }
     },
-    updatePreviewFolder: function updatePreviewFolder(path) {
+
+    updatePreviewFolder(path) {
       this.previewFolder = path;
     }
+
   }
 });
 
@@ -220,10 +172,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.js");
 /* harmony import */ var _mixins_UserConfig__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mixins/UserConfig */ "./src/mixins/UserConfig.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 //
 //
 //
@@ -262,82 +210,75 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       required: true
     }
   },
-  data: function data() {
+
+  data() {
     return {
       loaded: false,
       error: false
     };
   },
+
   computed: {
-    davPath: function davPath() {
+    davPath() {
       return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 250, "&y=", 250, "&a=0&v=").concat(this.item.injected.etag));
     },
-    ariaUuid: function ariaUuid() {
+
+    ariaUuid() {
       return "image-".concat(this.item.injected.fileid);
     },
-    ariaLabel: function ariaLabel() {
+
+    ariaLabel() {
       return t("photos", 'Open the full size "{name}" image', {
         name: this.item.injected.basename
       });
     },
-    isImage: function isImage() {
+
+    isImage() {
       return this.item.injected.mime.startsWith("image");
     },
-    height: function height() {
+
+    height() {
       return this.item.injected.height;
     },
-    width: function width() {
+
+    width() {
       return this.item.injected.width;
     },
-    src: function src() {
+
+    src() {
       return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 250, "&y=", 250, "&a=1&v=").concat(this.item.injected.etag));
     }
+
   },
-  mounted: function mounted() {// window.addEventListener("resize", this.handleResize);
+
+  mounted() {// window.addEventListener("resize", this.handleResize);
     // this.handleResize();
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     // cancel any pending load
     this.$refs.src = "";
   },
-  methods: {
-    openViewer: function openViewer() {
-      var _this = this;
 
+  methods: {
+    openViewer() {
       OCA.Viewer.open({
         path: this.item.injected.filename,
         list: this.item.injected.list,
-        loadMore: this.item.injected.loadMore ? /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  _context.next = 2;
-                  return _this.item.injected.loadMore(true);
-
-                case 2:
-                  return _context.abrupt("return", _context.sent);
-
-                case 3:
-                case "end":
-                  return _context.stop();
-              }
-            }
-          }, _callee);
-        })) : function () {
-          return [];
-        },
+        loadMore: this.item.injected.loadMore ? async () => await this.item.injected.loadMore(true) : () => [],
         canLoop: this.item.injected.canLoop
       });
     },
 
     /** When the image is fully loaded by browser we remove the placeholder */
-    onLoad: function onLoad() {
+    onLoad() {
       this.loaded = true;
     },
-    onError: function onError() {
+
+    onError() {
       this.error = true;
     }
+
   }
 });
 
@@ -366,16 +307,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _components_Gallery__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ../components/Gallery */ "./src/components/Gallery.vue");
 /* harmony import */ var _utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__ = __webpack_require__(/*! ../utils/CancelableRequest */ "./src/utils/CancelableRequest.js");
 /* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -507,74 +438,69 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       default: false
     }
   },
-  data: function data() {
+
+  data() {
     return {
       error: null,
-      cancelRequest: function cancelRequest() {},
+      cancelRequest: () => {},
       isGalleryViewEnabled: localStorage.getItem('photos:galleryLayout') || 'false'
     };
   },
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_9__.mapGetters)(['files', 'folders'])), {}, {
+
+  computed: { // global lists
+    ...(0,vuex__WEBPACK_IMPORTED_MODULE_9__.mapGetters)(['files', 'folders']),
+
     // current folder id from current path
-    folderId: function folderId() {
+    folderId() {
       return this.$store.getters.folderId(this.path);
     },
+
     // files list of the current folder
-    folder: function folder() {
+    folder() {
       return this.files[this.folderId];
     },
-    folderContent: function folderContent() {
+
+    folderContent() {
       return this.folders[this.folderId];
     },
-    fileList: function fileList() {
-      var _this = this;
 
-      var list = this.folderContent && this.folderContent.map(function (id) {
-        return _this.files[id];
-      }).filter(function (file) {
-        return !!file;
-      });
+    fileList() {
+      const list = this.folderContent && this.folderContent.map(id => this.files[id]).filter(file => !!file);
       return list;
     },
+
     // subfolders of the current folder
-    subFolders: function subFolders() {
+    subFolders() {
       return this.folderId && this.files[this.folderId] && this.files[this.folderId].folders;
     },
-    folderList: function folderList() {
-      var _this2 = this;
 
-      var list = this.subFolders && this.subFolders.map(function (id) {
-        return _this2.files[id];
-      }).filter(function (file) {
-        return !!file;
-      });
+    folderList() {
+      const list = this.subFolders && this.subFolders.map(id => this.files[id]).filter(file => !!file);
       return list;
     },
-    contentList: function contentList() {
-      var _this$folderList,
-          _this3 = this,
-          _this$fileList;
 
-      var folders = (_this$folderList = this.folderList) === null || _this$folderList === void 0 ? void 0 : _this$folderList.map(function (folder) {
-        _this3.$emit("update:loading", true);
+    contentList() {
+      var _this$folderList, _this$fileList;
 
+      const folders = (_this$folderList = this.folderList) === null || _this$folderList === void 0 ? void 0 : _this$folderList.map(folder => {
+        this.$emit("update:loading", true);
         return {
           id: "folder-".concat(folder.fileid),
-          injected: _objectSpread(_objectSpread({}, folder), {}, {
-            showShared: _this3.showShared
-          }),
+          injected: { ...folder,
+            showShared: this.showShared
+          },
           width: 256,
           height: 256,
           columnSpan: 1,
           renderComponent: _components_Folder__WEBPACK_IMPORTED_MODULE_3__.default
         };
       });
-      var files = (_this$fileList = this.fileList) === null || _this$fileList === void 0 ? void 0 : _this$fileList.map(function (file) {
+      const files = (_this$fileList = this.fileList) === null || _this$fileList === void 0 ? void 0 : _this$fileList.map(file => {
         return {
           id: "file-".concat(file.fileid),
-          injected: _objectSpread(_objectSpread({}, file), {}, {
-            list: _this3.fileList
-          }),
+          injected: { ...file,
+            list: this.fileList
+          },
           width: 256,
           height: 256,
           columnSpan: 1,
@@ -596,212 +522,148 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         };
       }
     },
+
     // is current folder empty?
-    isEmpty: function isEmpty() {
+    isEmpty() {
       return !this.haveFiles && !this.haveFolders;
     },
-    haveFiles: function haveFiles() {
+
+    haveFiles() {
       return !!this.fileList && this.fileList.length !== 0;
     },
-    haveFolders: function haveFolders() {
+
+    haveFolders() {
       return !!this.folderList && this.folderList.length !== 0;
     }
-  }),
+
+  },
   watch: {
-    path: function path() {
+    path() {
       this.fetchFolderContent();
     },
-    showShared: function showShared() {
+
+    showShared() {
       this.fetchFolderContent();
     }
+
   },
-  beforeMount: function beforeMount() {
-    var _this4 = this;
 
-    return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              _this4.fetchFolderContent();
-
-            case 1:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }))();
+  async beforeMount() {
+    this.fetchFolderContent();
   },
-  mounted: function mounted() {
-    var _this5 = this;
 
-    window.addEventListener("storage", function (event) {
-      _this5.isGalleryViewEnabled = localStorage.getItem('photos:galleryLayout');
+  mounted() {
+    window.addEventListener("storage", event => {
+      this.isGalleryViewEnabled = localStorage.getItem('photos:galleryLayout');
     });
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     this.cancelRequest('Changed view');
   },
+
   methods: {
-    getImageHeight: function getImageHeight(src) {
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                return _context2.abrupt("return", new Promise(function (resolve, reject) {
-                  var img = new Image();
+    async getImageHeight(src) {
+      return new Promise((resolve, reject) => {
+        let img = new Image();
 
-                  img.onload = function () {
-                    return resolve(img.height);
-                  };
+        img.onload = () => resolve(img.height);
 
-                  img.onerror = reject;
-                  img.src = src;
-                }));
-
-              case 1:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2);
-      }))();
+        img.onerror = reject;
+        img.src = src;
+      });
     },
-    getImageWidth: function getImageWidth(src) {
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                return _context3.abrupt("return", new Promise(function (resolve, reject) {
-                  var img = new Image();
 
-                  img.onload = function () {
-                    return resolve(img.width);
-                  };
+    async getImageWidth(src) {
+      return new Promise((resolve, reject) => {
+        let img = new Image();
 
-                  img.onerror = reject;
-                  img.src = src;
-                }));
+        img.onload = () => resolve(img.width);
 
-              case 1:
-              case "end":
-                return _context3.stop();
-            }
-          }
-        }, _callee3);
-      }))();
+        img.onerror = reject;
+        img.src = src;
+      });
     },
-    fetchFolderContent: function fetchFolderContent() {
-      var _this6 = this;
 
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
-        var _cancelableRequest, request, cancel, _yield$request, folder, folders, files;
+    async fetchFolderContent() {
+      // cancel any pending requests
+      this.cancelRequest('Changed folder'); // close any potential opened viewer & sidebar
 
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
-          while (1) {
-            switch (_context4.prev = _context4.next) {
-              case 0:
-                // cancel any pending requests
-                _this6.cancelRequest('Changed folder'); // close any potential opened viewer & sidebar
+      OCA.Viewer && OCA.Viewer.close && OCA.Viewer.close();
+      OCA.Files && OCA.Files.Sidebar.close && OCA.Files.Sidebar.close(); // if we don't already have some cached data let's show a loader
 
+      if (!this.files[this.folderId] || !this.folders[this.folderId]) {
+        this.$emit('update:loading', true);
+      }
 
-                OCA.Viewer && OCA.Viewer.close && OCA.Viewer.close();
-                OCA.Files && OCA.Files.Sidebar.close && OCA.Files.Sidebar.close(); // if we don't already have some cached data let's show a loader
+      this.error = null; // init cancellable request
 
-                if (!_this6.files[_this6.folderId] || !_this6.folders[_this6.folderId]) {
-                  _this6.$emit('update:loading', true);
-                }
+      const {
+        request,
+        cancel
+      } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_AlbumContent__WEBPACK_IMPORTED_MODULE_0__.default);
+      this.cancelRequest = cancel;
 
-                _this6.error = null; // init cancellable request
+      try {
+        // get content and current folder info
+        const {
+          folder,
+          folders,
+          files
+        } = await request(this.path, {
+          shared: this.showShared
+        }); //  for (var i = 0; i < files.length; i++) {
+        // 	var y = await this.getImageWidth(
+        // 	"/index.php/core/preview?fileId=" +
+        // 	files[i].fileid +
+        // 	"&x=1000&y=1000&forceIcon=0&a=1"
+        // 	);
+        // 	files[i].width = y;
+        // 	var z = await this.getImageHeight(
+        // 		"/index.php/core/preview?fileId=" +
+        // 		files[i].fileid +
+        // 		"&x=1000&y=1000&forceIcon=0&a=1"
+        // 	);
+        // 	files[i].height = z;
+        // }
 
-                _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_AlbumContent__WEBPACK_IMPORTED_MODULE_0__.default), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
-                _this6.cancelRequest = cancel;
-                _context4.prev = 7;
-                _context4.next = 10;
-                return request(_this6.path, {
-                  shared: _this6.showShared
-                });
-
-              case 10:
-                _yield$request = _context4.sent;
-                folder = _yield$request.folder;
-                folders = _yield$request.folders;
-                files = _yield$request.files;
-
-                //  for (var i = 0; i < files.length; i++) {
-                // 	var y = await this.getImageWidth(
-                // 	"/index.php/core/preview?fileId=" +
-                // 	files[i].fileid +
-                // 	"&x=1000&y=1000&forceIcon=0&a=1"
-                // 	);
-                // 	files[i].width = y;
-                // 	var z = await this.getImageHeight(
-                // 		"/index.php/core/preview?fileId=" +
-                // 		files[i].fileid +
-                // 		"&x=1000&y=1000&forceIcon=0&a=1"
-                // 	);
-                // 	files[i].height = z;
-                // }
-                _this6.$store.dispatch('addPath', {
-                  path: _this6.path,
-                  fileid: folder.fileid
-                });
-
-                _this6.$store.dispatch('updateFolders', {
-                  fileid: folder.fileid,
-                  files: files,
-                  folders: folders
-                });
-
-                _this6.$store.dispatch('updateFiles', {
-                  folder: folder,
-                  files: files,
-                  folders: folders
-                });
-
-                _context4.next = 23;
-                break;
-
-              case 19:
-                _context4.prev = 19;
-                _context4.t0 = _context4["catch"](7);
-
-                if (_context4.t0.response && _context4.t0.response.status) {
-                  if (_context4.t0.response.status === 404) {
-                    _this6.error = 404;
-                    setTimeout(function () {
-                      _this6.$router.push({
-                        name: _this6.$route.name
-                      });
-                    }, 3000);
-                  } else {
-                    _this6.error = _context4.t0;
-                  }
-                } // cancelled request, moving on...
-
-
-                console.error('Error fetching album data', _context4.t0);
-
-              case 23:
-                _context4.prev = 23;
-
-                // done loading even with errors
-                _this6.$emit('update:loading', false);
-
-                return _context4.finish(23);
-
-              case 26:
-              case "end":
-                return _context4.stop();
-            }
+        this.$store.dispatch('addPath', {
+          path: this.path,
+          fileid: folder.fileid
+        });
+        this.$store.dispatch('updateFolders', {
+          fileid: folder.fileid,
+          files,
+          folders
+        });
+        this.$store.dispatch('updateFiles', {
+          folder,
+          files,
+          folders
+        });
+      } catch (error) {
+        if (error.response && error.response.status) {
+          if (error.response.status === 404) {
+            this.error = 404;
+            setTimeout(() => {
+              this.$router.push({
+                name: this.$route.name
+              });
+            }, 3000);
+          } else {
+            this.error = error;
           }
-        }, _callee4, null, [[7, 19, 23, 26]]);
-      }))();
+        } // cancelled request, moving on...
+
+
+        console.error('Error fetching album data', error);
+      } finally {
+        // done loading even with errors
+        this.$emit('update:loading', false);
+      }
     },
-    processImages: function processImages(finalData) {
+
+    processImages(finalData) {
       var tempArray = [];
       var tempArray2 = [];
       var j = -1;
@@ -809,7 +671,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       var max_height = 200;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      var comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
+      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
       var windowWidth = document.getElementById("content-vue").offsetWidth; //  parseInt(comuptedStyle.getPropertyValue('width'));//
 
       if (windowWidth < 768) {
@@ -856,11 +718,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.$emit("update:loading", false);
       return finalData;
     },
-    adjustHeight: function adjustHeight(fileArray, maxHeight) {
+
+    adjustHeight(fileArray, maxHeight) {
       var totalImageWidth = 0;
       var leftContainer = document.getElementById("app-navigation-vue");
       var classExists = leftContainer.classList;
-      var comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
+      const comuptedStyle = window.getComputedStyle(document.getElementById("mainDivDesign"));
       var windowWidth = document.getElementById("content-vue").offsetWidth; // document.getElementById("content-vue").clientWidth;// document.documentElement.clientWidth;
 
       for (var i = 0; i < fileArray.length; i++) {
@@ -892,8 +755,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
       return fileArray;
     },
-    aspectRatio: function aspectRatio(height, width, requiredHeight) {
-      var repeat = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : 0;
+
+    aspectRatio: function (height, width, requiredHeight, repeat = 0) {
       var height1 = requiredHeight;
       return Math.round(width / height * height1);
     }
@@ -917,16 +780,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
 /* harmony import */ var _utils_fileUtils__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../utils/fileUtils */ "./src/utils/fileUtils.js");
 /* harmony import */ var _AllowedMimes__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./AllowedMimes */ "./src/services/AllowedMimes.js");
-function _createForOfIteratorHelper(o, allowArrayLike) { var it = typeof Symbol !== "undefined" && o[Symbol.iterator] || o["@@iterator"]; if (!it) { if (Array.isArray(o) || (it = _unsupportedIterableToArray(o)) || allowArrayLike && o && typeof o.length === "number") { if (it) o = it; var i = 0; var F = function F() {}; return { s: F, n: function n() { if (i >= o.length) return { done: true }; return { done: false, value: o[i++] }; }, e: function e(_e) { throw _e; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var normalCompletion = true, didErr = false, err; return { s: function s() { it = it.call(o); }, n: function n() { var step = it.next(); normalCompletion = step.done; return step; }, e: function e(_e2) { didErr = true; err = _e2; }, f: function f() { try { if (!normalCompletion && it.return != null) it.return(); } finally { if (didErr) throw err; } } }; }
-
-function _unsupportedIterableToArray(o, minLen) { if (!o) return; if (typeof o === "string") return _arrayLikeToArray(o, minLen); var n = Object.prototype.toString.call(o).slice(8, -1); if (n === "Object" && o.constructor) n = o.constructor.name; if (n === "Map" || n === "Set") return Array.from(o); if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return _arrayLikeToArray(o, minLen); }
-
-function _arrayLikeToArray(arr, len) { if (len == null || len > arr.length) len = arr.length; for (var i = 0, arr2 = new Array(len); i < len; i++) { arr2[i] = arr[i]; } return arr2; }
-
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /**
  * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>
  *
@@ -961,81 +814,33 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @returns {Array} the file list
  */
 
-/* harmony default export */ function __WEBPACK_DEFAULT_EXPORT__() {
-  return _ref.apply(this, arguments);
-}
+/* harmony default export */ async function __WEBPACK_DEFAULT_EXPORT__(path = '/', options = {}) {
+  const prefixPath = (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)("/apps/photos/api/v1/".concat(options.shared ? 'shared' : 'albums')); // fetch listing
 
-function _ref() {
-  _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-    var path,
-        options,
-        prefixPath,
-        response,
-        list,
-        folder,
-        folders,
-        files,
-        _iterator,
-        _step,
-        entry,
-        _args = arguments;
+  const response = await _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__.default.get(prefixPath + (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_2__.encodeFilePath)(path), options);
+  const list = response.data.map(data => (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_2__.genFileInfo)(data)); // filter all the files and folders
 
-    return regeneratorRuntime.wrap(function _callee$(_context) {
-      while (1) {
-        switch (_context.prev = _context.next) {
-          case 0:
-            path = _args.length > 0 && _args[0] !== undefined ? _args[0] : '/';
-            options = _args.length > 1 && _args[1] !== undefined ? _args[1] : {};
-            prefixPath = (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_1__.generateUrl)("/apps/photos/api/v1/".concat(options.shared ? 'shared' : 'albums')); // fetch listing
+  let folder = {};
+  const folders = [];
+  const files = [];
 
-            _context.next = 5;
-            return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__.default.get(prefixPath + (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_2__.encodeFilePath)(path), options);
+  for (const entry of list) {
+    // is this the current provided path ?
+    if (entry.filename === path) {
+      folder = entry;
+    } else if (entry.type !== 'file') {
+      folders.push(entry);
+    } else if (_AllowedMimes__WEBPACK_IMPORTED_MODULE_3__.default.indexOf(entry.mime) > -1) {
+      files.push(entry);
+    }
+  } // return current folder, subfolders and files
 
-          case 5:
-            response = _context.sent;
-            list = response.data.map(function (data) {
-              return (0,_utils_fileUtils__WEBPACK_IMPORTED_MODULE_2__.genFileInfo)(data);
-            }); // filter all the files and folders
 
-            folder = {};
-            folders = [];
-            files = [];
-            _iterator = _createForOfIteratorHelper(list);
-
-            try {
-              for (_iterator.s(); !(_step = _iterator.n()).done;) {
-                entry = _step.value;
-
-                // is this the current provided path ?
-                if (entry.filename === path) {
-                  folder = entry;
-                } else if (entry.type !== 'file') {
-                  folders.push(entry);
-                } else if (_AllowedMimes__WEBPACK_IMPORTED_MODULE_3__.default.indexOf(entry.mime) > -1) {
-                  files.push(entry);
-                }
-              } // return current folder, subfolders and files
-
-            } catch (err) {
-              _iterator.e(err);
-            } finally {
-              _iterator.f();
-            }
-
-            return _context.abrupt("return", {
-              folder: folder,
-              folders: folders,
-              files: files
-            });
-
-          case 13:
-          case "end":
-            return _context.stop();
-        }
-      }
-    }, _callee);
-  }));
-  return _ref.apply(this, arguments);
+  return {
+    folder,
+    folders,
+    files
+  };
 }
 
 /***/ }),
@@ -1735,4 +1540,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=ee06f66198e394786d59
+//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=bad3b938a8e93a550ab5

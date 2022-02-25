@@ -23,7 +23,9 @@
 <template>
   <Content app-name="photos">
     <div class="container-fixed" id="mainDivDesign"> 
+      <LeftNavigationToggle  />
     <AppNavigation>
+      
       <template #list>
         <AppNavigationItem
           to="/favorites"
@@ -107,8 +109,16 @@ import AppContent from "@nextcloud/vue/dist/Components/AppContent";
 import AppNavigation from "@nextcloud/vue/dist/Components/AppNavigation";
 import AppNavigationItem from "@nextcloud/vue/dist/Components/AppNavigationItem";
 import AppNavigationSettings from "@nextcloud/vue/dist/Components/AppNavigationSettings";
-
+import AppNavigationCaption from '@nextcloud/vue/dist/Components/AppNavigationCaption';
 import SettingsView from "./components/Settings/SettingsView";
+//import AppNavigationIconCollapsible from '@nextcloud/vue/dist/Components/AppNavigationIconCollapsible';
+import AppNavigationNew from '@nextcloud/vue/dist/Components/AppNavigationNew';
+import AppNavigationNewItem from '@nextcloud/vue/dist/Components/AppNavigationNewItem';
+import AppNavigationSpacer from '@nextcloud/vue/dist/Components/AppNavigationSpacer';
+import AppNavigationToggle from '@nextcloud/vue/dist/Components/AppNavigationToggle';
+import LeftNavigationToggle from "./components/LeftNavigationToggle";
+
+
 import svgplaceholder from "./assets/file-placeholder.svg";
 import imgplaceholder from "./assets/image.svg";
 import videoplaceholder from "./assets/video.svg";
@@ -124,6 +134,7 @@ export default {
     AppNavigation,
     AppNavigationItem,
     AppNavigationSettings,
+    LeftNavigationToggle
   },
   data() {
     return {
@@ -187,10 +198,7 @@ export default {
   },
   
   methods:{
-
-      
-
-        CheckNavigationToggle: function(){
+      CheckNavigationToggle: function(){
           //app-content-vue
             var leftContainer = document.getElementById("app-navigation-vue");
             var classExists = leftContainer.classList;
@@ -224,9 +232,14 @@ export default {
   	z-index: 0 !important;
 }
 
+.app-navigation-toggle{
+   transition: width 2s;
+  display: none !important;
+}
 .app-navigation__photos::v-deep .app-navigation-entry-icon.icon-photos {
   background-size: 20px;
 }
+
 
 </style>
 

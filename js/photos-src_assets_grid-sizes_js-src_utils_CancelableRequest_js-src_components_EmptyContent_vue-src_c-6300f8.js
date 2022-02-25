@@ -12,10 +12,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 //
 //
 //
@@ -58,18 +54,20 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       default: ''
     }
   },
-  data: function data() {
+
+  data() {
     return {
       illustration: ''
     };
   },
+
   computed: {
     /**
      * Does this component have an illustration
      *
      * @returns {boolean}
      */
-    haveIllustration: function haveIllustration() {
+    haveIllustration() {
       return this.illustrationName !== '';
     },
 
@@ -78,7 +76,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      *
      * @returns {boolean}
      */
-    isLoaded: function isLoaded() {
+    isLoaded() {
       if (!this.haveIllustration) {
         return true;
       }
@@ -92,65 +90,43 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
      *
      * @returns {boolean}
      */
-    isReady: function isReady() {
+    isReady() {
       return !this.haveIllustration || this.haveIllustration && this.isLoaded;
     }
+
   },
 
   /**
    * Fetch the new illustration as soon as it changes
    */
   watch: {
-    illustrationName: function illustrationName() {
+    illustrationName() {
       this.getIllustration();
     }
+
   },
-  beforeMount: function beforeMount() {
+
+  beforeMount() {
     this.getIllustration();
   },
+
   methods: {
     /**
      * Fetch the illustration as webpack chunk
      */
-    getIllustration: function getIllustration() {
-      var _this = this;
+    async getIllustration() {
+      this.illustration = '';
 
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var illustration;
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                _this.illustration = '';
-
-                if (!(_this.illustrationName !== '')) {
-                  _context.next = 12;
-                  break;
-                }
-
-                _context.prev = 2;
-                _context.next = 5;
-                return __webpack_require__("./src/assets/Illustrations lazy recursive !./node_modules/raw-loader/dist/cjs.js! ^\\.\\/.*\\.svg$")("./".concat(_this.illustrationName, ".svg"));
-
-              case 5:
-                illustration = _context.sent;
-                _this.illustration = illustration.default;
-                _context.next = 12;
-                break;
-
-              case 9:
-                _context.prev = 9;
-                _context.t0 = _context["catch"](2);
-                console.error('Could not get the error illustration', _context.t0);
-
-              case 12:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee, null, [[2, 9]]);
-      }))();
+      if (this.illustrationName !== '') {
+        try {
+          const illustration = await __webpack_require__("./src/assets/Illustrations lazy recursive !./node_modules/raw-loader/dist/cjs.js! ^\\.\\/.*\\.svg$")("./".concat(this.illustrationName, ".svg"));
+          this.illustration = illustration.default;
+        } catch (error) {
+          console.error('Could not get the error illustration', error);
+        }
+      }
     }
+
   }
 });
 
@@ -170,10 +146,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _nextcloud_router__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/router */ "./node_modules/@nextcloud/router/dist/index.js");
 /* harmony import */ var _nextcloud_auth__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! @nextcloud/auth */ "./node_modules/@nextcloud/auth/dist/index.js");
 /* harmony import */ var _mixins_UserConfig__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../mixins/UserConfig */ "./src/mixins/UserConfig.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 //
 //
 //
@@ -246,73 +218,63 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
       required: true
     }
   },
-  data: function data() {
+
+  data() {
     return {
       loaded: false,
       error: false
     };
   },
+
   computed: {
-    davPath: function davPath() {
+    davPath() {
       return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateRemoteUrl)("dav/files") + this.item.injected.filename;
     },
-    ariaUuid: function ariaUuid() {
+
+    ariaUuid() {
       return "image-".concat(this.item.injected.fileid);
     },
-    ariaLabel: function ariaLabel() {
+
+    ariaLabel() {
       return t('photos', 'Open the full size "{name}" image', {
         name: this.item.injected.basename
       });
     },
-    isImage: function isImage() {
+
+    isImage() {
       return this.item.injected.mime.startsWith('image');
     },
-    src: function src() {
+
+    src() {
       return (0,_nextcloud_router__WEBPACK_IMPORTED_MODULE_0__.generateUrl)("/core/preview?fileId=".concat(this.item.injected.fileid, "&x=", 256, "&y=", 256, "&a=").concat(!this.croppedLayout, "&v=").concat(this.item.injected.etag));
     }
+
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     // cancel any pending load
     this.$refs.src = '';
   },
-  methods: {
-    openViewer: function openViewer() {
-      var _this = this;
 
+  methods: {
+    openViewer() {
       OCA.Viewer.open({
         path: this.item.injected.filename,
         list: this.item.injected.list,
-        loadMore: this.item.injected.loadMore ? /*#__PURE__*/_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-          return regeneratorRuntime.wrap(function _callee$(_context) {
-            while (1) {
-              switch (_context.prev = _context.next) {
-                case 0:
-                  _context.next = 2;
-                  return _this.item.injected.loadMore(true);
-
-                case 2:
-                  return _context.abrupt("return", _context.sent);
-
-                case 3:
-                case "end":
-                  return _context.stop();
-              }
-            }
-          }, _callee);
-        })) : function () {
-          return [];
-        },
+        loadMore: this.item.injected.loadMore ? async () => await this.item.injected.loadMore(true) : () => [],
         canLoop: this.item.injected.canLoop
       });
     },
 
     /** When the image is fully loaded by browser we remove the placeholder */
-    onLoad: function onLoad() {
+    onLoad() {
       this.loaded = true;
     },
-    onError: function onError() {
+
+    onError() {
       this.error = true;
     }
+
   }
 });
 
@@ -405,26 +367,30 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   computed: {
-    isRoot: function isRoot() {
+    isRoot() {
       return this.filename === '/';
     },
-    name: function name() {
+
+    name() {
       if (this.isRoot) {
         return this.rootTitle;
       }
 
       return this.basename;
     },
-    parentPath: function parentPath() {
-      var path = this.filename.split('/');
+
+    parentPath() {
+      const path = this.filename.split('/');
       path.pop();
-      var parent = path.join('/');
+      const parent = path.join('/');
       return this.isRoot || parent.trim() === '' ? '/' : path.join('/');
     },
-    parentName: function parentName() {
+
+    parentName() {
       return this.parentPath && this.parentPath.split('/').pop();
     },
-    backToText: function backToText() {
+
+    backToText() {
       if (this.parentPath === '/') {
         return t('photos', 'Back to {folder}', {
           folder: this.rootTitle
@@ -444,42 +410,45 @@ __webpack_require__.r(__webpack_exports__);
      *
      * @returns {string|object}
      */
-    to: function to() {
+    to() {
       // always remove first slash, the router
       // manage it automatically
-      var regex = /^\/?(.*)/i;
-      var path = regex.exec(this.parentPath)[1]; // apply to current route
+      const regex = /^\/?(.*)/i;
+      const path = regex.exec(this.parentPath)[1]; // apply to current route
 
-      var _Object$assign = Object.assign({}, this.$route, {
+      const {
+        name,
+        params
+      } = Object.assign({}, this.$route, {
         params: {
-          path: path
+          path
         }
-      }),
-          name = _Object$assign.name,
-          params = _Object$assign.params; // return the full object as we don't care about
+      }); // return the full object as we don't care about
       // an empty path if this is route
-
 
       if (path === '') {
         return {
-          name: name
+          name
         };
       } // returning a string prevent vue-router to encode it again
 
 
       return decodeURIComponent(this.$router.resolve({
-        name: name,
-        params: params
+        name,
+        params
       }).resolved.path);
     }
+
   },
   methods: {
-    folderUp: function folderUp() {
+    folderUp() {
       this.$router.push(this.to);
     },
-    showSidebar: function showSidebar() {
+
+    showSidebar() {
       OCA.Files.Sidebar.open(this.filename);
     }
+
   }
 });
 
@@ -513,7 +482,7 @@ __webpack_require__.r(__webpack_exports__);
  *
  */
 // for now we want to keep the same gap everywhere
-var gap = 8;
+const gap = 8;
 /**
  * Define the max width proportions
  * The number (key) indicate the MAX size
@@ -530,56 +499,56 @@ module.exports = {
       marginW: gap,
       // same as grid-gap
       count: 2,
-      gap: gap
+      gap
     },
     641: {
       marginTop: 66,
       marginW: 8,
       // same as grid-gap
       count: 3,
-      gap: gap
+      gap
     },
     1024: {
       marginTop: 66,
       marginW: 44,
       count: 3,
-      gap: gap
+      gap
     },
     1025: {
       marginTop: 66,
       marginW: 44,
       count: 4,
-      gap: gap
+      gap
     },
     1300: {
       marginTop: 66,
       marginW: 44,
       count: 4,
-      gap: gap
+      gap
     },
     1301: {
       marginTop: 66,
       marginW: 44,
       count: 5,
-      gap: gap
+      gap
     },
     1600: {
       marginTop: 66,
       marginW: 44,
       count: 5,
-      gap: gap
+      gap
     },
     1601: {
       marginTop: 88,
       marginW: 66,
       count: 6,
-      gap: gap
+      gap
     },
     max: {
       marginTop: 88,
       marginW: 88,
       count: 6,
-      gap: gap
+      gap
     }
   }
 };
@@ -598,10 +567,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export */   "default": () => (__WEBPACK_DEFAULT_EXPORT__)
 /* harmony export */ });
 /* harmony import */ var _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! @nextcloud/axios */ "./node_modules/@nextcloud/axios/dist/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
 /**
  * @copyright Copyright (c) 2019 Marco Ambrosini <marcoambrosini@pm.me>
  *
@@ -630,9 +595,7 @@ function _asyncToGenerator(fn) { return function () { var self = this, args = ar
  * @returns {CancelTokenSource}
  */
 
-var createCancelToken = function createCancelToken() {
-  return _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__.default.CancelToken.source();
-};
+const createCancelToken = () => _nextcloud_axios__WEBPACK_IMPORTED_MODULE_0__.default.CancelToken.source();
 /**
  * Creates a cancelable axios 'request object'.
  *
@@ -641,11 +604,11 @@ var createCancelToken = function createCancelToken() {
  */
 
 
-var CancelableRequest = function CancelableRequest(request) {
+const CancelableRequest = function (request) {
   /**
    * Generate an axios cancel token
    */
-  var cancelToken = createCancelToken();
+  const cancelToken = createCancelToken();
   /**
    * Execute the request
    *
@@ -653,28 +616,11 @@ var CancelableRequest = function CancelableRequest(request) {
    * @param {Object} [options] optional config for the request
    */
 
-  var fetch = /*#__PURE__*/function () {
-    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(url, options) {
-      return regeneratorRuntime.wrap(function _callee$(_context) {
-        while (1) {
-          switch (_context.prev = _context.next) {
-            case 0:
-              return _context.abrupt("return", request(url, Object.assign({
-                cancelToken: cancelToken.token
-              }, options)));
-
-            case 1:
-            case "end":
-              return _context.stop();
-          }
-        }
-      }, _callee);
-    }));
-
-    return function fetch(_x, _x2) {
-      return _ref.apply(this, arguments);
-    };
-  }();
+  const fetch = async function (url, options) {
+    return request(url, Object.assign({
+      cancelToken: cancelToken.token
+    }, options));
+  };
 
   return {
     request: fetch,
@@ -751,7 +697,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n.icon-confirm[data-v-81440b78] {\n  -webkit-transform: rotate(180deg);\n          transform: rotate(180deg);\n}\n.photos-navigation[data-v-81440b78] {\n  display: flex;\n  position: block;\n  height: 44px;\n  padding: 0 40px;\n  align-items: center;\n  max-width: 100%;\n}\n.photos-navigation__title[data-v-81440b78] {\n  margin: 0;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.photos-navigation__share[data-v-81440b78] {\n  margin-left: 10px;\n}\n.photos-navigation__back[data-v-81440b78], .photos-navigation__share[data-v-81440b78] {\n  flex-grow: 0;\n  flex-shrink: 0;\n}\n@media (min-width: 0px) and (max-width: 640px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 640px) and (max-width: 641px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 641px) and (max-width: 1024px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1024px) and (max-width: 1025px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1025px) and (max-width: 1300px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1300px) and (max-width: 1301px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1301px) and (max-width: 1600px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1600px) and (max-width: 1601px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 11px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 22px;\n}\n}\n@media (min-width: 1601px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 22px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 44px;\n}\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "@charset \"UTF-8\";\n/**\n * @copyright Copyright (c) 2019 John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @author John Molakvoæ <skjnldsv@protonmail.com>\n *\n * @license GNU AGPL version 3 or any later version\n *\n * This program is free software: you can redistribute it and/or modify\n * it under the terms of the GNU Affero General Public License as\n * published by the Free Software Foundation, either version 3 of the\n * License, or (at your option) any later version.\n *\n * This program is distributed in the hope that it will be useful,\n * but WITHOUT ANY WARRANTY; without even the implied warranty of\n * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the\n * GNU Affero General Public License for more details.\n *\n * You should have received a copy of the GNU Affero General Public License\n * along with this program. If not, see <http://www.gnu.org/licenses/>.\n *\n */\n.icon-confirm[data-v-81440b78] {\n  transform: rotate(180deg);\n}\n.photos-navigation[data-v-81440b78] {\n  display: flex;\n  position: block;\n  height: 44px;\n  padding: 0 40px;\n  align-items: center;\n  max-width: 100%;\n}\n.photos-navigation__title[data-v-81440b78] {\n  margin: 0;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.photos-navigation__share[data-v-81440b78] {\n  margin-left: 10px;\n}\n.photos-navigation__back[data-v-81440b78], .photos-navigation__share[data-v-81440b78] {\n  flex-grow: 0;\n  flex-shrink: 0;\n}\n@media (min-width: 0px) and (max-width: 640px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 640px) and (max-width: 641px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: -36px;\n}\n}\n@media (min-width: 641px) and (max-width: 1024px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1024px) and (max-width: 1025px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1025px) and (max-width: 1300px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1300px) and (max-width: 1301px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1301px) and (max-width: 1600px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: -7.3333333333px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 0px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 0px;\n}\n}\n@media (min-width: 1600px) and (max-width: 1601px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 11px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 22px;\n}\n}\n@media (min-width: 1601px) {\n.photos-navigation[data-v-81440b78] {\n    margin-top: 0px;\n}\n.photos-navigation__back[data-v-81440b78] {\n    margin: 0 22px;\n}\n.photos-navigation--root .photos-navigation__title[data-v-81440b78] {\n    padding-left: 44px;\n}\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -1376,4 +1322,4 @@ module.exports = webpackAsyncContext;
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8.js.map?v=7f486e3044fc66d9b29b
+//# sourceMappingURL=photos-src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8.js.map?v=d492e53f2e0231f25112

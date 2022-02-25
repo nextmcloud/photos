@@ -79,16 +79,6 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _mixins_GridConfig__WEBPACK_IMPORTED_MODULE_9__ = __webpack_require__(/*! ../mixins/GridConfig */ "./src/mixins/GridConfig.js");
 /* harmony import */ var _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_10__ = __webpack_require__(/*! ../services/AllowedMimes */ "./src/services/AllowedMimes.js");
 /* provided dependency */ var console = __webpack_require__(/*! console-browserify */ "./node_modules/console-browserify/index.js");
-function asyncGeneratorStep(gen, resolve, reject, _next, _throw, key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { Promise.resolve(value).then(_next, _throw); } }
-
-function _asyncToGenerator(fn) { return function () { var self = this, args = arguments; return new Promise(function (resolve, reject) { var gen = fn.apply(self, args); function _next(value) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "next", value); } function _throw(err) { asyncGeneratorStep(gen, resolve, reject, _next, _throw, "throw", err); } _next(undefined); }); }; }
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) { symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); } keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { _defineProperty(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
-function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
-
 //
 //
 //
@@ -178,9 +168,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     mimesType: {
       type: Array,
-      default: function _default() {
-        return _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_10__.allMimes;
-      }
+      default: () => _services_AllowedMimes__WEBPACK_IMPORTED_MODULE_10__.allMimes
     },
     rootTitle: {
       type: String,
@@ -191,7 +179,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       default: ''
     }
   },
-  data: function data() {
+
+  data() {
     return {
       cancelRequest: null,
       done: false,
@@ -201,19 +190,17 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       loaderComponent: _components_Loader__WEBPACK_IMPORTED_MODULE_7__.default
     };
   },
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_11__.mapGetters)(['files', 'timeline'])), {}, {
+
+  computed: { // global lists
+    ...(0,vuex__WEBPACK_IMPORTED_MODULE_11__.mapGetters)(['files', 'timeline']),
+
     // list of loaded medias
-    fileList: function fileList() {
-      var _this = this;
-
-      return this.timeline.map(function (fileId) {
-        return _this.files[fileId];
-      });
+    fileList() {
+      return this.timeline.map(fileId => this.files[fileId]);
     },
-    // list of displayed content in the grid (titles + medias)
-    contentList: function contentList() {
-      var _this2 = this;
 
+    // list of displayed content in the grid (titles + medias)
+    contentList() {
       /** The goal of this flat map is to return an array of images separated by titles (months)
        * ie: [{month1}, {image1}, {image2}, {month2}, {image3}, {image4}, {image5}]
        * First we get the current month+year of the image
@@ -224,17 +211,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
        * In our case injected could be an image/video (aka file) or a title (year/month)
        * Note2: titles are rendered full width and images are rendered on 1 column and 256x256 ratio
        */
-      return this.fileList.flatMap(function (file, index) {
-        var finalArray = [];
+      return this.fileList.flatMap((file, index) => {
+        const finalArray = [];
+        const currentSection = this.getFormatedDate(file.lastmod, 'YYYY MMMM');
 
-        var currentSection = _this2.getFormatedDate(file.lastmod, 'YYYY MMMM');
-
-        if (_this2.lastSection !== currentSection) {
+        if (this.lastSection !== currentSection) {
           finalArray.push({
             id: "title-".concat(index),
             injected: {
-              year: _this2.getFormatedDate(file.lastmod, 'YYYY'),
-              month: _this2.getFormatedDate(file.lastmod, 'MMMM')
+              year: this.getFormatedDate(file.lastmod, 'YYYY'),
+              month: this.getFormatedDate(file.lastmod, 'MMMM')
             },
             height: 90,
             columnSpan: 0,
@@ -242,16 +228,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             newRow: true,
             renderComponent: _components_SeparatorVirtualGrid__WEBPACK_IMPORTED_MODULE_4__.default
           });
-          _this2.lastSection = currentSection; // we keep track of the last section for the next batch
+          this.lastSection = currentSection; // we keep track of the last section for the next batch
         }
 
         finalArray.push({
           id: "img-".concat(file.fileid),
-          injected: _objectSpread(_objectSpread({}, file), {}, {
-            list: _this2.fileList,
-            loadMore: _this2.getContent,
+          injected: { ...file,
+            list: this.fileList,
+            loadMore: this.getContent,
             canLoop: false
-          }),
+          },
           width: 256,
           height: 256,
           columnSpan: 1,
@@ -260,60 +246,34 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         return finalArray;
       });
     },
+
     // is current folder empty?
-    isEmpty: function isEmpty() {
+    isEmpty() {
       return this.fileList.length === 0;
     }
-  }),
-  watch: {
-    onlyFavorites: function onlyFavorites() {
-      var _this3 = this;
 
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        return regeneratorRuntime.wrap(function _callee$(_context) {
-          while (1) {
-            switch (_context.prev = _context.next) {
-              case 0:
-                // reset component
-                _this3.resetState();
-
-                _this3.getContent();
-
-              case 2:
-              case "end":
-                return _context.stop();
-            }
-          }
-        }, _callee);
-      }))();
-    },
-    mimesType: function mimesType() {
-      var _this4 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
-          while (1) {
-            switch (_context2.prev = _context2.next) {
-              case 0:
-                // reset component
-                _this4.resetState();
-
-                _this4.getContent();
-
-              case 2:
-              case "end":
-                return _context2.stop();
-            }
-          }
-        }, _callee2);
-      }))();
-    }
   },
-  beforeMount: function beforeMount() {
+  watch: {
+    async onlyFavorites() {
+      // reset component
+      this.resetState();
+      this.getContent();
+    },
+
+    async mimesType() {
+      // reset component
+      this.resetState();
+      this.getContent();
+    }
+
+  },
+
+  beforeMount() {
     this.resetState();
     this.getContent();
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     // cancel any pending requests
     window.removeEventListener("click", this.checkClickSource);
     document.removeEventListener("scroll", this.onScroll);
@@ -324,124 +284,89 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 
     this.resetState();
   },
+
   methods: {
     /** Return next batch of data depending on global offset
      * @param {boolean} doReturn Returns a Promise with the list instead of a boolean
      * @returns {Promise<boolean>} Returns a Promise with a boolean that stops infinite loading
      */
-    getContent: function getContent(doReturn) {
-      var _this5 = this;
-
-      return _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
-        var _cancelableRequest, request, cancel, numberOfImagesPerBatch, files;
-
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
-          while (1) {
-            switch (_context3.prev = _context3.next) {
-              case 0:
-                if (!_this5.done) {
-                  _context3.next = 2;
-                  break;
-                }
-
-                return _context3.abrupt("return", Promise.resolve(true));
-
-              case 2:
-                // cancel any pending requests
-                if (_this5.cancelRequest) {
-                  _this5.cancelRequest('Changed view');
-                } // if we don't already have some cached data let's show a loader
+    async getContent(doReturn) {
+      if (this.done) {
+        return Promise.resolve(true);
+      } // cancel any pending requests
 
 
-                if (_this5.timeline.length === 0) {
-                  _this5.$emit('update:loading', true);
-                } // done loading even with errors
+      if (this.cancelRequest) {
+        this.cancelRequest('Changed view');
+      } // if we don't already have some cached data let's show a loader
 
 
-                _cancelableRequest = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_PhotoSearch__WEBPACK_IMPORTED_MODULE_1__.default), request = _cancelableRequest.request, cancel = _cancelableRequest.cancel;
-                _this5.cancelRequest = cancel;
-                numberOfImagesPerBatch = _this5.gridConfig.count * 5; // loading 5 rows
-
-                _context3.prev = 7;
-                _context3.next = 10;
-                return request(_this5.onlyFavorites, {
-                  page: _this5.page,
-                  perPage: numberOfImagesPerBatch,
-                  mimesType: _this5.mimesType
-                });
-
-              case 10:
-                files = _context3.sent;
-
-                //debugger;
-                // If we get less files than requested that means we got to the end
-                if (files.length !== numberOfImagesPerBatch) {
-                  _this5.done = true;
-                }
-
-                if (_this5.timeline.length <= _this5.page * numberOfImagesPerBatch) {
-                  _this5.$store.dispatch('updateTimeline', files);
-
-                  _this5.$store.dispatch('appendFiles', files);
-                }
-
-                _this5.page += 1;
-
-                if (!doReturn) {
-                  _context3.next = 16;
-                  break;
-                }
-
-                return _context3.abrupt("return", Promise.resolve(files));
-
-              case 16:
-                return _context3.abrupt("return", Promise.resolve(false));
-
-              case 19:
-                _context3.prev = 19;
-                _context3.t0 = _context3["catch"](7);
-
-                if (_context3.t0.response && _context3.t0.response.status) {
-                  if (_context3.t0.response.status === 404) {
-                    _this5.error = 404;
-                    setTimeout(function () {
-                      _this5.$router.push({
-                        name: _this5.$route.name
-                      });
-                    }, 3000);
-                  } else {
-                    _this5.error = _context3.t0;
-                  }
-                } // cancelled request, moving on...
+      if (this.timeline.length === 0) {
+        this.$emit('update:loading', true);
+      } // done loading even with errors
 
 
-                _this5.$store.dispatch('resetTimeline');
+      const {
+        request,
+        cancel
+      } = (0,_utils_CancelableRequest__WEBPACK_IMPORTED_MODULE_8__.default)(_services_PhotoSearch__WEBPACK_IMPORTED_MODULE_1__.default);
+      this.cancelRequest = cancel;
+      const numberOfImagesPerBatch = this.gridConfig.count * 5; // loading 5 rows
 
-                console.error('Error fetching timeline', _context3.t0);
-                return _context3.abrupt("return", Promise.resolve(true));
+      try {
+        // Load next batch of images
+        const files = await request(this.onlyFavorites, {
+          page: this.page,
+          perPage: numberOfImagesPerBatch,
+          mimesType: this.mimesType
+        }); //debugger;
+        // If we get less files than requested that means we got to the end
 
-              case 25:
-                _context3.prev = 25;
+        if (files.length !== numberOfImagesPerBatch) {
+          this.done = true;
+        }
 
-                // done loading even with errors
-                _this5.$emit('update:loading', false);
+        if (this.timeline.length <= this.page * numberOfImagesPerBatch) {
+          this.$store.dispatch('updateTimeline', files);
+          this.$store.dispatch('appendFiles', files);
+        }
 
-                _this5.cancelRequest = null;
-                return _context3.finish(25);
+        this.page += 1;
 
-              case 29:
-              case "end":
-                return _context3.stop();
-            }
+        if (doReturn) {
+          return Promise.resolve(files);
+        }
+
+        return Promise.resolve(false);
+      } catch (error) {
+        if (error.response && error.response.status) {
+          if (error.response.status === 404) {
+            this.error = 404;
+            setTimeout(() => {
+              this.$router.push({
+                name: this.$route.name
+              });
+            }, 3000);
+          } else {
+            this.error = error;
           }
-        }, _callee3, null, [[7, 19, 25, 29]]);
-      }))();
+        } // cancelled request, moving on...
+
+
+        this.$store.dispatch('resetTimeline');
+        console.error('Error fetching timeline', error);
+        return Promise.resolve(true);
+      } finally {
+        // done loading even with errors
+        this.$emit('update:loading', false);
+        this.cancelRequest = null;
+      }
     },
 
     /**
      * Reset this component data to a pristine state
      */
-    resetState: function resetState() {
+    resetState() {
       this.$store.dispatch('resetTimeline');
       this.done = false;
       this.error = null;
@@ -449,9 +374,11 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       this.lastSection = '';
       this.$emit('update:loading', true); //this.$refs.virtualgrid.resetGrid()
     },
-    getFormatedDate: function getFormatedDate(string, format) {
+
+    getFormatedDate(string, format) {
       return _nextcloud_moment__WEBPACK_IMPORTED_MODULE_0___default()(string).format(format);
     }
+
   }
 });
 
@@ -497,23 +424,24 @@ __webpack_require__.r(__webpack_exports__);
  */
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  data: function data() {
+  data() {
     return {
       gridConfig: {}
     };
   },
-  created: function created() {
-    var _this = this;
 
-    _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.$on('changed', function (val) {
-      _this.gridConfig = val;
+  created() {
+    _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.$on('changed', val => {
+      this.gridConfig = val;
     });
     console.debug("[".concat("photos", "]"), 'Grid config', Object.assign({}, _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.gridConfig));
     this.gridConfig = _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.gridConfig;
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     _services_GridConfig__WEBPACK_IMPORTED_MODULE_0__.default.$off('changed', this.gridConfig);
   }
+
 });
 
 /***/ }),
@@ -556,31 +484,35 @@ __webpack_require__.r(__webpack_exports__);
 
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (new vue__WEBPACK_IMPORTED_MODULE_1__.default({
-  data: function data() {
+  data() {
     return {
       gridConfig: _assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes.max
     };
   },
+
   watch: {
-    gridConfig: function gridConfig(val) {
+    gridConfig(val) {
       this.$emit('changed', val);
     }
+
   },
-  created: function created() {
+
+  created() {
     window.addEventListener('resize', this.handleWindowResize);
     this.handleWindowResize();
   },
-  beforeDestroy: function beforeDestroy() {
+
+  beforeDestroy() {
     window.removeEventListener('resize', this.handleWindowResize);
   },
+
   methods: {
-    handleWindowResize: function handleWindowResize() {
+    handleWindowResize() {
       // find the first grid size that fit the current window width
-      var currentSize = Object.keys(_assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes).find(function (size) {
-        return size > document.documentElement.clientWidth;
-      });
+      const currentSize = Object.keys(_assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes).find(size => size > document.documentElement.clientWidth);
       this.gridConfig = _assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes[currentSize] || _assets_grid_sizes__WEBPACK_IMPORTED_MODULE_0__.sizes.max;
     }
+
   }
 }));
 
@@ -986,4 +918,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=de8fce7958c9d340a221
+//# sourceMappingURL=photos-src_views_Timeline_vue.js.map?v=31abc29542ae587196f4
