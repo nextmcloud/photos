@@ -236,9 +236,9 @@ export default {
   background-size: 20px;
 }
 
-  .app-navigation-toggle{
-      display: none !important;
-  }
+  // .app-navigation-toggle{
+  //     display: none !important;
+  // }
 
 </style>
 
