@@ -20,11 +20,11 @@ export default {
           var leftContainer = document.getElementById("app-navigation-vue").classList;
           if (leftContainer.contains('app-navigation--close')) 
           {  
-             leftContainer.remove('app-navigation--close');  
+            leftContainer.remove('app-navigation--close');  
           }  
           else
           {  
-                          leftContainer.add('app-navigation--close');
+            leftContainer.add('app-navigation--close');
           } 
 
         }
