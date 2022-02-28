@@ -6419,12 +6419,12 @@ __webpack_require__.r(__webpack_exports__);
 
   methods: {
     hideNavigationToggle: function () {
-      var leftContainer = document.getElementById("app-navigation-vue");
+      var leftContainer = document.getElementById("app-navigation-vue").classList;
 
-      if (leftContainer.style.display !== "none") {
-        leftContainer.style.display = "none";
+      if (leftContainer.contains('app-navigation--close')) {
+        leftContainer.remove('app-navigation--close');
       } else {
-        leftContainer.style.display = "block";
+        leftContainer.add('app-navigation--close');
       }
     }
   }
@@ -15360,7 +15360,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.app-navigation-toggle[data-v-32e4913a] {\n  transition: width 2s;\n  display: none !important;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}\n.app-navigation-toggle[data-v-32e4913a] {\n  display: none !important;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -37188,8 +37188,6 @@ var render = function() {
       "div",
       { staticClass: "container-fixed", attrs: { id: "mainDivDesign" } },
       [
-        _c("LeftNavigationToggle"),
-        _vm._v(" "),
         _c("AppNavigation", {
           scopedSlots: _vm._u([
             {
@@ -37278,6 +37276,8 @@ var render = function() {
             ]
           },
           [
+            _c("LeftNavigationToggle"),
+            _vm._v(" "),
             _c("router-view", {
               directives: [
                 {
@@ -50966,4 +50966,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=e9e0c14fcce5effbf7ce
+//# sourceMappingURL=photos-main.js.map?v=48cb4bb6a8276a217385

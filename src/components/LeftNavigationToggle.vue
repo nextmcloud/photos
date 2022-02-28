@@ -17,14 +17,14 @@ export default {
      methods:{
 
         hideNavigationToggle: function(){
-          var leftContainer = document.getElementById("app-navigation-vue");
-          if (leftContainer.style.display !== "none") 
+          var leftContainer = document.getElementById("app-navigation-vue").classList;
+          if (leftContainer.contains('app-navigation--close')) 
           {  
-             leftContainer.style.display = "none";  
+             leftContainer.remove('app-navigation--close');  
           }  
           else
           {  
-             leftContainer.style.display = "block";  
+                          leftContainer.add('app-navigation--close');
           } 
 
         }

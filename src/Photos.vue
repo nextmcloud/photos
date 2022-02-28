@@ -23,7 +23,7 @@
 <template>
   <Content app-name="photos">
     <div class="container-fixed" id="mainDivDesign"> 
-      <LeftNavigationToggle  />
+   
     <AppNavigation>
       
       <template #list>
@@ -85,7 +85,7 @@
     </AppNavigation>
     <AppContent  :class="[{ 'icon-loading': loading },isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show']" >
       <!-- <div class='br-place-holder' > </div> -->
-
+       <LeftNavigationToggle  />
       <router-view v-show="!loading" :loading.sync="loading" />
       
       <!-- svg img loading placeholder (linked to the File component) -->
@@ -232,14 +232,13 @@ export default {
   	z-index: 0 !important;
 }
 
-.app-navigation-toggle{
-   transition: width 2s;
-  display: none !important;
-}
 .app-navigation__photos::v-deep .app-navigation-entry-icon.icon-photos {
   background-size: 20px;
 }
 
+  .app-navigation-toggle{
+      display: none !important;
+  }
 
 </style>
 
