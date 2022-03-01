@@ -15360,7 +15360,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(false);
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}\n.app-navigation-toggle[data-v-32e4913a] {\n  display: none !important;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".app-content[data-v-32e4913a] {\n  display: flex;\n  flex-grow: 1;\n  flex-direction: column;\n  z-index: 0 !important;\n}\n.app-navigation__photos[data-v-32e4913a] .app-navigation-entry-icon.icon-photos {\n  background-size: 20px;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -37276,7 +37276,7 @@ var render = function() {
             ]
           },
           [
-            _c("LeftNavigationToggle"),
+            _c("LeftNavigationToggle", { staticClass: "app-nav-main" }),
             _vm._v(" "),
             _c("router-view", {
               directives: [
@@ -50966,4 +50966,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=48cb4bb6a8276a217385
+//# sourceMappingURL=photos-main.js.map?v=5ac197d5f7a146dbc3cd
