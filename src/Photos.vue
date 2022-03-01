@@ -85,7 +85,7 @@
     </AppNavigation>
     <AppContent  :class="[{ 'icon-loading': loading },isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show']" >
       <!-- <div class='br-place-holder' > </div> -->
-       <LeftNavigationToggle class="app-nav-main"  />
+       <LeftNavigationToggle id="left-navigation-toggle"  class="app-nav-main"  />
       <router-view v-show="!loading" :loading.sync="loading" />
       
       <!-- svg img loading placeholder (linked to the File component) -->

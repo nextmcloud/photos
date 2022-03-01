@@ -6420,11 +6420,23 @@ __webpack_require__.r(__webpack_exports__);
   methods: {
     hideNavigationToggle: function () {
       var leftContainer = document.getElementById("app-navigation-vue").classList;
+      var app_content_vue = document.getElementById("app-content-vue").classList;
+      var leftContainerClassList = document.getElementById("left-navigation-toggle").classList;
 
       if (leftContainer.contains('app-navigation--close')) {
         leftContainer.remove('app-navigation--close');
+        leftContainerClassList.remove('app-nav-close');
       } else {
         leftContainer.add('app-navigation--close');
+        leftContainerClassList.add('app-nav-close');
+      }
+
+      if (app_content_vue.contains('left-menu-hide')) {
+        if (leftContainerClassList.contains('app-nav-close')) {
+          leftContainerClassList.remove('app-nav-close');
+        } else {
+          leftContainerClassList.add('app-nav-close');
+        }
       }
     }
   }
@@ -37276,7 +37288,10 @@ var render = function() {
             ]
           },
           [
-            _c("LeftNavigationToggle", { staticClass: "app-nav-main" }),
+            _c("LeftNavigationToggle", {
+              staticClass: "app-nav-main",
+              attrs: { id: "left-navigation-toggle" }
+            }),
             _vm._v(" "),
             _c("router-view", {
               directives: [
@@ -50966,4 +50981,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=5ac197d5f7a146dbc3cd
+//# sourceMappingURL=photos-main.js.map?v=16039142ddeeb0b7be36
