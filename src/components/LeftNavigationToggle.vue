@@ -32,7 +32,7 @@ export default {
           } 
 
 
-          if(app_content_vue.contains('left-menu-hide')){
+          if(app_content_vue.contains('left-menu-hide') || app_content_vue.contains('left-menu-show')){
              if(leftContainerClassList.contains('app-nav-close')){
                  leftContainerClassList.remove('app-nav-close');
              }

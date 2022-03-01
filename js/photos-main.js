@@ -6431,7 +6431,7 @@ __webpack_require__.r(__webpack_exports__);
         leftContainerClassList.add('app-nav-close');
       }
 
-      if (app_content_vue.contains('left-menu-hide')) {
+      if (app_content_vue.contains('left-menu-hide') || app_content_vue.contains('left-menu-show')) {
         if (leftContainerClassList.contains('app-nav-close')) {
           leftContainerClassList.remove('app-nav-close');
         } else {
@@ -50981,4 +50981,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=16039142ddeeb0b7be36
+//# sourceMappingURL=photos-main.js.map?v=b10ca66565ed82cee829
