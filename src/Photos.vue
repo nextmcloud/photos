@@ -181,11 +181,9 @@ export default {
   },
   updated(){
     var leftContainer = document.getElementById("app-navigation-vue");
-    console.log(this.isAppNavigationHidden);
     var classExists = leftContainer.classList;
     this.isAppNavigationHidden = classExists && classExists.contains('app-navigation--close');
-    console.log(this.isAppNavigationHidden);
-
+    
 
 
   },

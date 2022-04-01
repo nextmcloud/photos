@@ -353,14 +353,11 @@ export default {
 			
 			}
 			else if (windowWidth >= 1025 && windowWidth <1299 ) {
-				console.log("inner 1024 : ");
 				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth -44;
 			}  
 			else {
 				var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth -30-44;
 			}
-			console.log("main width: "+ originalMainWindow);
-			console.log("windowWidth : "+ parseInt(comuptedStyle.getPropertyValue('width')));
 			
 			var rowWidth = 0;
 			var totalRowWidth = originalMainWindow;
@@ -382,7 +379,6 @@ export default {
 				
 				if (rowWidth >= totalRowWidth) {
 					tempArray2 = this.adjustHeight(tempArray,max_height);
-					console.log(tempArray2);
 					tempArray = [];
 					tempArray.push(finalData[i]);
 					rowWidth = finalData[i].injected.width;;
