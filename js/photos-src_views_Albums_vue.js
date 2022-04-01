@@ -681,14 +681,11 @@ __webpack_require__.r(__webpack_exports__);
       if (windowWidth < 1025 || classExists.contains('app-navigation--close')) {
         var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width'));
       } else if (windowWidth >= 1025 && windowWidth < 1299) {
-        console.log("inner 1024 : ");
         var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - 44;
       } else {
         var originalMainWindow = parseInt(comuptedStyle.getPropertyValue('width')) - leftContainer.offsetWidth - 30 - 44;
       }
 
-      console.log("main width: " + originalMainWindow);
-      console.log("windowWidth : " + parseInt(comuptedStyle.getPropertyValue('width')));
       var rowWidth = 0;
       var totalRowWidth = originalMainWindow;
 
@@ -707,7 +704,6 @@ __webpack_require__.r(__webpack_exports__);
 
         if (rowWidth >= totalRowWidth) {
           tempArray2 = this.adjustHeight(tempArray, max_height);
-          console.log(tempArray2);
           tempArray = [];
           tempArray.push(finalData[i]);
           rowWidth = finalData[i].injected.width;
@@ -1540,4 +1536,4 @@ render._withStripped = true
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=bad3b938a8e93a550ab5
+//# sourceMappingURL=photos-src_views_Albums_vue.js.map?v=0e42c005715038c2cd79

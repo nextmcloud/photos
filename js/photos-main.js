@@ -6357,10 +6357,8 @@ __webpack_require__.r(__webpack_exports__);
 
   updated() {
     var leftContainer = document.getElementById("app-navigation-vue");
-    console.log(this.isAppNavigationHidden);
     var classExists = leftContainer.classList;
     this.isAppNavigationHidden = classExists && classExists.contains('app-navigation--close');
-    console.log(this.isAppNavigationHidden);
   },
 
   beforeDestroy() {
@@ -50711,7 +50709,7 @@ module.exports = function whichTypedArray(value) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"23e634838c2fa871f9e6","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"d492e53f2e0231f25112","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"c8246db411f374ff058a","src_views_Albums_vue":"bad3b938a8e93a550ab5","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"5cfb86fdc1f3c908f824","src_patchedRequest_js-src_views_Tags_vue":"be35b89500ba39ea7a2b","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"6f1aaadc2de67a8e922c","src_views_Timeline_vue":"31abc29542ae587196f4","src_views_Timeline1_vue":"6f82f6a736b51d277555","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-535d92":"7cd08454e0663d84a7c7","vendors-node_modules_vue-virtual-grid_dist_virtual-grid_common_js":"23e634838c2fa871f9e6","src_assets_grid-sizes_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-6300f8":"d492e53f2e0231f25112","src_mixins_GridConfig_js-src_components_FolderTagPreview_vue":"c8246db411f374ff058a","src_views_Albums_vue":"0e42c005715038c2cd79","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"5cfb86fdc1f3c908f824","src_patchedRequest_js-src_views_Tags_vue":"be35b89500ba39ea7a2b","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_nextcloud_moment_node_module-ca085a":"9076da4912f439381d73","node_modules_nextcloud_moment_node_modules_moment_locale_sync_recursive_-src_patchedRequest_j-7a0fa1":"6f1aaadc2de67a8e922c","src_views_Timeline_vue":"31abc29542ae587196f4","src_views_Timeline1_vue":"6f82f6a736b51d277555","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_empty_svg":"0ac771dcd210e4938880","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_folder_svg":"5aca4c501914dac7afe9","node_modules_raw-loader_dist_cjs_js_src_assets_Illustrations_images_svg":"4d5604db069c0d6c3684"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -50981,4 +50979,4 @@ window.addEventListener('DOMContentLoaded', () => {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=b10ca66565ed82cee829
+//# sourceMappingURL=photos-main.js.map?v=bf362145b0d342856d4b
