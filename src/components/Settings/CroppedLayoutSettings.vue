@@ -22,7 +22,6 @@
 
 <template>
 	<div class="section">
-		<h2>{{ t('photos', 'View') }}</h2>
 		<p>
 			<input
 				id="enable-cropped-layout"
@@ -30,7 +29,7 @@
 				type="checkbox"
 				class="checkbox"
 				@change="updateSetting('croppedLayout')">
-			<label for="enable-cropped-layout">{{ t('photos', 'Enable squared photos view') }}</label>
+			<label for="enable-cropped-layout">{{ t('photos', 'Crop image previous') }}</label>
 		</p>
 	</div>
 </template>

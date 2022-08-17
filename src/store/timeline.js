@@ -3,7 +3,7 @@
  *
  * @author John Molakvoæ <skjnldsv@protonmail.com>
  *
- * @license AGPL-3.0-or-later
+ * @license GNU AGPL version 3 or any later version
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -17,17 +17,24 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ *
  */
 
-const state = {
+ const state = {
 	timeline: [],
 }
+
+const getDefaultState = () => {
+	return {
+		timeline: [],
+	}
+  }
 
 const mutations = {
 	/**
 	 * Update timeline files list
 	 *
-	 * @param {object} state the store mutations
+	 * @param {Object} state the store mutations
 	 * @param {Array} files the store mutations
 	 */
 	updateTimeline(state, files) {
@@ -49,8 +56,8 @@ const actions = {
 	/**
 	 * Update timeline files list
 	 *
-	 * @param {object} context the store mutations
-	 * @param {number[]} files list of files ids
+	 * @param {Object} context the store mutations
+	 * @param {Number[]} files list of files ids
 	 */
 	updateTimeline(context, files = []) {
 		// we want all the FileInfo! Folders included!
@@ -60,7 +67,7 @@ const actions = {
 	/**
 	 * Reset the timeline files list
 	 *
-	 * @param {object} context the store mutations
+	 * @param {Object} context the store mutations
 	 */
 	resetTimeline(context) {
 		context.commit('resetTimeline')

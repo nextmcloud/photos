@@ -22,33 +22,56 @@
 
 <template>
 	<Content app-name="photos">
+	 <div class="container-fixed" id="mainDivDesign"> 
 		<AppNavigation>
-			<template #list>
-				<AppNavigationItem :to="{name: 'timeline'}"
-					class="app-navigation__photos"
-					:title="t('photos', 'Your photos')"
-					icon="icon-yourphotos"
-					exact />
-				<AppNavigationItem to="/videos" :title="t('photos', 'Your videos')" icon="icon-video" />
-				<AppNavigationItem to="/favorites" :title="t('photos', 'Favorites')" icon="icon-favorite" />
-				<AppNavigationItem :to="{name: 'albums'}" :title="t('photos', 'Your folders')" icon="icon-files-dark" />
-				<AppNavigationItem :to="{name: 'shared'}" :title="t('photos', 'Shared with you')" icon="icon-share" />
-				<AppNavigationItem v-if="areTagsInstalled"
-					:to="{name: 'tags'}"
-					:title="t('photos', 'Tagged photos')"
-					icon="icon-tag" />
-				<AppNavigationItem v-if="showLocationMenuEntry"
-					:to="{name: 'maps'}"
-					:title="t('photos', 'Locations')"
-					icon="icon-address" />
+			 <template #list>
+        <AppNavigationItem
+          to="/favorites"
+          :title="t('photos', 'Favorites')"
+          icon="icon-favorite"
+        />
+
+        <AppNavigationItem
+          :to="{ name: 'timeline' }"
+          class="app-navigation__allmedia "
+          :title="t('photos', 'All media')"
+          icon="icon-yourphotos allmedia"
+          exact
+        />
+        <AppNavigationItem
+           to="/images"
+          class="app-navigation__photos "
+          :title="t('photos', 'My photos')"
+          icon="icon-yourphotos allphotos"
+          exact
+        />
+        <AppNavigationItem
+          to="/videos"
+          :title="t('photos', 'My videos')"
+          class="myvideos"
+          icon="icon-video"
+        />
+        
+        <AppNavigationItem
+          :to="{ name: 'albums' }"
+          :title="t('photos', 'My folders')"
+          icon="icon-files-dark"
+        />
+        <AppNavigationItem
+          :to="{ name: 'shared' }"
+          :title="t('photos', 'Shared with me')"
+          icon="icon-share"
+        />
 			</template>
 			<template #footer>
-				<AppNavigationSettings :title="t('photos', 'Settings')">
+				<AppNavigationSettings :title="t('photos', 'Display settings')">
 					<CroppedLayoutSettings />
 				</AppNavigationSettings>
 			</template>
 		</AppNavigation>
-		<AppContent :class="{ 'icon-loading': loading }">
+	  <AppContent  :class="[{ 'icon-loading': loading },isAppNavigationHidden ? 'left-menu-hide' : 'left-menu-show']" >
+      <!-- <div class='br-place-holder' > </div> -->
+       <LeftNavigationToggle id="left-navigation-toggle"  class="app-nav-main"  />
 			<router-view v-show="!loading" :loading.sync="loading" />
 
 			<!-- svg img loading placeholder (linked to the File component) -->
@@ -59,6 +82,7 @@
 			<!-- eslint-disable-next-line vue/no-v-html (because it's an SVG file) -->
 			<span class="hidden-visually" role="none" v-html="videoplaceholder" />
 		</AppContent>
+		</div>
 	</Content>
 </template>
 
@@ -78,6 +102,7 @@ import imgplaceholder from './assets/image.svg'
 import videoplaceholder from './assets/video.svg'
 import isMapsInstalled from './services/IsMapsInstalled'
 import areTagsInstalled from './services/AreTagsInstalled'
+import LeftNavigationToggle from "./components/LeftNavigationToggle";
 
 export default {
 	name: 'Photos',
@@ -88,6 +113,7 @@ export default {
 		AppNavigation,
 		AppNavigationItem,
 		AppNavigationSettings,
+		LeftNavigationToggle
 	},
 	data() {
 		return {
@@ -96,6 +122,7 @@ export default {
 			imgplaceholder,
 			videoplaceholder,
 			areTagsInstalled,
+			isAppNavigationHidden:false,
 			showLocationMenuEntry: getCurrentUser() === null
 				? false
 				: getCurrentUser().isAdmin || isMapsInstalled,
@@ -119,23 +146,46 @@ export default {
 			console.debug('Service Worker is not enabled on this browser.')
 		}
 	},
-
+	updated(){
+		var leftContainer = document.getElementById("app-navigation-vue");
+		var classExists = leftContainer.classList;
+		this.isAppNavigationHidden = classExists && classExists.contains('app-navigation--close');
+  	},
 	beforeDestroy() {
 		window.removeEventListener('load', () => {
 			navigator.serviceWorker.register(generateUrl('/apps/photos/service-worker.js'))
 		})
 	},
+	methods:{
+      CheckNavigationToggle: function(){
+          //app-content-vue
+            var leftContainer = document.getElementById("app-navigation-vue");
+            var classExists = leftContainer.classList;
+            this.isAppNavigationHidden = classExists.contains('app-navigation--close');
+            if(this.isAppNavigationHidden){
+              var app_content_vue = document.getElementById("app-content-vue");
+              app_content_vue.classList.remove("left-menu-show");
+              app_content_vue.classList.add("left-menu-hide");
+            }
+            else{
+              var app_content_vue = document.getElementById("app-content-vue");
+              app_content_vue.classList.remove("left-menu-hide");
+              app_content_vue.classList.add("left-menu-show");
+            }            
+        },
+  	}
 }
 </script>
 <style lang="scss" scoped>
 .app-content {
-	display: flex;
-	flex-grow: 1;
-	flex-direction: column;
-	align-content: space-between;
+  display: flex;
+  flex-grow: 1;
+  flex-direction: column;
+  	z-index: 0 !important;
 }
 
 .app-navigation__photos::v-deep .app-navigation-entry-icon.icon-photos {
-	background-size: 20px;
+  background-size: 20px;
 }
+
 </style>

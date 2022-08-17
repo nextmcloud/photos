@@ -4,7 +4,7 @@
  - @author John Molakvoæ <skjnldsv@protonmail.com>
  - @author Corentin Mors <medias@pixelswap.fr>
  -
- - @license AGPL-3.0-or-later
+ - @license GNU AGPL version 3 or any later version
  -
  - This program is free software: you can redistribute it and/or modify
  - it under the terms of the GNU Affero General Public License as
@@ -190,11 +190,14 @@ export default {
 	},
 
 	beforeMount() {
+		this.resetState()
 		this.getContent()
 	},
 
 	beforeDestroy() {
 		// cancel any pending requests
+		window.removeEventListener("click", this.checkClickSource);
+		document.removeEventListener("scroll", this.onScroll); 
 		if (this.cancelRequest) {
 			this.cancelRequest('Changed view')
 		}
@@ -203,9 +206,8 @@ export default {
 
 	methods: {
 		/** Return next batch of data depending on global offset
-		 *
 		 * @param {boolean} doReturn Returns a Promise with the list instead of a boolean
-		 * @return {Promise<boolean>} Returns a Promise with a boolean that stops infinite loading
+		 * @returns {Promise<boolean>} Returns a Promise with a boolean that stops infinite loading
 		 */
 		async getContent(doReturn) {
 			if (this.done) {
@@ -235,17 +237,18 @@ export default {
 					perPage: numberOfImagesPerBatch,
 					mimesType: this.mimesType,
 				})
-
+				//debugger;
 				// If we get less files than requested that means we got to the end
 				if (files.length !== numberOfImagesPerBatch) {
 					this.done = true
 				}
-
-				this.$store.dispatch('updateTimeline', files)
-				this.$store.dispatch('appendFiles', files)
-
+				if(this.timeline.length <= this.page *  numberOfImagesPerBatch ){
+					this.$store.dispatch('updateTimeline', files)
+					this.$store.dispatch('appendFiles', files)
+				}
 				this.page += 1
-
+				
+				
 				if (doReturn) {
 					return Promise.resolve(files)
 				}
@@ -264,6 +267,7 @@ export default {
 				}
 
 				// cancelled request, moving on...
+				this.$store.dispatch('resetTimeline')
 				console.error('Error fetching timeline', error)
 				return Promise.resolve(true)
 			} finally {
@@ -283,7 +287,7 @@ export default {
 			this.page = 0
 			this.lastSection = ''
 			this.$emit('update:loading', true)
-			this.$refs.virtualgrid.resetGrid()
+			//this.$refs.virtualgrid.resetGrid()
 		},
 
 		getFormatedDate(string, format) {
