@@ -112,6 +112,7 @@ export default {
 			done: false,
 			error: null,
 			page: 0,
+			lastSection: '',
 			loaderComponent: Loader,
 		}
 	},
@@ -123,10 +124,8 @@ export default {
 			'timeline',
 		]),
 		// list of loaded medias
-		fileList() {
-			return this.timeline
-				.map((fileId) => this.files[fileId])
-				.filter((file) => !!file)
+			fileList() {
+			return this.timeline.map((fileId) => this.files[fileId])
 		},
 		// list of displayed content in the grid (titles + medias)
 		contentList() {
@@ -190,27 +189,43 @@ export default {
 			}
 			this.resetState()
 		},
+		
+		async mimesType() {
+			// reset component
+			this.resetState()
+			this.getContent()
+		},
 		async onThisDay() {
 			// reset component
 			this.resetState()
 			this.getContent()
 		},
 	},
+		
+	beforeMount() {
+		this.resetState()
+		this.getContent()
+	},
 
-	beforeRouteLeave(from, to, next) {
+	// beforeRouteLeave(from, to, next) {
+	// 	// cancel any pending requests
+	// 	if (this.cancelRequest) {
+	// 		this.cancelRequest('Changed view')
+	// 	}
+	// 	this.resetState()
+	// 	next()
+	// },
+	
+
+
+	beforeDestroy() {
 		// cancel any pending requests
+		window.removeEventListener("click", this.checkClickSource);
+		document.removeEventListener("scroll", this.onScroll); 
 		if (this.cancelRequest) {
 			this.cancelRequest('Changed view')
 		}
 		this.resetState()
-		next()
-	},
-
-	beforeDestroy() {
-		// cancel any pending requests
-		if (this.cancelRequest) {
-			this.cancelRequest('Changed view')
-		}
 	},
 
 	methods: {
@@ -221,6 +236,7 @@ export default {
 		 * @return {Promise<boolean>} Returns a Promise with a boolean that stops infinite loading
 		 */
 		async getContent(doReturn) {
+			
 			if (this.done) {
 				return Promise.resolve(true)
 			}
@@ -254,12 +270,13 @@ export default {
 				if (files.length !== numberOfImagesPerBatch) {
 					this.done = true
 				}
-
-				this.$store.dispatch('updateTimeline', files)
-				this.$store.dispatch('appendFiles', files)
-
+				if(this.timeline.length <= this.page *  numberOfImagesPerBatch ){
+					this.$store.dispatch('updateTimeline', files)
+					this.$store.dispatch('appendFiles', files)
+				}
 				this.page += 1
-
+				
+				
 				if (doReturn) {
 					return Promise.resolve(files)
 				}
@@ -278,6 +295,7 @@ export default {
 				}
 
 				// cancelled request, moving on...
+				this.$store.dispatch('resetTimeline')
 				console.error('Error fetching timeline', error)
 				return Promise.resolve(true)
 			} finally {
@@ -297,9 +315,7 @@ export default {
 			this.page = 0
 			this.lastSection = ''
 			this.$emit('update:loading', true)
-			if (this.$refs.virtualgrid) {
-				this.$refs.virtualgrid.resetGrid()
-			}
+			//this.$refs.virtualgrid.resetGrid()
 		},
 
 		getFormatedDate(string, format) {

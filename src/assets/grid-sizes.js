@@ -17,7 +17,6 @@
  *
  * You should have received a copy of the GNU Affero General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
- *
  */
 
 // for now we want to keep the same gap everywhere
@@ -27,7 +26,7 @@ const gap = 8
  * Define the max width proportions
  * The number (key) indicate the MAX size
  *
- * needs to be compatible with webpack config
+ * needs to be ompatible with webpack config
  * so no export default {}
  */
 module.exports = {

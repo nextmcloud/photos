@@ -20,16 +20,15 @@
  - along with this program. If not, see <http://www.gnu.org/licenses/>.
  -
  -->
-
 <template>
-	<!-- Errors handlers-->
+		<!-- Errors handlers-->
 	<EmptyContent v-if="error === 404" illustration-name="folder">
 		{{ t('photos', 'This folder does not exist') }}
 	</EmptyContent>
 	<EmptyContent v-else-if="error">
 		{{ t('photos', 'An error occurred') }}
 	</EmptyContent>
-
+	
 	<!-- Folder content -->
 	<div v-else-if="!loading">
 		<Navigation v-if="folder"
@@ -41,14 +40,30 @@
 		<EmptyContent v-if="isEmpty" key="emptycontent" illustration-name="empty">
 			{{ t('photos', 'No photos in here') }}
 		</EmptyContent>
-
-		<div v-else class="grid-container">
-			<VirtualGrid ref="virtualgrid"
-				:items="contentList"
+		
+		<div v-else class="grid-container">			
+				<div class="folders" v-if="contentList.folders.length">
+				<div class="list-title" >Folders</div>
+			<VirtualGrid
+				ref="virtualgrid"
+				:items="contentList.folders"
 				:get-column-count="() => gridConfig.count"
 				:get-grid-gap="() => gridConfig.gap" />
-		</div>
+			</div>
+			<div class="spacing-between" v-if="contentList.folders.length" />
+
+			<div class="list-title"  >{{t('photos', 'Files')}}</div>
+			
+			<VirtualGrid
+				ref="virtualgrid"
+				:items="contentList.files"
+				:get-column-count="() => gridConfig.count"
+				:get-grid-gap="() => gridConfig.gap" />
+					 <div class="footer-replace">  </div>
+		
 	</div>
+	</div>
+
 </template>
 
 <script>
@@ -61,7 +76,7 @@ import EmptyContent from '../components/EmptyContent'
 import Folder from '../components/Folder'
 import File from '../components/File'
 import Navigation from '../components/Navigation'
-
+import Gallery from "../components/Gallery";
 import GridConfigMixin from '../mixins/GridConfig'
 
 import cancelableRequest from '../utils/CancelableRequest'
@@ -72,6 +87,7 @@ export default {
 		VirtualGrid,
 		EmptyContent,
 		Navigation,
+		Gallery
 	},
 	mixins: [GridConfigMixin],
 	props: {
@@ -169,7 +185,8 @@ export default {
 				}
 			})
 
-			return [...(folders || []), ...(files || [])]
+			//return [...(folders || []), ...(files || [])]
+			return {"folders": folders,"files":(files)}	
 		},
 
 		// is current folder empty?
@@ -249,12 +266,51 @@ export default {
 }
 </script>
 
+
 <style lang="scss" scoped>
-@import '../mixins/GridSizes';
+@import '../mixins/GridSizes.scss';
+
 
 .grid-container {
 	@include grid-sizes using ($marginTop, $marginW) {
 		padding: 0px #{$marginW}px 256px #{$marginW}px;
 	}
+}
+.spacing-between{
+  height: 64px;
+}
+
+.main-container {
+  display: flex;
+  justify-content: start;
+  flex-direction: row;
+  flex-wrap: wrap;
+  width: 100%;
+  margin: 0 4px;
+}
+
+.item {
+  width: auto;
+  margin: 2px;
+  position: relative;
+}
+
+.title-item {
+  height: 90px;
+  width: 100%;
+  margin: 4px;
+}
+.fullWidth {
+  width: 100%;
+  height: auto;
+}
+.footer-replace{
+  height: 70px;
+}
+.list-title{
+    line-height: 50px !important;
+	font-weight: bold;
+    font-size: 24px;
+    padding: 0 6px;
 }
 </style>

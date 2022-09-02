@@ -20,7 +20,7 @@
     </dependencies>
     <navigations>
         <navigation>
-            <name>Photos</name>
+            <name>Media</name>
             <route>photos.page.index</route>
             <order>1</order>
         </navigation>

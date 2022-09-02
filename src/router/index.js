@@ -26,7 +26,7 @@ import Vue from 'vue'
 
 import isMapsInstalled from '../services/IsMapsInstalled'
 import areTagsInstalled from '../services/AreTagsInstalled'
-import { videoMimes } from '../services/AllowedMimes'
+import { imageMimes,videoMimes } from '../services/AllowedMimes'
 
 const Albums = () => import('../views/Albums')
 const Tags = () => import('../views/Tags')
@@ -63,6 +63,15 @@ export default new Router({
 			name: 'timeline',
 			props: route => ({
 				rootTitle: t('photos', 'Your photos'),
+			}),
+		},
+		{
+			path: '/images',
+			component: Timeline,
+			name: 'images',
+			props: route => ({
+				rootTitle: t('photos', 'Your photos'),
+				mimesType: imageMimes,
 			}),
 		},
 		{
@@ -125,15 +134,6 @@ export default new Router({
 			beforeEnter() {
 				window.open(mapsPath, '_blank')
 			},
-		},
-		{
-			path: '/thisday',
-			name: 'thisday',
-			component: Timeline,
-			props: route => ({
-				rootTitle: t('photos', 'On this day'),
-				onThisDay: true,
-			}),
 		},
 	],
 })
