@@ -58981,7 +58981,7 @@ function _typeof(obj) {
 /******/ 		// This function allow to reference async chunks
 /******/ 		__webpack_require__.u = (chunkId) => {
 /******/ 			// return url for filenames based on template
-/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-208129":"5e2c7e7debbb47f0b848","src_mixins_GridConfig_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-45f6cf":"5c994df558be92cd139f","src_components_FolderTagPreview_vue":"d42ade3ae930a8a3a53f","src_views_Albums_vue":"15824941f598d02438d5","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"e994af123015e4364b9f","src_patchedRequest_js-src_views_Tags_vue":"56e8b8d2715d60d95edd","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_moment_locale_af_js-node_mod-100548":"7c1b32030ca5ceeaa9fe","src_patchedRequest_js-node_modules_moment_locale_sync_recursive_-src_views_Timeline_vue":"a82896fe8836439d3f4a","src_assets_Illustrations_empty_svg":"9aa90a577719228f3cc6","src_assets_Illustrations_folder_svg":"a146defec670d5cd330f","src_assets_Illustrations_images_svg":"6f905c12ea6739881dfc"}[chunkId] + "";
+/******/ 			return "photos-" + chunkId + ".js?v=" + {"vendors-node_modules_nextcloud_vue_dist_Components_ActionButton_js-node_modules_nextcloud_vue-208129":"5e2c7e7debbb47f0b848","src_mixins_GridConfig_js-src_utils_CancelableRequest_js-src_components_EmptyContent_vue-src_c-45f6cf":"5c994df558be92cd139f","src_components_FolderTagPreview_vue":"d42ade3ae930a8a3a53f","src_views_Albums_vue":"15824941f598d02438d5","vendors-node_modules_webdav_dist_node_index_js-node_modules_webdav_dist_node_request_js":"e994af123015e4364b9f","src_patchedRequest_js-src_views_Tags_vue":"56e8b8d2715d60d95edd","vendors-node_modules_nextcloud_moment_dist_index_js-node_modules_moment_locale_af_js-node_mod-100548":"7c1b32030ca5ceeaa9fe","src_patchedRequest_js-node_modules_moment_locale_sync_recursive_-src_views_Timeline_vue":"3bd8e9f41625c0e75877","src_assets_Illustrations_empty_svg":"9aa90a577719228f3cc6","src_assets_Illustrations_folder_svg":"a146defec670d5cd330f","src_assets_Illustrations_images_svg":"6f905c12ea6739881dfc"}[chunkId] + "";
 /******/ 		};
 /******/ 	})();
 /******/ 	
@@ -59255,4 +59255,4 @@ window.addEventListener('DOMContentLoaded', function () {
 
 /******/ })()
 ;
-//# sourceMappingURL=photos-main.js.map?v=19c4abafedc52153a5f5
+//# sourceMappingURL=photos-main.js.map?v=24ba358d56b1e88c2c9c

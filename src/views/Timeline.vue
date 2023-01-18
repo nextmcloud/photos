@@ -38,10 +38,14 @@
 			:filename="'/'"
 			:root-title="rootTitle" />
 
-		<EmptyContent v-if="isEmpty" illustration-name="empty">
-			{{ t('photos', 'No photos in here') }}
+		<EmptyContent v-if="isEmpty" illustration-name="empty" >
+				<li v-if="isVideo== 'video'">
+					{{ t('photos', 'No videos in here') }}
+					<li v-else>
+					{{ t('photos', 'No media in here') }}
+				</li>
 		</EmptyContent>
-
+		
 		<div class="grid-container">
 			<VirtualGrid ref="virtualgrid"
 				:items="contentList"
@@ -177,8 +181,17 @@ export default {
 		},
 		// is current folder empty?
 		isEmpty() {
+
 			return this.fileList.length === 0
 		},
+		isVideo(){
+			if(this.mimesType.length==2 && this.mimesType.includes("video/mp4"))
+			{
+				console.log(this.mimesType)
+				return "video"
+			}
+			return "images"
+		}
 	},
 
 	watch: {
@@ -334,5 +347,8 @@ export default {
 	@include grid-sizes using ($marginTop, $marginW) {
 		padding: 0px #{$marginW}px 256px #{$marginW}px;
 	}
+}
+li{ 
+  list-style-type: none;
 }
 </style>
