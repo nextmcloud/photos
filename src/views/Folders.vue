@@ -304,37 +304,43 @@ export default {
 }
 
 .spacing-between{
-  height: 64px;
+	height: 64px;
 }
+
 .main-container {
-  display: flex;
-  justify-content: start;
-  flex-direction: row;
-  flex-wrap: wrap;
-  width: 100%;
-  margin: 0 4px;
+	display: flex;
+	justify-content: start;
+	flex-direction: row;
+	flex-wrap: wrap;
+	width: 100%;
+	margin: 0 4px;
 }
+
 .item {
-  width: auto;
-  margin: 2px;
-  position: relative;
+	width: auto;
+	margin: 2px;
+	position: relative;
 }
+
 .title-item {
-  height: 90px;
-  width: 100%;
-  margin: 4px;
+	height: 90px;
+	width: 100%;
+	margin: 4px;
 }
+
 .fullWidth {
-  width: 100%;
-  height: auto;
+	width: 100%;
+	height: auto;
 }
+
 .footer-replace{
-  height: 70px;
+	height: 70px;
 }
+
 .list-title{
-    line-height: 50px !important;
+	line-height: 50px !important;
 	font-weight: bold;
-    font-size: 24px;
-    padding: 0 6px;
+	font-size: 24px;
+	padding: 0 6px;
 }
 </style>
