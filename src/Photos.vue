@@ -216,7 +216,7 @@ export default {
 }
 </script>
 <style lang="scss">
- @import "./styles/_variables.scss";
+ @import "./css/style.scss";
 .app-content {
 	display: flex;
 	flex-grow: 1;
