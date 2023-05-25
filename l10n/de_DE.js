@@ -142,6 +142,14 @@ OC.L10N.register(
     "Your videos" : "Ihre Videos",
     "Your folders" : "Ihre Ordner",
     "Locations" : "Orte",
-    "Settings" : "Einstellungen"
+    "Settings" : "Einstellungen",
+    "Media" : "Medien",
+    "Files":"Dateien",
+    "Close navigation" : "Menü ausblenden",
+    "Crop image previews":"Vorschaubilder beschneiden",
+    "My photos" : "Meine Fotos",
+    "My videos" : "Meine Videos",
+    "No media in here"  : "Keine Medien vorhanden",
+    "No videos in here" : "Keine Videos vorhanden",
 },
 "nplurals=2; plural=(n != 1);");
