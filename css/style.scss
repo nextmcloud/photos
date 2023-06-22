@@ -146,7 +146,7 @@ $background-color_1: unset;
 	#app-navigation-vue {
 		left: 0 !important;
 		transition: margin .4s,opacity .4s;
-		height: calc(100vh - 140px) !important;
+		height: 100% !important;
 		opacity: 1;
 	}
 	.grid-title {
