@@ -19,10 +19,11 @@
     "type": "git"
   },
   "homepage": "https://github.com/nextcloud/photos",
-  "license": "agpl",
+  "license": "AGPL-3.0-or-later",
   "private": true,
   "scripts": {
     "build": "NODE_ENV=production webpack --progress --config webpack.js",
+    "postbuild": "build-js/npm-post-build.sh",
     "dev": "NODE_ENV=development webpack --progress --config webpack.js",
     "watch": "NODE_ENV=development webpack --progress --watch --config webpack.js",
     "serve": "NODE_ENV=development webpack serve --progress --config webpack.js",
@@ -103,7 +104,7 @@
     "jest-environment-jsdom": "^29.4.1",
     "module-replace-webpack-plugin": "0.0.12",
     "postcss": "^8.4.38",
-    "postcss-loader": "^7.3.3",
+    "postcss-loader": "^8.1.1",
     "raw-loader": "^4.0.2",
     "ts-node": "^10.9.2",
     "tslib": "^2.6.2",
