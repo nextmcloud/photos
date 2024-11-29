@@ -95,9 +95,9 @@ export default async function(options = {}) {
 		: ''
 
 	const sourceFolders = store.state.userConfig.photosSourceFolders
-		.map(folder => `
+		.map(() => `
 			<d:scope>
-				<d:href>${joinPaths(davRootPath, folder)}</d:href>
+				<d:href>${joinPaths(davRootPath)}</d:href>
 				<d:depth>infinity</d:depth>
 			</d:scope>`
 		)

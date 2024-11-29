@@ -144,13 +144,20 @@ export default {
 			const path = regex.exec(this.parentPath)[1]
 
 			// apply to current route
-			const { name, params } = Object.assign({}, this.$route, {
+			let { name, params } = Object.assign({}, this.$route, {
 				params: this.params || { path },
 			})
 
 			// return the full object as we don't care about
 			// an empty path if this is route
 			if (path === '') {
+
+				// for the root path of the albums view we have to alter name
+				// as it uses a separate route and component
+				if (name === 'albumsContent') {
+					name = 'albums'
+				}
+
 				return { name }
 			}
 
