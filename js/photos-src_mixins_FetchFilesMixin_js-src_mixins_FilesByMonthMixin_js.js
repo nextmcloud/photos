@@ -329,9 +329,9 @@ __webpack_require__.r(__webpack_exports__);
 				</d:lt>
 			</d:and>`;
   }).join('\n')}</d:or>` : '';
-  const sourceFolders = _store_index_js__WEBPACK_IMPORTED_MODULE_5__["default"].state.userConfig.photosSourceFolders.map(() => `
+  const sourceFolders = _store_index_js__WEBPACK_IMPORTED_MODULE_5__["default"].state.userConfig.photosSourceFolders.map(folder => `
 			<d:scope>
-				<d:href>${(0,_nextcloud_paths__WEBPACK_IMPORTED_MODULE_7__.joinPaths)(_nextcloud_files__WEBPACK_IMPORTED_MODULE_6__.davRootPath)}</d:href>
+				<d:href>${(0,_nextcloud_paths__WEBPACK_IMPORTED_MODULE_7__.joinPaths)(_nextcloud_files__WEBPACK_IMPORTED_MODULE_6__.davRootPath, folder)}</d:href>
 				<d:depth>infinity</d:depth>
 			</d:scope>`).join('\n');
   options = Object.assign({
@@ -389,4 +389,4 @@ __webpack_require__.r(__webpack_exports__);
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_mixins_FetchFilesMixin_js-src_mixins_FilesByMonthMixin_js.js.map?v=83e70d7a403b141026a7
+//# sourceMappingURL=photos-src_mixins_FetchFilesMixin_js-src_mixins_FilesByMonthMixin_js.js.map?v=36d5596e80b344be2108

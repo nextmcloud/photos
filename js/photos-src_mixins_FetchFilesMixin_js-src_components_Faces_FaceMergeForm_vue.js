@@ -352,9 +352,9 @@ __webpack_require__.r(__webpack_exports__);
 				</d:lt>
 			</d:and>`;
   }).join('\n')}</d:or>` : '';
-  const sourceFolders = _store_index_js__WEBPACK_IMPORTED_MODULE_5__["default"].state.userConfig.photosSourceFolders.map(() => `
+  const sourceFolders = _store_index_js__WEBPACK_IMPORTED_MODULE_5__["default"].state.userConfig.photosSourceFolders.map(folder => `
 			<d:scope>
-				<d:href>${(0,_nextcloud_paths__WEBPACK_IMPORTED_MODULE_7__.joinPaths)(_nextcloud_files__WEBPACK_IMPORTED_MODULE_6__.davRootPath)}</d:href>
+				<d:href>${(0,_nextcloud_paths__WEBPACK_IMPORTED_MODULE_7__.joinPaths)(_nextcloud_files__WEBPACK_IMPORTED_MODULE_6__.davRootPath, folder)}</d:href>
 				<d:depth>infinity</d:depth>
 			</d:scope>`).join('\n');
   options = Object.assign({
@@ -584,4 +584,4 @@ __webpack_require__.r(__webpack_exports__);
 /***/ })
 
 }]);
-//# sourceMappingURL=photos-src_mixins_FetchFilesMixin_js-src_components_Faces_FaceMergeForm_vue.js.map?v=ce6a6d38b89f32fb0d36
+//# sourceMappingURL=photos-src_mixins_FetchFilesMixin_js-src_components_Faces_FaceMergeForm_vue.js.map?v=7644fc33a1dcf6e47e1b
