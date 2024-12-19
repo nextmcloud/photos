@@ -30,10 +30,14 @@
 		<slot name="header" />
 
 		<!-- No collections -->
-		<slot v-if="noCollection && !loading" name="empty-collections-list" class="collections__empty" />
+		<ul v-if="noCollection" class="collections__list">
+			<slot name="collection-add" />
+		</ul>
 
 		<!-- List -->
 		<ul v-else-if="!noCollection" class="collections__list">
+			<slot name="collection-add" />
+
 			<slot v-for="collection in collections"
 				:collection="collection"
 				class="collection" />
@@ -92,17 +96,17 @@ export default {
 	height: 100%;
 
 	&__list {
-		padding: 32px 48px;
+		padding: 2.5rem;
 		flex-grow: 1;
 		display: flex;
 		flex-wrap: wrap;
-		gap: 16px;
+		gap: 1.5rem;
 		align-items: flex-start;
-		height: calc(100% - 60px);
+		height: calc(100% - 3rem);
 		overflow-x: scroll;
 
-		@media only screen and (max-width: 1200px) {
-			padding: 32px 12px;
+		@media only screen and (max-width: 480px) {
+			padding: 2rem 1rem;
 			justify-content: center;
 		}
 	}

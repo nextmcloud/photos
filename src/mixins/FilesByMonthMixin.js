@@ -44,12 +44,39 @@ export default {
 			return filesByMonth
 		},
 
+		collectionFileIdsByMonth() {
+			const filesByMonth = {}
+
+			for (const fileId of this.collectionFileIds) {
+				const file = this.files[fileId]
+				if (file) {
+					filesByMonth[file.month] = filesByMonth[file.month] ?? []
+					filesByMonth[file.month].push(file.fileid)
+				}
+			}
+
+			// Sort files in sections.
+			Object.keys(filesByMonth)
+				.forEach(month => filesByMonth[month].sort(this.sortFilesByTimestamp))
+
+			return filesByMonth
+		},
+
 		/**
 		 * @return {string[]}
 		 */
 		monthsList() {
 			return Object
 				.keys(this.fileIdsByMonth)
+				.sort((month1, month2) => month1 > month2 ? -1 : 1)
+		},
+
+		/**
+		 * @return {string[]}
+		 */
+		collectionMonthsList() {
+			return Object
+				.keys(this.collectionFileIdsByMonth)
 				.sort((month1, month2) => month1 > month2 ? -1 : 1)
 		},
 	},

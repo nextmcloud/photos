@@ -33,7 +33,10 @@
 			<div class="file__images">
 				<VideoIcon v-if="file.mime.includes('video')" class="icon-overlay" :size="64" />
 				<PlayCircleIcon v-else-if="file.metadataFilesLivePhoto !== undefined" class="icon-overlay" :size="64" />
-
+				<div class="hover-overlay" v-if="isCollection">
+					<Star class="icon-overlay-action" :size="24" @click.stop.prevent="emitFavorite" />
+					<Delete class="icon-overlay-action" :size="24" @click.stop.prevent="emitRemove" />
+				</div>
 				<!-- We have two img elements to load the small and large preview -->
 				<!-- Do not show the small preview if the larger one is loaded -->
 				<!-- Prioritize visible files -->
@@ -82,6 +85,11 @@
 import VideoIcon from 'vue-material-design-icons/Video.vue'
 import PlayCircleIcon from 'vue-material-design-icons/PlayCircle.vue'
 import FavoriteIcon from './FavoriteIcon.vue'
+<<<<<<< Updated upstream
+=======
+import Star from 'vue-material-design-icons/Star.vue'
+import Delete from 'vue-material-design-icons/Delete.vue'
+>>>>>>> Stashed changes
 
 import { generateUrl } from '@nextcloud/router'
 import { NcCheckboxRadioSwitch } from '@nextcloud/vue'
@@ -95,6 +103,8 @@ export default {
 		NcCheckboxRadioSwitch,
 		VideoIcon,
 		PlayCircleIcon,
+		Star,
+		Delete,
 	},
 	inheritAttrs: false,
 	props: {
@@ -109,6 +119,10 @@ export default {
 		allowSelection: {
 			type: Boolean,
 			default: true,
+		},
+		isCollection: {
+			type: Boolean,
+			default: false,
 		},
 		distance: {
 			type: Number,
@@ -181,6 +195,14 @@ export default {
 	methods: {
 		emitClick() {
 			this.$emit('click', this.file.fileid)
+		},
+
+		emitFavorite() {
+			this.$emit('favorite', this.file.fileid)
+		},
+
+		emitRemove() {
+			this.$emit('remove', this.file.fileid)
 		},
 
 		onLoadSmall() {
@@ -293,6 +315,49 @@ export default {
 					height: 70%;
 				}
 			}
+<<<<<<< Updated upstream
+		}
+
+		&__hidden-description {
+			position: absolute;
+			left: -10000px;
+			top: -10000px;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+
+			&.show {
+				position: initial;
+				width: fit-content;
+				height: fit-content;
+=======
+
+			.star-icon {
+				position: absolute;
+				z-index: 1000;
+				left: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+
+				svg {
+					color: #fff;
+				}
+			}
+
+			.delete-icon {
+				position: absolute;
+				z-index: 1000;
+				right: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+
+				svg {
+					color: #fff;
+				}
+>>>>>>> Stashed changes
+			}
 		}
 
 		&__hidden-description {
@@ -311,6 +376,17 @@ export default {
 		}
 	}
 
+	.hover-overlay {
+		bottom: 0;
+		cursor: unset;
+		display: none;
+		position: absolute;
+		height: 2.5rem;
+		width: 100%;
+		z-index: 900;
+		background-color: rgba(0,0,0,0.5);
+	}
+
 	// Reveal checkbox on hover.
 	&:hover, &.selected, &:focus-within {
 		.selection-checkbox {
@@ -319,6 +395,10 @@ export default {
 
 		.favorite-state {
 			display: none;
+		}
+
+		.hover-overlay {
+			display: flex;
 		}
 	}
 

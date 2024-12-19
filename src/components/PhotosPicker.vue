@@ -26,9 +26,10 @@
 		:open="open"
 		out-transition
 		size="large"
+		@closing="$emit('closed')"
 		@update:open="(open) => $emit('update:open', open)">
 		<!-- Navigation containing the months available -->
-		<template #navigation="{ isCollapsed }">
+		<template v-if="false" #navigation="{ isCollapsed }">
 			<!-- Mobile view -->
 			<NcSelect v-if="isCollapsed"
 				v-model="targetMonth"
@@ -61,6 +62,7 @@
 
 		<!-- The actions on the bottom -->
 		<template #actions>
+<<<<<<< Updated upstream
 			<UploadPicker :accept="allowedMimes"
 				:context="uploadContext"
 				:destination="photosLocationFolder"
@@ -73,6 +75,26 @@
 				</template>
 				{{ t('photos', 'Add to {destination}', { destination }) }}
 			</NcButton>
+=======
+			<div class="photos-picker__actions">
+				<div class="photos-picker__actions__buttons">
+					<NcButton v-if="allowempty" type="secondary" :disabled="loading" @click="$emit('closed')">
+						<template #icon>
+							<ImageAlbum v-if="!loading" />
+							<NcLoadingIcon v-if="loading" />
+						</template>
+						{{ t('photos', 'Create empty album') }}
+					</NcButton>
+					<NcButton type="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
+						<template #icon>
+							<ImagePlus v-if="!loading" />
+							<NcLoadingIcon v-if="loading" />
+						</template>
+						{{ t('photos', 'Add to {destination}', { destination }) }}
+					</NcButton>
+				</div>
+			</div>
+>>>>>>> Stashed changes
 		</template>
 
 		<FilesListViewer class="photos-picker__file-list"
@@ -113,6 +135,7 @@ import { mapGetters } from 'vuex'
 
 import moment from '@nextcloud/moment'
 
+import ImageAlbum from 'vue-material-design-icons/ImageAlbum.vue'
 import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
 
 import FilesListViewer from './FilesListViewer.vue'
@@ -130,6 +153,7 @@ export default defineComponent({
 	components: {
 		File,
 		FilesListViewer,
+		ImageAlbum,
 		ImagePlus,
 		NcButton,
 		NcDialog,
@@ -178,6 +202,13 @@ export default defineComponent({
 		loading: {
 			type: Boolean,
 			default: false,
+		},
+
+		// Whether we should create empty album.
+		allowempty: {
+			type: Boolean,
+			default: false,
+			required: false,
 		},
 	},
 
@@ -282,7 +313,7 @@ export default defineComponent({
 
 		.section-header {
 			font-weight: bold;
-			font-size: 20px;
+			font-size: 1.5rem;
 			padding: 8px 0 4px 0;
 		}
 
@@ -296,5 +327,21 @@ export default defineComponent({
 			justify-content: center;
 		}
 	}
+<<<<<<< Updated upstream
+=======
+
+	&__actions {
+		display: flex;
+		flex-direction: column;
+		flex-grow: 1;
+
+		&__buttons {
+			display: flex;
+			align-items: center;
+			justify-content: flex-end;
+			gap: 16px;
+		}
+	}
+>>>>>>> Stashed changes
 }
 </style>

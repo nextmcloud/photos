@@ -1,24 +1,4 @@
-<!--
- - @copyright Copyright (c) 2022 Louis Chemineau <louis@chmn.me>
- -
- - @author Louis Chemineau <louis@chmn.me>
- -
- - @license AGPL-3.0-or-later
- -
- - This program is free software: you can redistribute it and/or modify
- - it under the terms of the GNU Affero General Public License as
- - published by the Free Software Foundation, either version 3 of the
- - License, or (at your option) any later version.
- -
- - This program is distributed in the hope that it will be useful,
- - but WITHOUT ANY WARRANTY; without even the implied warranty of
- - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- - GNU Affero General Public License for more details.
- -
- - You should have received a copy of the GNU Affero General Public License
- - along with this program. If not, see <http://www.gnu.org/licenses/>.
- -
- -->
+
 <template>
 	<div class="album-container">
 		<CollectionContent ref="collectionContent"
@@ -26,8 +6,10 @@
 			:collection-file-ids="albumFileIds"
 			:loading="loadingCollection || loadingCollectionFiles"
 			:error="errorFetchingCollection || errorFetchingCollectionFiles">
+
 			<!-- Header -->
-			<HeaderNavigation key="navigation"
+			<HeaderNavigation 
+				key="navigation"
 				slot="header"
 				slot-scope="{selectedFileIds, resetSelection}"
 				:class="{'photos-navigation--uploading': uploader.queue?.length > 0}"
@@ -36,8 +18,9 @@
 				:path="'/' + albumName"
 				:title="albumName"
 				@refresh="fetchAlbumContent">
-				<div v-if="album !== undefined && album.location !== ''" slot="subtitle" class="album__location">
-					<MapMarker />{{ album.location }}
+
+				<div v-if="album !== undefined && album.nbItems !== 0" slot="subtitle" class="album__details">
+					{{ n('photos', '%n item', '%n photos and videos', album.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.date }}
 				</div>
 
 				<template slot="default">
@@ -49,6 +32,17 @@
 						</template>
 						{{ t('photos', 'Unselect all') }}
 					</NcButton>
+
+					<ActionFavoriteButton v-if="selectedFileIds.length > 0" :selected-file-ids="selectedFileIds" />
+
+					<NcButton v-if="selectedFileIds.length > 0"
+						:aria-label="t('photos', 'Unselect all')"
+						@click="handleRemoveFilesFromAlbum(selectedFileIds)">
+						<template #icon>
+							<Delete />
+						</template>
+						{{ t('photos', 'Remove selection from album') }}
+					</NcButton>
 				</template>
 
 				<template v-if="album !== undefined" slot="right">
@@ -58,15 +52,28 @@
 						:root="uploadContext.root"
 						:multiple="true"
 						@uploaded="onUpload" />
+				</template>
 
-					<NcButton v-if="sharingEnabled"
-						type="tertiary"
-						:aria-label="t('photos', 'Manage collaborators for this album')"
-						@click="showManageCollaboratorView = true">
-						<ShareVariant slot="icon" />
+				<template v-if="album !== undefined" slot="buttons">
+
+					<NcButton
+						:aria-label="t('photos', 'Enable squared photos view')"
+						@click="toggleCroppedLayout('croppedLayout')">
+						<template #icon>
+							<ViewGridOutline v-if="isCroppedLayout" />
+							<ViewDashboardOutline v-else />
+						</template>
 					</NcButton>
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
+						<NcActionButton v-if="sharingEnabled" 
+							:close-after-click="true"
+							:aria-label="t('photos', 'Manage collaborators for this album')"
+							@click="showManageCollaboratorView = true">
+							{{ t('photos', 'Manage collaborators for this album') }}
+							<ShareVariant slot="icon" />
+						</NcActionButton>
+
 						<NcActionButton :close-after-click="true"
 							:aria-label="t('photos', 'Edit album details')"
 							@click="showEditAlbumForm = true">
@@ -166,7 +173,7 @@ import { mapActions } from 'vuex'
 
 import { Folder, addNewFileMenuEntry, removeNewFileMenuEntry, davParsePermissions } from '@nextcloud/files'
 import { getCurrentUser } from '@nextcloud/auth'
-import { NcActions, NcActionButton, NcButton, NcDialog, NcModal, NcEmptyContent, NcActionSeparator, NcLoadingIcon, isMobile } from '@nextcloud/vue'
+import { NcActions, NcActionButton, NcButton, NcDialog, NcModal, NcEmptyContent, NcActionSeparator, NcLoadingIcon } from '@nextcloud/vue'
 import { UploadPicker, getUploader } from '@nextcloud/upload'
 import { translate } from '@nextcloud/l10n'
 import debounce from 'debounce'
@@ -179,15 +186,18 @@ import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
 import MapMarker from 'vue-material-design-icons/MapMarker.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
+
 import PlusSvg from '@mdi/svg/svg/plus.svg'
 import ShareVariant from 'vue-material-design-icons/ShareVariant.vue'
 
-import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.js'
 import UserConfig from '../mixins/UserConfig.js'
 
 // import ActionDownload from '../components/Actions/ActionDownload.vue'
 import ActionFavorite from '../components/Actions/ActionFavorite.vue'
+import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import CollaboratorsSelectionForm from '../components/Albums/CollaboratorsSelectionForm.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
@@ -202,6 +212,7 @@ export default {
 	components: {
 		// ActionDownload,
 		ActionFavorite,
+		ActionFavoriteButton,
 		AlbumForm,
 		Close,
 		CollaboratorsSelectionForm,
@@ -225,12 +236,17 @@ export default {
 		Plus,
 		ShareVariant,
 		UploadPicker,
+		ViewGridOutline,
+		ViewDashboardOutline
 	},
 
 	mixins: [
 		FetchCollectionContentMixin,
+<<<<<<< Updated upstream
 		FetchFilesMixin,
 		isMobile,
+=======
+>>>>>>> Stashed changes
 		UserConfig,
 	],
 
@@ -244,11 +260,9 @@ export default {
 	data() {
 		return {
 			allowedMimes,
-
 			showAddPhotosModal: false,
 			showManageCollaboratorView: false,
 			showEditAlbumForm: false,
-
 			loadingAddCollaborators: false,
 
 			uploader: getUploader(),
@@ -288,6 +302,10 @@ export default {
 			return OC.Share !== undefined
 		},
 
+		isCroppedLayout() {
+			return this.croppedLayout
+		},
+
 		/**
 		 * The upload picker context
 		 * We're uploading to the album folder, and the backend handle
@@ -312,12 +330,13 @@ export default {
 		},
 
 		albumAsFolder() {
-			return new Folder({
+			let newFolder = new Folder({
 				...this.album,
 				owner: getCurrentUser()?.uid ?? '',
 				source: this.album?.source ?? '',
 				permissions: davParsePermissions(this.album.permissions),
 			})
+			return newFolder
 		},
 	},
 
@@ -356,6 +375,11 @@ export default {
 			if (this.album.basename !== album.basename) {
 				this.$router.push(`/albums/${album.basename}`)
 			}
+		},
+
+		toggleCroppedLayout({ }) {
+			this.croppedLayout = !this.croppedLayout
+			this.updateSetting('croppedLayout')
 		},
 
 		async handleFilesPicked(fileIds) {

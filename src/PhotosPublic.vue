@@ -61,16 +61,24 @@ export default {
 	},
 
 	async beforeMount() {
+		// Register excluded paths
+		const files = loadState('photos', 'nomedia-paths', [])
+		this.$store.dispatch('setNomediaPaths', files)
+		logger.debug('Known .nomedia and .noimage  paths', { files })
+
 		if ('serviceWorker' in navigator) {
 			// Use the window load event to keep the page load performant
-			window.addEventListener('load', async () => {
-				try {
-					const url = generateUrl('/apps/photos/service-worker.js', {}, { noRewrite: true })
-					const registration = await navigator.serviceWorker.register(url, { scope: generateUrl('/apps/photos') })
+			window.addEventListener('load', () => {
+				navigator.serviceWorker.register(generateUrl('/apps/photos/service-worker.js', {}, {
+					noRewrite: true,
+				}), {
+					scope: generateUrl('/apps/photos'),
+				}).then(registration => {
 					logger.debug('SW registered: ', { registration })
-				} catch (error) {
-					logger.error('SW registration failed: ', { error })
-				}
+				}).catch(registrationError => {
+					logger.error('SW registration failed: ', { registrationError })
+				})
+
 			})
 		} else {
 			logger.debug('Service Worker is not enabled on this browser.')

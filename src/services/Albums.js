@@ -148,11 +148,12 @@ function formatAlbum(album) {
 		startDate: moment.unix(dateRange.start).format('MMMM YYYY'),
 		endDate: moment.unix(dateRange.end).format('MMMM YYYY'),
 	}
-	if (dateRangeFormatted.startDate === dateRangeFormatted.endDate) {
+
+	// if (dateRangeFormatted.startDate === dateRangeFormatted.endDate) {
 		album.date = dateRangeFormatted.startDate
-	} else {
-		album.date = t('photos', '{startDate} to {endDate}', dateRangeFormatted)
-	}
+	// } else {
+	// 	album.date = t('photos', '{startDate} to {endDate}', dateRangeFormatted)
+	// }
 
 	return album
 }

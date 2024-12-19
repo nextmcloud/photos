@@ -21,6 +21,11 @@
  -->
 <template>
 	<form v-if="!showCollaboratorView" class="album-form" @submit.prevent="submit">
+		<div class="form-cover">
+			<img class="form-cover__image"
+				:src="albumCoverImage"
+				:alt="t('photos', 'Create album')">
+		</div>
 		<div class="form-inputs">
 			<NcTextField ref="nameInput"
 				:value.sync="albumName"
@@ -43,6 +48,11 @@
 					type="tertiary"
 					@click="back">
 					{{ t('photos', 'Back') }}
+				</NcButton>
+				<NcButton
+					type="secondary"
+					@click="cancel()">
+					{{ t('photos', 'Cancel') }}
 				</NcButton>
 			</span>
 			<span class="right-buttons">
@@ -159,6 +169,10 @@ export default {
 		albumFileName() {
 			return this.$store.getters.getAlbumName(this.albumName)
 		},
+
+		albumCoverImage() {
+			return '/customapps/photos/img/create-album.png'
+		}
 	},
 
 	mounted() {
@@ -186,6 +200,10 @@ export default {
 			} else {
 				this.handleCreateAlbum(collaborators)
 			}
+		},
+
+		cancel() {
+			this.$emit('cancel')
 		},
 
 		/** @param {import('../../store/albums.js').Collaborator[]} collaborators */

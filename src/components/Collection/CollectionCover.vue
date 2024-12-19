@@ -68,25 +68,29 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+
 .collection-cover {
 	display: flex;
 	flex-direction: column;
-	padding: 16px;
+    overflow: hidden;
+    box-sizing: border-box;
+	background-color: var(--color-main-background);
 	border-radius: var(--border-radius-large);
+	box-shadow: var(--telekom-shadow-raised-pressed);
 
 	&:hover, &:focus {
-		background: var(--color-background-dark);
+		// background: var(--color-background-hover);
+		box-shadow: var(--telekom-shadow-raised-standard);
 	}
 
 	&__image {
-		width: 350px;
-		height: 350px;
+		width: 300px;
+		height: 230px;
 		object-fit: cover;
-		border-radius: var(--border-radius-large);
 
 		@media only screen and (max-width: 1200px) {
-			width: 250px;
-			height: 250px;
+			width: 270px;
+			height: 230px;
 		}
 
 		&--placeholder {
@@ -106,11 +110,11 @@ export default {
 	&__details {
 		display: flex;
 		flex-direction: column;
-		margin-top: 16px;
-		width: 350px;
+		padding: 1rem;
+		width: 300px;
 
 		@media only screen and (max-width: 1200px) {
-			width: 250px;
+			width: 270px;
 		}
 
 		&__title {
@@ -119,7 +123,7 @@ export default {
 
 		&__subtitle {
 			display: flex;
-			color: var(--color-text-lighter);
+			color: var(--color-main-text);
 		}
 	}
 

@@ -184,11 +184,11 @@ function formatCollection(rawCollection) {
 		startDate: moment.unix(dateRange.start).format('MMMM YYYY'),
 		endDate: moment.unix(dateRange.end).format('MMMM YYYY'),
 	}
-	if (dateRangeFormatted.startDate === dateRangeFormatted.endDate) {
+	// if (dateRangeFormatted.startDate === dateRangeFormatted.endDate) {
 		rawCollection.date = dateRangeFormatted.startDate
-	} else {
-		rawCollection.date = t('photos', '{startDate} to {endDate}', dateRangeFormatted)
-	}
+	// } else {
+	// 	rawCollection.date = t('photos', '{startDate} to {endDate}', dateRangeFormatted)
+	// }
 
 	return rawCollection
 }
