@@ -26,9 +26,10 @@
 		:open="open"
 		out-transition
 		size="large"
+		@closing="$emit('closed')"
 		@update:open="(open) => $emit('update:open', open)">
 		<!-- Navigation containing the months available -->
-		<template #navigation="{ isCollapsed }">
+		<template v-if="false" #navigation="{ isCollapsed }">
 			<!-- Mobile view -->
 			<NcSelect v-if="isCollapsed"
 				v-model="targetMonth"
@@ -63,11 +64,13 @@
 		<template #actions>
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
-					<UploadPicker :accept="allowedMimes"
-						:context="uploadContext"
-						:destination="photosLocationFolder"
-						:multiple="true"
-						@uploaded="refreshFiles" />
+					<NcButton v-if="allowempty" type="secondary" :disabled="loading" @click="$emit('closed')">
+						<template #icon>
+							<ImageAlbum v-if="!loading" />
+							<NcLoadingIcon v-if="loading" />
+						</template>
+						{{ t('photos', 'Create empty album') }}
+					</NcButton>
 					<NcButton type="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
 						<template #icon>
 							<ImagePlus v-if="!loading" />
@@ -76,9 +79,6 @@
 						{{ t('photos', 'Add to {destination}', { destination }) }}
 					</NcButton>
 				</div>
-				<NcNoteCard v-if="photosLocationFolder.attributes['owner-id'] !== currentUser" type="warning">
-					{{ t('photos', 'The destination folder is owned by {owner}', { owner: photosLocationFolder.attributes['owner-id'] }) }}
-				</NcNoteCard>
 			</div>
 		</template>
 
@@ -121,6 +121,7 @@ import { mapGetters } from 'vuex'
 import moment from '@nextcloud/moment'
 import { getCurrentUser } from '@nextcloud/auth'
 
+import ImageAlbum from 'vue-material-design-icons/ImageAlbum.vue'
 import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
 
 import FilesListViewer from './FilesListViewer.vue'
@@ -137,6 +138,7 @@ export default defineComponent({
 	components: {
 		File,
 		FilesListViewer,
+		ImageAlbum,
 		ImagePlus,
 		NcButton,
 		NcDialog,
@@ -185,6 +187,13 @@ export default defineComponent({
 		loading: {
 			type: Boolean,
 			default: false,
+		},
+
+		// Whether we should create empty album.
+		allowempty: {
+			type: Boolean,
+			default: false,
+			required: false,
 		},
 	},
 
@@ -294,7 +303,7 @@ export default defineComponent({
 
 		.section-header {
 			font-weight: bold;
-			font-size: 20px;
+			font-size: 1.5rem;
 			padding: 8px 0 4px 0;
 		}
 
@@ -317,7 +326,7 @@ export default defineComponent({
 		&__buttons {
 			display: flex;
 			align-items: center;
-			justify-content: end;
+			justify-content: flex-end;
 			gap: 16px;
 		}
 	}

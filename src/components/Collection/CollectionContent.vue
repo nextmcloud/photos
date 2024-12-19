@@ -41,30 +41,47 @@
 		<slot v-if="sortedCollectionFileIds.length === 0 && !loading" name="empty-content" />
 
 		<!-- Media list -->
-		<FilesListViewer v-if="collection !== undefined && sortedCollectionFileIds.length > 0 "
+		<FilesListViewer v-if="collection !== undefined"
 			:container-element="appContent"
-			class="collection__media"
-			:file-ids="sortedCollectionFileIds"
+			class="timeline__file-list"
+			:file-ids-by-section="collectionFileIdsByMonth"
+			:sections="collectionMonthsList"
+			:loading="loading"
 			:base-height="isMobile ? 120 : 200"
-			:loading="loading">
-			<File slot-scope="{file, distance}"
-				:file="files[file.id]"
-				:allow-selection="allowSelection"
-				:selected="selection[file.id] === true"
-				:distance="distance"
-				@click="openViewer"
-				@select-toggled="onFileSelectToggle" />
+			:empty-message="t('photos', 'No photos or videos in here')">
+			<template slot-scope="{file, isHeader, distance}">
+				<h2 v-if="isHeader"
+					:id="`file-picker-section-header-${file.id}`"
+					class="section-header">
+					<b>{{ file.id | dateMonth }}</b>
+					{{ file.id | dateYear }}
+				</h2>
+				<File v-else
+					:file="files[file.id]"
+					:allow-selection="true"
+					:is-collection="true"
+					:selected="selection[file.id] === true"
+					:distance="distance"
+					@click="openViewer"
+					@favorite="toggleFavorite"
+					@remove="removeFromCollection"
+					@select-toggled="onFileSelectToggle" />
+			</template>
 		</FilesListViewer>
 	</div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
+
 import AlertCircle from 'vue-material-design-icons/AlertCircle.vue'
 import FolderMultipleImage from 'vue-material-design-icons/FolderMultipleImage.vue'
 
 import { NcEmptyContent, isMobile } from '@nextcloud/vue'
 import { translate } from '@nextcloud/l10n'
 
+import FetchFilesMixin from '../../mixins/FetchFilesMixin.js'
+import FilesByMonthMixin from '../../mixins/FilesByMonthMixin.js'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
 import FilesListViewer from '.././FilesListViewer.vue'
 import File from '.././File.vue'
@@ -81,7 +98,9 @@ export default {
 	},
 
 	mixins: [
+		FetchFilesMixin,
 		FilesSelectionMixin,
+		FilesByMonthMixin,
 		isMobile,
 	],
 
@@ -131,14 +150,51 @@ export default {
 		},
 	},
 
+	filters: {
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateMonth(date) {
+			return moment(date, 'YYYYMM').format('MMMM')
+		},
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateYear(date) {
+			return moment(date, 'YYYYMM').format('YYYY')
+		},
+	},
+
 	methods: {
+		...mapActions([
+			'removeFileFromCollection',
+		]),
+
 		openViewer(fileId) {
 			const file = this.files[fileId]
 			OCA.Viewer.open({
 				fileInfo: file,
-				list: this.sortedCollectionFileIds.map(fileId => this.files[fileId]).filter(file => !file.sectionHeader),
+				list: Object.values(this.collectionFileIdsByMonth).flat().map(fileId => this.files[fileId]),
 				loadMore: file.loadMore ? async () => await file.loadMore(true) : () => [],
 				canLoop: file.canLoop,
+			})
+		},
+
+		async toggleFavorite(fileId) {
+			let newState = this.$store.state.files.files[fileId].favorite ? 0 : 1
+			console.log(newState)
+			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [ fileId ], favoriteState: newState })
+		},
+
+		async removeFromCollection(fileId) {
+			await this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.filename, fileIdsToRemove: [ fileId ] })
+		},
+
+		getContent() {
+			this.fetchFiles('', {
+				mimesType: this.mimesType,
+				onThisDay: this.onThisDay,
+				onlyFavorites: this.onlyFavorites,
 			})
 		},
 

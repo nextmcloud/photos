@@ -1,33 +1,13 @@
-<!--
- - @copyright Copyright (c) 2022 Louis Chemineau <louis@chmn.me>
- -
- - @author Louis Chemineau <louis@chmn.me>
- - @author Richard Steinmetz <richard@steinmetz.cloud>
- -
- - @license AGPL-3.0-or-later
- -
- - This program is free software: you can redistribute it and/or modify
- - it under the terms of the GNU Affero General Public License as
- - published by the Free Software Foundation, either version 3 of the
- - License, or (at your option) any later version.
- -
- - This program is distributed in the hope that it will be useful,
- - but WITHOUT ANY WARRANTY; without even the implied warranty of
- - MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- - GNU Affero General Public License for more details.
- -
- - You should have received a copy of the GNU Affero General Public License
- - along with this program. If not, see <http://www.gnu.org/licenses/>.
- -
- -->
+
 <template>
-	<div>
+	<div class="album-container">
 		<CollectionContent ref="collectionContent"
 			:collection="album"
 			:collection-file-ids="albumFileIds"
 			:allow-selection="false"
 			:loading="loadingCollection || loadingCollectionFiles"
 			:error="errorFetchingCollection || errorFetchingCollectionFiles">
+
 			<!-- Header -->
 			<HeaderNavigation v-if="albumOriginalName !== ''"
 				key="navigation"
@@ -39,34 +19,10 @@
 				:root-title="albumOriginalName"
 				:title="albumOriginalName"
 				@refresh="fetchAlbumContent">
-				<div v-if="album.location !== ''" slot="subtitle" class="album__location">
-					<MapMarker />{{ album.location }}
+
+				<div v-if="album !== undefined && album.nbItems !== 0" slot="subtitle" class="album__details">
+					{{ n('photos', '%n item', '%n photos and videos', album.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.date }}
 				</div>
-				<template v-if="album !== undefined" slot="right">
-					<NcActions :force-menu="true" :aria-label="t('photos', 'Open actions menu')">
-						<!-- TODO: enable download on public albums -->
-						<!-- <ActionDownload v-if="albumFileIds.length > 0"
-							:selected-file-ids="albumFileIds"
-							:title="t('photos', 'Download all files in album')">
-							<DownloadMultiple slot="icon" />
-						</ActionDownload> -->
-
-						<template v-if="selectedFileIds.length > 0">
-							<!-- TODO: enable download on public albums -->
-							<!-- <NcActionSeparator />
-
-							<ActionDownload :selected-file-ids="selectedFileIds" :title="t('photos', 'Download selected files')">
-								<Download slot="icon" />
-							</ActionDownload> -->
-
-							<!-- </**  :close */-after-click="true"
-								@click="handleRemoveFilesFromAlbum(selectedFileIds)">
-								{{ t('photos', 'Remove selection from album') }}
-								<Close slot="icon" />
-							<//** > */ -->
-						</template>
-					</NcActions>
-				</template>
 			</HeaderNavigation>
 
 			<!-- No content -->
@@ -74,16 +30,6 @@
 				:name="t('photos', 'This album does not have any photos or videos yet!')"
 				class="album__empty">
 				<ImageOff slot="icon" />
-
-				<!-- Public upload is not implemented yet
-				<NcButton slot="action"
-					type="primary"
-					:aria-label="t('photos', 'Add photos to this album')"
-					@click="showAddPhotosModal = true">
-					<Plus slot="icon" />
-					{{ t('photos', "Add") }}
-				</NcButton>
-				-->
 			</NcEmptyContent>
 		</CollectionContent>
 	</div>
@@ -93,21 +39,17 @@
 import { mapActions } from 'vuex'
 import { createClient, getPatcher } from 'webdav'
 
-import MapMarker from 'vue-material-design-icons/MapMarker.vue'
-// import Plus from 'vue-material-design-icons/Plus.vue'
-// import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
 import ImageOff from 'vue-material-design-icons/ImageOff.vue'
-// import Download from 'vue-material-design-icons/Download.vue'
-// import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 
-import { NcActions, /** NcButton, */ NcEmptyContent, /** NcActionSeparator, */ isMobile } from '@nextcloud/vue'
 import axios from '@nextcloud/axios'
+import { NcActions, NcButton, NcEmptyContent } from '@nextcloud/vue'
 import { generateUrl, generateRemoteUrl } from '@nextcloud/router'
 import { translate } from '@nextcloud/l10n'
 
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
-// import ActionDownload from '../components/Actions/ActionDownload.vue'
 import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.js'
 
 const publicRootPath = 'dav'
@@ -123,24 +65,18 @@ const publicRemote = remote
 export default {
 	name: 'PublicAlbumContent',
 	components: {
-		MapMarker,
-		// Plus,
-		// Download,
-		// DownloadMultiple,
-		// ImagePlus,
 		ImageOff,
+		ViewGridOutline,
+		ViewDashboardOutline,
 		NcEmptyContent,
 		NcActions,
-		// NcActionSeparator,
-		// NcButton,
+		NcButton,
 		CollectionContent,
-		// ActionDownload,
 		HeaderNavigation,
 	},
 
 	mixins: [
 		FetchCollectionContentMixin,
-		isMobile,
 	],
 
 	props: {
@@ -191,6 +127,10 @@ export default {
 		publicAlbumFileName() {
 			return this.$store.getters.getPublicAlbumName(this.albumName)
 		},
+
+		isCroppedLayout() {
+			return this.croppedLayout
+		},
 	},
 
 	async beforeMount() {
@@ -205,6 +145,10 @@ export default {
 			'addFilesToCollection',
 			'removeFilesFromCollection',
 		]),
+
+		toggleCroppedLayout({ }) {
+			this.croppedLayout = !this.croppedLayout
+		},
 
 		async fetchAlbumInfo() {
 			const album = await this.fetchCollection(
@@ -233,27 +177,20 @@ export default {
 			)
 		},
 
-		async handleFilesPicked(fileIds) {
-			this.showAddPhotosModal = false
-			await this.addFilesToCollection({ collectionFileName: this.albumName, fileIdsToAdd: fileIds })
-			// Re-fetch album content to have the proper filenames.
-			await this.fetchAlbumContent()
-		},
-
-		async handleRemoveFilesFromAlbum(fileIds) {
-			this.$refs.collectionContent.onUncheckFiles(fileIds)
-			await this.removeFilesFromCollection({ collectionFileName: this.albumName, fileIdsToRemove: fileIds })
-		},
-
 		t: translate,
 	},
 }
 </script>
 <style lang="scss" scoped>
-.album {
-	display: flex;
-	flex-direction: column;
+.album-container {
+	height: 100%;
 
+	:deep(.collection) {
+		height: 100%;
+	}
+}
+
+.album {
 	&__title {
 		width: 100%;
 	}
@@ -268,6 +205,28 @@ export default {
 		margin-left: -4px;
 		display: flex;
 		color: var(--color-text-lighter);
+	}
+}
+
+.photos-navigation {
+	position: relative;
+	// Add space at the bottom for the progress bar.
+	&--uploading {
+		margin-bottom: 30px;
+	}
+
+	:deep(.upload-picker) {
+		.upload-picker__progress {
+			position: absolute;
+			bottom: -30px;
+			left: 64px;
+			margin: 0;
+		}
+		.upload-picker__cancel {
+			position: absolute;
+			bottom: -24px;
+			right: 50px;
+		}
 	}
 }
 </style>

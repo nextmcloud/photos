@@ -103,6 +103,17 @@
 					</NcActions>
 				</template>
 			</div>
+			
+			<template slot="buttons">
+				<NcButton
+					:aria-label="t('photos', 'Enable squared photos view')"
+					@click="toggleCroppedLayout('croppedLayout')">
+					<template #icon>
+						<ViewGridOutline v-if="isCroppedLayout" />
+						<ViewDashboardOutline v-else />
+					</template>
+				</NcButton>
+			</template>
 		</HeaderNavigation>
 
 		<FilesListViewer ref="filesListViewer"
@@ -157,6 +168,8 @@ import Delete from 'vue-material-design-icons/Delete.vue'
 import PlusBoxMultiple from 'vue-material-design-icons/PlusBoxMultiple.vue'
 import Download from 'vue-material-design-icons/Download.vue'
 import Close from 'vue-material-design-icons/Close.vue'
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 import AlertCircle from 'vue-material-design-icons/AlertCircle.vue'
 
 import { NcModal, NcActions, NcActionButton, NcButton, NcEmptyContent, isMobile } from '@nextcloud/vue'
@@ -168,6 +181,7 @@ import { allMimes } from '../services/AllowedMimes.js'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import FilesByMonthMixin from '../mixins/FilesByMonthMixin.js'
 import FilesSelectionMixin from '../mixins/FilesSelectionMixin.js'
+import UserConfig from '../mixins/UserConfig.js'
 import FilesListViewer from '../components/FilesListViewer.vue'
 import File from '../components/File.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
@@ -199,6 +213,8 @@ export default {
 		ActionFavorite,
 		ActionDownload,
 		HeaderNavigation,
+		ViewGridOutline,
+		ViewDashboardOutline
 		PhotosSourceLocationsSettings,
 		AlertCircle,
 	},
@@ -223,6 +239,7 @@ export default {
 		FilesSelectionMixin,
 		FilesByMonthMixin,
 		isMobile,
+		UserConfig,
 	],
 
 	beforeRouteLeave(to, from, next) {
@@ -270,6 +287,10 @@ export default {
 		...mapGetters([
 			'files',
 		]),
+
+		isCroppedLayout() {
+			return this.croppedLayout
+		},
 	},
 
 	methods: {
@@ -298,6 +319,11 @@ export default {
 
 		openUploader() {
 			// TODO: finish when implementing upload
+		},
+
+		toggleCroppedLayout({ }) {
+			this.croppedLayout = !this.croppedLayout
+			this.updateSetting('croppedLayout')
 		},
 
 		async addSelectionToAlbum(album) {
@@ -347,7 +373,7 @@ export default {
 	&__header {
 		&__left {
 			display: flex;
-			gap: 4px;
+			gap: 1rem;
 		}
 	}
 
