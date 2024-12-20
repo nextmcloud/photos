@@ -30,6 +30,7 @@ on:
           - stable28-custom
           - stable29
           - stable29-custom
+          - nmc/optimized-albums
       increment:
         description: 'Release increment'
         required: true
