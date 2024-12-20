@@ -66,11 +66,8 @@
     "Jump to specific date in list" : "Jump to specific date in list",
     "Jump to {date}" : "Jump to {date}",
     "Add to {destination}" : "Add to {destination}",
-<<<<<<< Updated upstream
-=======
     "Create empty album" : "Create empty album",
     "The destination folder is owned by {owner}" : "The destination folder is owned by {owner}",
->>>>>>> Stashed changes
     "There are no photos or videos yet!" : "There are no photos or videos yet!",
     "_{years} year ago_::_{years} years ago_" : ["{years} year ago","{years} years ago"],
     "Enable squared photos view" : "Enable squared photos view",

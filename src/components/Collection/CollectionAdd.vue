@@ -19,7 +19,7 @@
  - along with this program. If not, see <http://www.gnu.org/licenses/>.
  -
  -->
- <template>
+<template>
 	<li id="collection-add">
 		<slot name="default" />
 	</li>
@@ -39,7 +39,7 @@ export default {
 </script>
 <style lang="scss" scoped>
 #collection-add {
-	
+
 	.button-vue {
 		display: flex;
 		flex-direction: column;

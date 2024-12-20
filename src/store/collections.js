@@ -121,8 +121,6 @@ const mutations = {
 			...state.collectionsFiles,
 			[collectionFileName]: [...new Set([...collectionFiles, ...fileIdsToAdd])],
 		}
-		
-		console.log(state.collections)		
 
 		state.collections[collectionFileName].nbItems += fileIdsToAdd.length
 		state.collections[collectionFileName].lastPhoto = Number.parseInt(fileIdsToAdd[fileIdsToAdd.length - 1])
@@ -137,10 +135,6 @@ const mutations = {
 	 * @param {string[]} data.fileIdsToRemove list of files
 	 */
 	removeFilesFromCollection(state, { collectionFileName, fileIdsToRemove }) {
-
-		console.log(collectionFileName)
-		console.log(fileIdsToRemove)
-
 		state.collectionsFiles = {
 			...state.collectionsFiles,
 			[collectionFileName]: state.collectionsFiles[collectionFileName].filter(fileId => !fileIdsToRemove.includes(fileId)),
@@ -342,7 +336,7 @@ const actions = {
 								</d:prop>
 							</d:set>
 							</d:propertyupdate>`,
-				}
+				},
 			)
 
 			return updatedCollection

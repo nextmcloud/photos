@@ -214,7 +214,7 @@ export default {
 		// Replaces the app navigation button
 		position: absolute !important;
 		left: 1rem;
-    	top: 1.5rem;
+		top: 1.5rem;
 	}
 
 	&__title {
@@ -246,7 +246,7 @@ export default {
 	}
 
 	&__content-right,
-	&__content, 
+	&__content,
 	&__content-buttons {
 		display: flex;
 		align-items: center;

@@ -1,4 +1,3 @@
-
 <template>
 	<div class="album-container">
 		<CollectionContent ref="collectionContent"
@@ -6,10 +5,8 @@
 			:collection-file-ids="albumFileIds"
 			:loading="loadingCollection || loadingCollectionFiles"
 			:error="errorFetchingCollection || errorFetchingCollectionFiles">
-
 			<!-- Header -->
-			<HeaderNavigation 
-				key="navigation"
+			<HeaderNavigation key="navigation"
 				slot="header"
 				slot-scope="{selectedFileIds, resetSelection}"
 				:class="{'photos-navigation--uploading': uploader.queue?.length > 0}"
@@ -18,7 +15,6 @@
 				:path="'/' + albumName"
 				:title="albumName"
 				@refresh="fetchAlbumContent">
-
 				<div v-if="album !== undefined && album.nbItems !== 0" slot="subtitle" class="album__details">
 					{{ n('photos', '%n item', '%n photos and videos', album.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.date }}
 				</div>
@@ -55,9 +51,7 @@
 				</template>
 
 				<template v-if="album !== undefined" slot="buttons">
-
-					<NcButton
-						:aria-label="t('photos', 'Enable squared photos view')"
+					<NcButton :aria-label="t('photos', 'Enable squared photos view')"
 						@click="toggleCroppedLayout('croppedLayout')">
 						<template #icon>
 							<ViewGridOutline v-if="isCroppedLayout" />
@@ -66,7 +60,7 @@
 					</NcButton>
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
-						<NcActionButton v-if="sharingEnabled" 
+						<NcActionButton v-if="sharingEnabled"
 							:close-after-click="true"
 							:aria-label="t('photos', 'Manage collaborators for this album')"
 							@click="showManageCollaboratorView = true">
@@ -183,7 +177,6 @@ import Delete from 'vue-material-design-icons/Delete.vue'
 // import Download from 'vue-material-design-icons/Download.vue'
 // import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
 import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
-import MapMarker from 'vue-material-design-icons/MapMarker.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
@@ -223,7 +216,6 @@ export default {
 		PhotosPicker,
 		HeaderNavigation,
 		ImagePlus,
-		MapMarker,
 		NcActionButton,
 		NcActions,
 		NcActionSeparator,
@@ -237,16 +229,11 @@ export default {
 		ShareVariant,
 		UploadPicker,
 		ViewGridOutline,
-		ViewDashboardOutline
+		ViewDashboardOutline,
 	},
 
 	mixins: [
 		FetchCollectionContentMixin,
-<<<<<<< Updated upstream
-		FetchFilesMixin,
-		isMobile,
-=======
->>>>>>> Stashed changes
 		UserConfig,
 	],
 
@@ -330,7 +317,7 @@ export default {
 		},
 
 		albumAsFolder() {
-			let newFolder = new Folder({
+			const newFolder = new Folder({
 				...this.album,
 				owner: getCurrentUser()?.uid ?? '',
 				source: this.album?.source ?? '',
@@ -361,7 +348,7 @@ export default {
 		async fetchAlbum() {
 			await this.fetchCollection(
 				this.albumFileName,
-				['<nc:location />', '<nc:dateRange />', '<nc:collaborators />']
+				['<nc:location />', '<nc:dateRange />', '<nc:collaborators />'],
 			)
 		},
 
@@ -377,7 +364,7 @@ export default {
 			}
 		},
 
-		toggleCroppedLayout({ }) {
+		toggleCroppedLayout() {
 			this.croppedLayout = !this.croppedLayout
 			this.updateSetting('croppedLayout')
 		},

@@ -21,7 +21,6 @@
  */
 
 import moment from '@nextcloud/moment'
-import { translate as t } from '@nextcloud/l10n'
 
 import defaultClient from '../services/DavClient.js'
 import logger from '../services/logger.js'
@@ -149,11 +148,7 @@ function formatAlbum(album) {
 		endDate: moment.unix(dateRange.end).format('MMMM YYYY'),
 	}
 
-	// if (dateRangeFormatted.startDate === dateRangeFormatted.endDate) {
-		album.date = dateRangeFormatted.startDate
-	// } else {
-	// 	album.date = t('photos', '{startDate} to {endDate}', dateRangeFormatted)
-	// }
+	album.date = dateRangeFormatted.startDate
 
 	return album
 }

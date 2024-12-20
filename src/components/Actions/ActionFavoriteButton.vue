@@ -45,7 +45,7 @@ import Star from 'vue-material-design-icons/Star.vue'
 import { NcButton } from '@nextcloud/vue'
 
 export default {
-	name: 'ActionFavorite',
+	name: 'ActionFavoriteButton',
 	components: {
 		Star,
 		NcButton,

@@ -21,7 +21,6 @@
  */
 
 import moment from '@nextcloud/moment'
-import { translate as t } from '@nextcloud/l10n'
 
 import defaultClient from './DavClient.js'
 import logger from './logger.js'
@@ -184,11 +183,8 @@ function formatCollection(rawCollection) {
 		startDate: moment.unix(dateRange.start).format('MMMM YYYY'),
 		endDate: moment.unix(dateRange.end).format('MMMM YYYY'),
 	}
-	// if (dateRangeFormatted.startDate === dateRangeFormatted.endDate) {
-		rawCollection.date = dateRangeFormatted.startDate
-	// } else {
-	// 	rawCollection.date = t('photos', '{startDate} to {endDate}', dateRangeFormatted)
-	// }
+
+	rawCollection.date = dateRangeFormatted.startDate
 
 	return rawCollection
 }

@@ -235,7 +235,7 @@ const actions = {
 								</d:prop>
 							</d:set>
 							</d:propertyupdate>`,
-						}
+						},
 					)
 				} catch (error) {
 					context.commit('favoriteFile', { fileId, favoriteState: favoriteState === 0 ? 1 : 0 })

@@ -172,7 +172,7 @@ const actions = {
 				try {
 					await client.moveFile(
 						oldFace ? `/recognize/${getCurrentUser()?.uid}/faces/${oldFace}/${fileBaseName}` : `/recognize/${getCurrentUser()?.uid}/unassigned-faces/${fileBaseName}`,
-						`/recognize/${getCurrentUser()?.uid}/faces/${faceName}/${fileBaseName}`
+						`/recognize/${getCurrentUser()?.uid}/faces/${faceName}/${fileBaseName}`,
 					)
 					file.faceDetections.find(detection => detection.title === oldFace).title = faceName
 					await context.commit('addFilesToFace', { faceName, fileIdsToAdd: [fileId] })

@@ -62,23 +62,12 @@
 
 		<!-- The actions on the bottom -->
 		<template #actions>
-<<<<<<< Updated upstream
-			<UploadPicker :accept="allowedMimes"
-				:context="uploadContext"
-				:destination="photosLocationFolder"
-				:multiple="true"
-				@uploaded="refreshFiles" />
-			<NcButton type="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
-				<template #icon>
-					<ImagePlus v-if="!loading" />
-					<NcLoadingIcon v-if="loading" />
-				</template>
-				{{ t('photos', 'Add to {destination}', { destination }) }}
-			</NcButton>
-=======
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
-					<NcButton v-if="allowempty" type="secondary" :disabled="loading" @click="$emit('closed')">
+					<NcButton v-if="allowempty"
+						type="secondary"
+						:disabled="loading"
+						@click="$emit('closed')">
 						<template #icon>
 							<ImageAlbum v-if="!loading" />
 							<NcLoadingIcon v-if="loading" />
@@ -94,7 +83,6 @@
 					</NcButton>
 				</div>
 			</div>
->>>>>>> Stashed changes
 		</template>
 
 		<FilesListViewer class="photos-picker__file-list"
@@ -128,7 +116,6 @@
 </template>
 
 <script>
-import { UploadPicker } from '@nextcloud/upload'
 import { NcButton, NcDialog, NcLoadingIcon, NcSelect, useIsMobile } from '@nextcloud/vue'
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
@@ -159,7 +146,6 @@ export default defineComponent({
 		NcDialog,
 		NcLoadingIcon,
 		NcSelect,
-		UploadPicker,
 	},
 
 	mixins: [
@@ -327,8 +313,6 @@ export default defineComponent({
 			justify-content: center;
 		}
 	}
-<<<<<<< Updated upstream
-=======
 
 	&__actions {
 		display: flex;
@@ -342,6 +326,5 @@ export default defineComponent({
 			gap: 16px;
 		}
 	}
->>>>>>> Stashed changes
 }
 </style>

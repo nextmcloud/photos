@@ -52,8 +52,8 @@ export default {
 		/**
 		 * @param {string} path - Path to pass to getPhotos.
 		 * @param {object} options - Options to pass to getPhotos.
-		 * @param {string[]} [blacklist=[]] - Array of ids to filter out.
-		 * @param {boolean} [force=false] - Force fetching even if doneFetchingFiles is true
+		 * @param {string[]} [blacklist] - Array of ids to filter out.
+		 * @param {boolean} [force] - Force fetching even if doneFetchingFiles is true
 		 * @return {Promise<string[]>} - The next batch of data depending on global offset.
 		 */
 		async fetchFiles(path = '', options = {}, blacklist = [], force = false) {
@@ -89,7 +89,7 @@ export default {
 				this.fetchedFileIds.push(
 					...fileIds
 						.map((fileId) => fileId.toString())
-						.filter((fileId) => !blacklist.includes(fileId))
+						.filter((fileId) => !blacklist.includes(fileId)),
 				)
 
 				this.$store.dispatch('appendFiles', fetchedFiles)

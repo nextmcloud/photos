@@ -79,6 +79,7 @@ import FolderMultipleImage from 'vue-material-design-icons/FolderMultipleImage.v
 
 import { NcEmptyContent, isMobile } from '@nextcloud/vue'
 import { translate } from '@nextcloud/l10n'
+import moment from '@nextcloud/moment'
 
 import FetchFilesMixin from '../../mixins/FetchFilesMixin.js'
 import FilesByMonthMixin from '../../mixins/FilesByMonthMixin.js'
@@ -95,6 +96,21 @@ export default {
 		NcEmptyContent,
 		FilesListViewer,
 		File,
+	},
+
+	filters: {
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateMonth(date) {
+			return moment(date, 'YYYYMM').format('MMMM')
+		},
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateYear(date) {
+			return moment(date, 'YYYYMM').format('YYYY')
+		},
 	},
 
 	mixins: [
@@ -150,21 +166,6 @@ export default {
 		},
 	},
 
-	filters: {
-		/**
-		 * @param {string} date - In the following format: YYYYMM
-		 */
-		dateMonth(date) {
-			return moment(date, 'YYYYMM').format('MMMM')
-		},
-		/**
-		 * @param {string} date - In the following format: YYYYMM
-		 */
-		dateYear(date) {
-			return moment(date, 'YYYYMM').format('YYYY')
-		},
-	},
-
 	methods: {
 		...mapActions([
 			'removeFileFromCollection',
@@ -181,13 +182,12 @@ export default {
 		},
 
 		async toggleFavorite(fileId) {
-			let newState = this.$store.state.files.files[fileId].favorite ? 0 : 1
-			console.log(newState)
-			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [ fileId ], favoriteState: newState })
+			const newState = this.$store.state.files.files[fileId].favorite ? 0 : 1
+			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
 		},
 
 		async removeFromCollection(fileId) {
-			await this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.filename, fileIdsToRemove: [ fileId ] })
+			await this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.filename, fileIdsToRemove: [fileId] })
 		},
 
 		getContent() {

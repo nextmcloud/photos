@@ -33,7 +33,7 @@
 			<div class="file__images">
 				<VideoIcon v-if="file.mime.includes('video')" class="icon-overlay" :size="64" />
 				<PlayCircleIcon v-else-if="file.metadataFilesLivePhoto !== undefined" class="icon-overlay" :size="64" />
-				<div class="hover-overlay" v-if="isCollection">
+				<div v-if="isCollection" class="hover-overlay">
 					<Star class="icon-overlay-action" :size="24" @click.stop.prevent="emitFavorite" />
 					<Delete class="icon-overlay-action" :size="24" @click.stop.prevent="emitRemove" />
 				</div>
@@ -85,11 +85,8 @@
 import VideoIcon from 'vue-material-design-icons/Video.vue'
 import PlayCircleIcon from 'vue-material-design-icons/PlayCircle.vue'
 import FavoriteIcon from './FavoriteIcon.vue'
-<<<<<<< Updated upstream
-=======
 import Star from 'vue-material-design-icons/Star.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
->>>>>>> Stashed changes
 
 import { generateUrl } from '@nextcloud/router'
 import { NcCheckboxRadioSwitch } from '@nextcloud/vue'
@@ -315,22 +312,6 @@ export default {
 					height: 70%;
 				}
 			}
-<<<<<<< Updated upstream
-		}
-
-		&__hidden-description {
-			position: absolute;
-			left: -10000px;
-			top: -10000px;
-			width: 1px;
-			height: 1px;
-			overflow: hidden;
-
-			&.show {
-				position: initial;
-				width: fit-content;
-				height: fit-content;
-=======
 
 			.star-icon {
 				position: absolute;
@@ -356,7 +337,6 @@ export default {
 				svg {
 					color: #fff;
 				}
->>>>>>> Stashed changes
 			}
 		}
 

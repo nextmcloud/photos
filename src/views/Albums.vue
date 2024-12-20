@@ -30,8 +30,7 @@
 				:loading="loadingCollections"
 				:title="t('photos', 'Albums')"
 				:root-title="t('photos', 'Albums')"
-				@refresh="fetchAlbums">
-			</HeaderNavigation>
+				@refresh="fetchAlbums" />
 
 			<CollectionCover :key="collection.basename"
 				slot-scope="{collection}"
@@ -72,12 +71,11 @@
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
-			<AlbumForm @done="handleAlbumCreated" 
-			@cancel="handleAlbumCreateCancel" />
+			<AlbumForm @done="handleAlbumCreated"
+				@cancel="handleAlbumCreateCancel" />
 		</NcModal>
 
-		<PhotosPicker
-			:open.sync="showPhotosPicker"
+		<PhotosPicker :open.sync="showPhotosPicker"
 			:blacklist-ids="blacklistIds"
 			:destination="destination"
 			:name="t('photos', 'Add photos to {albumName}', {albumName: destination})"
@@ -88,7 +86,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import FolderMultipleImage from 'vue-material-design-icons/FolderMultipleImage.vue'
 import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
@@ -106,7 +104,6 @@ import AlbumForm from '../components/Albums/AlbumForm.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
 import FetchCollectionsMixin from '../mixins/FetchCollectionsMixin.js'
 
-
 export default {
 	name: 'Albums',
 	components: {
@@ -121,7 +118,7 @@ export default {
 		HeaderNavigation,
 		AlbumForm,
 		PhotosPicker,
-		ExportVariant
+		ExportVariant,
 	},
 
 	filters: {
@@ -182,7 +179,7 @@ export default {
 		fetchAlbums() {
 			this.fetchCollections(
 				`/photos/${getCurrentUser()?.uid}/albums`,
-				['<nc:location />', '<nc:dateRange />', '<nc:collaborators />']
+				['<nc:location />', '<nc:dateRange />', '<nc:collaborators />'],
 			)
 		},
 
@@ -223,7 +220,7 @@ export default {
 		 * @return {boolean}
 		 */
 		isShared(album) {
-			if (album.collaborators.length === 0) { 
+			if (album.collaborators.length === 0) {
 				return false
 			}
 			return true

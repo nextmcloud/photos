@@ -1,4 +1,3 @@
-
 <template>
 	<div class="album-container">
 		<CollectionContent ref="collectionContent"
@@ -7,19 +6,16 @@
 			:allow-selection="false"
 			:loading="loadingCollection || loadingCollectionFiles"
 			:error="errorFetchingCollection || errorFetchingCollectionFiles">
-
 			<!-- Header -->
 			<HeaderNavigation v-if="albumOriginalName !== ''"
 				key="navigation"
 				slot="header"
-				slot-scope="{selectedFileIds}"
 				:loading="loadingCollection || loadingCollectionFiles"
 				:params="{ token }"
 				path="/"
 				:root-title="albumOriginalName"
 				:title="albumOriginalName"
 				@refresh="fetchAlbumContent">
-
 				<div v-if="album !== undefined && album.nbItems !== 0" slot="subtitle" class="album__details">
 					{{ n('photos', '%n item', '%n photos and videos', album.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.date }}
 				</div>
@@ -40,11 +36,9 @@ import { mapActions } from 'vuex'
 import { createClient, getPatcher } from 'webdav'
 
 import ImageOff from 'vue-material-design-icons/ImageOff.vue'
-import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
-import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 
 import axios from '@nextcloud/axios'
-import { NcActions, NcButton, NcEmptyContent } from '@nextcloud/vue'
+import { NcEmptyContent } from '@nextcloud/vue'
 import { generateUrl, generateRemoteUrl } from '@nextcloud/router'
 import { translate } from '@nextcloud/l10n'
 
@@ -66,11 +60,7 @@ export default {
 	name: 'PublicAlbumContent',
 	components: {
 		ImageOff,
-		ViewGridOutline,
-		ViewDashboardOutline,
 		NcEmptyContent,
-		NcActions,
-		NcButton,
 		CollectionContent,
 		HeaderNavigation,
 	},
@@ -146,10 +136,6 @@ export default {
 			'removeFilesFromCollection',
 		]),
 
-		toggleCroppedLayout({ }) {
-			this.croppedLayout = !this.croppedLayout
-		},
-
 		async fetchAlbumInfo() {
 			const album = await this.fetchCollection(
 				`/photospublic/${this.token}`,
@@ -173,7 +159,7 @@ export default {
 						// Disable use of generic file previews for public albums - for older versions of the Viewer app
 						hasPreview: false,
 					}),
-				]
+				],
 			)
 		},
 

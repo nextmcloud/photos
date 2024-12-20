@@ -117,7 +117,7 @@ export default {
 						data: DavRequest,
 						details: true,
 						signal: this.abortController.signal,
-					}
+					},
 				)
 
 				fetchedFiles = fetchedFiles
@@ -169,7 +169,7 @@ export default {
 						data: DavRequest,
 						details: true,
 						signal: this.abortController.signal,
-					}
+					},
 				)
 
 				fetchedFiles = fetchedFiles
@@ -210,7 +210,7 @@ export default {
 						data: DavRequest,
 						details: true,
 						signal: this.abortController.signal,
-					}
+					},
 				)
 
 				const count = Number(unassignedFacesRoot.props.nbItems)

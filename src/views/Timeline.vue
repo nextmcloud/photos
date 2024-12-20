@@ -97,10 +97,9 @@
 					</NcActions>
 				</template>
 			</div>
-			
+
 			<template slot="buttons">
-				<NcButton
-					:aria-label="t('photos', 'Enable squared photos view')"
+				<NcButton :aria-label="t('photos', 'Enable squared photos view')"
 					@click="toggleCroppedLayout('croppedLayout')">
 					<template #icon>
 						<ViewGridOutline v-if="isCroppedLayout" />
@@ -161,12 +160,8 @@ import Delete from 'vue-material-design-icons/Delete.vue'
 import PlusBoxMultiple from 'vue-material-design-icons/PlusBoxMultiple.vue'
 import Download from 'vue-material-design-icons/Download.vue'
 import Close from 'vue-material-design-icons/Close.vue'
-<<<<<<< Updated upstream
-=======
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
-import AlertCircle from 'vue-material-design-icons/AlertCircle.vue'
->>>>>>> Stashed changes
 
 import { NcModal, NcActions, NcActionButton, NcButton, NcEmptyContent, isMobile } from '@nextcloud/vue'
 import moment from '@nextcloud/moment'
@@ -205,13 +200,8 @@ export default {
 		ActionFavorite,
 		ActionDownload,
 		HeaderNavigation,
-<<<<<<< Updated upstream
-=======
 		ViewGridOutline,
 		ViewDashboardOutline,
-		PhotosSourceLocationsSettings,
-		AlertCircle,
->>>>>>> Stashed changes
 	},
 
 	filters: {
@@ -308,7 +298,7 @@ export default {
 			// TODO: finish when implementing upload
 		},
 
-		toggleCroppedLayout({ }) {
+		toggleCroppedLayout() {
 			this.croppedLayout = !this.croppedLayout
 			this.updateSetting('croppedLayout')
 		},

@@ -32,12 +32,12 @@ import moment from '@nextcloud/moment'
  *
  * @param {object} path the lookup path
  * @param {object} [options] used for the cancellable requests
- * @param {number} [options.firstResult=0] Index of the first result that we want (starts at 0)
- * @param {number} [options.nbResults=200] The number of file to fetch
- * @param {string[]} [options.mimesType=allMimes] Mime type of the files
- * @param {boolean} [options.full=false] get full data of the files
- * @param {boolean} [options.onThisDay=false] get only items from this day of year
- * @param {boolean} [options.onlyFavorites=false] get only favorite items
+ * @param {number} [options.firstResult] Index of the first result that we want (starts at 0)
+ * @param {number} [options.nbResults] The number of file to fetch
+ * @param {string[]} [options.mimesType] Mime type of the files
+ * @param {boolean} [options.full] get full data of the files
+ * @param {boolean} [options.onThisDay] get only items from this day of year
+ * @param {boolean} [options.onlyFavorites] get only favorite items
  * @return {Promise<object[]>} the file list
  */
 export default async function(path = '', options = {}) {

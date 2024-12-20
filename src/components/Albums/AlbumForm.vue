@@ -49,8 +49,7 @@
 					@click="back">
 					{{ t('photos', 'Back') }}
 				</NcButton>
-				<NcButton
-					type="secondary"
+				<NcButton type="secondary"
 					@click="cancel()">
 					{{ t('photos', 'Cancel') }}
 				</NcButton>
@@ -172,7 +171,7 @@ export default {
 
 		albumCoverImage() {
 			return '/customapps/photos/img/create-album.png'
-		}
+		},
 	},
 
 	mounted() {
