@@ -85,6 +85,7 @@ OC.L10N.register(
     "Choose the folder where photos and albums are uploaded to." : "Escolha a pasta para onde as fotos e os álbuns serão carregados.",
     "_%n photo_::_%n photos_" : ["%n foto","%n fotos","%n fotos"],
     "Unselect all" : "Desmarque todos",
+    "Add photos to this album" : "Adicionar fotos a este álbum",
     "Manage collaborators for this album" : "Gerenciar colaboradores para este álbum",
     "Open actions menu" : "Abrir menu de ações",
     "Edit album details" : "Modificar detalhes do álbu",
@@ -93,7 +94,6 @@ OC.L10N.register(
     "Download selected files" : "Baixar arquivos selecionados",
     "Remove selection from album" : "Remover seleção do álbum",
     "This album does not have any photos or videos yet!" : "Este álbum ainda não possui fotos ou vídeos!",
-    "Add photos to this album" : "Adicionar fotos a este álbum",
     "Add photos to {albumName}" : "Add photos to {albumName}",
     "Manage collaborators" : "Gerenciar colaboradores",
     "Save collaborators for this album." : "Salve os colaboradores deste álbum.",
@@ -129,7 +129,6 @@ OC.L10N.register(
     "Popular tags" : "Etiquetas populares",
     "All tags" : "Todas as etiquetas",
     "One of the source folders does not exist" : "Um dos arquivos da fonte não existe",
-    "Add" : "Adicionar",
     "Add to album" : "Adicionar a álbum",
     "Delete selection" : "Excluir seleção",
     "No photos or videos in here" : "Não há fotos ou vídeos aqui",
@@ -155,10 +154,7 @@ OC.L10N.register(
     "Failed to set favorite state for {fileId}." : "Falha ao definir o estado de favorito para {fileId}.",
     "Failed to set favorite state for {fileName}." : "Falha ao definir o estado de favorito para {fileName}.",
     "Could not load photos folder" : "Não foi possível carregar a pasta de fotos",
-    "Default Photos upload and Albums location" : "Localização padrão de upload para fotos e álbuns",
-    "Select the default location for your media" : "Selecione o local padrão para sua mídia",
-    "Invalid location selected" : "Invalidar localização selecionada",
-    "Photos directory" : "Diretório de fotos",
-    "One of the source folders does not exists" : "Uma das pastas de origem não existe"
+    "One of the source folders does not exists" : "Uma das pastas de origem não existe",
+    "Add" : "Adicionar"
 },
 "nplurals=3; plural=(n == 0 || n == 1) ? 0 : n != 0 && n % 1000000 == 0 ? 1 : 2;");

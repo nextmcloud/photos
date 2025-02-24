@@ -71,6 +71,7 @@
     "All folders" : "Усі каталоги",
     "Add a Photos source for the timelines" : "Додати джерело світлин до хронології",
     "Add folder" : "Додати теку",
+    "Pick folder" : "Вибрати каталог",
     "Select a source folder for your media" : "Виберіть каталог джерела для ваших світлин чи відеозаписів",
     "Home" : "Домівка",
     "Choose default Photos upload and Albums location" : "Виберіть типове розташування для завантаження світлин та альбомів",
@@ -83,6 +84,7 @@
     "Choose the folder where photos and albums are uploaded to." : "Виберіть каталог, до якого завантажувати світлини та альбоми.",
     "_%n photo_::_%n photos_" : ["%n фото","%n фото","%n фото","%n фото"],
     "Unselect all" : "Зняти вибір",
+    "Add photos to this album" : "Додайте фотографії до цього альбому",
     "Manage collaborators for this album" : "Керуйте співавторами для цього альбому",
     "Open actions menu" : "Відкрити меню дій",
     "Edit album details" : "Редагувати деталі альбому",
@@ -91,7 +93,6 @@
     "Download selected files" : "Звантажити вибрані файли",
     "Remove selection from album" : "Вилучити виділення з альбому",
     "This album does not have any photos or videos yet!" : "У цьому альбомі ще немає фото чи відео!",
-    "Add photos to this album" : "Додайте фотографії до цього альбому",
     "Add photos to {albumName}" : "Додати світлини до {albumName}",
     "Manage collaborators" : "Керуйте співавторами",
     "Save collaborators for this album." : "Зберегти співавторів для цього альбому.",
@@ -126,7 +127,7 @@
     "Photos with tags will show up here" : "Світлини з мітками буде показано тут",
     "Popular tags" : "Популярні мітки",
     "All tags" : "Всі мітки",
-    "Add" : "Додати",
+    "One of the source folders does not exist" : "Один із каталогів призначення відсутній",
     "Add to album" : "Додати в альбом",
     "Delete selection" : "Вилучити виділення",
     "No photos or videos in here" : "Тут немає фотографій та відео",
@@ -152,10 +153,7 @@
     "Failed to set favorite state for {fileId}." : "Не вдалося позначити зірочкою {fileId}.",
     "Failed to set favorite state for {fileName}." : "Не вдалося позначити зірочкою {fileName}.",
     "Could not load photos folder" : "Неможливо завантажити каталог зі світлинами",
-    "Default Photos upload and Albums location" : "Типове місце завантажених світлин та альбомів",
-    "Select the default location for your media" : "Виберіть типове розташування для ваших зображень та відео",
-    "Invalid location selected" : "Вибрано недійсне місце розташування",
-    "Photos directory" : "Каталог фотографій",
-    "One of the source folders does not exists" : "Один з каталогів джерел відсутній"
+    "One of the source folders does not exists" : "Один з каталогів джерел відсутній",
+    "Add" : "Додати"
 },"pluralForm" :"nplurals=4; plural=(n % 1 == 0 && n % 10 == 1 && n % 100 != 11 ? 0 : n % 1 == 0 && n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 1 : n % 1 == 0 && (n % 10 ==0 || (n % 10 >=5 && n % 10 <=9) || (n % 100 >=11 && n % 100 <=14 )) ? 2: 3);"
 }

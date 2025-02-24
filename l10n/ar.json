@@ -71,6 +71,7 @@
     "All folders" : "كل المجلدات",
     "Add a Photos source for the timelines" : "إضافة مصادر الصور إلى الخطوط الزمنية",
     "Add folder" : "إضافة مجلد",
+    "Pick folder" : "إختَر مُجلّداً",
     "Select a source folder for your media" : "إختَر المجلد المصدر لوسائطك ",
     "Home" : "الرئيسية",
     "Choose default Photos upload and Albums location" : "اختر افتراضي رفع الصور وموقع الألبومات",
@@ -83,6 +84,7 @@
     "Choose the folder where photos and albums are uploaded to." : "إختَر المجلد الذي تُرفع إليه الصور و الألبومات",
     "_%n photo_::_%n photos_" : ["%n صور","%n صورة","%n صور","%n صور","%n صور","%n صور"],
     "Unselect all" : "إلغاء الاختيار للكل",
+    "Add photos to this album" : "إضِف صوراً إلى هذا الألبوم",
     "Manage collaborators for this album" : "إدارة المتعاونين لهذا الألبوم",
     "Open actions menu" : "فتح قائمة الإجراءات",
     "Edit album details" : "تعديل تفاصيل الألبوم",
@@ -91,7 +93,6 @@
     "Download selected files" : "تنزيل الملفات التي تمّ تحديدها",
     "Remove selection from album" : "حذف ما تمّ تحديده من الألبوم",
     "This album does not have any photos or videos yet!" : "هذا الألبوم ليس فيه أي صور أو مقاطع فيديو حتى الآن!",
-    "Add photos to this album" : "إضِف صوراً إلى هذا الألبوم",
     "Add photos to {albumName}" : "إضافة الصور إلى {albumName}",
     "Manage collaborators" : "إدارة المتعاونين",
     "Save collaborators for this album." : "حفظ المتعاونين لهذا الألبوم",
@@ -127,7 +128,6 @@
     "Popular tags" : "وسوم شائعة",
     "All tags" : "كل الوسوم",
     "One of the source folders does not exist" : "أحد المجلدات المصدرية غير موجود",
-    "Add" : "إضافة",
     "Add to album" : "إضِف إلى ألبوم",
     "Delete selection" : "حذف ما تمّ تحديده",
     "No photos or videos in here" : "لا توجد أي صور أو مقاطع فيديو هنا.",
@@ -153,10 +153,7 @@
     "Failed to set favorite state for {fileId}." : "تعذّر تعيين حالة \"مُفضّل\" لـ {fileId}.",
     "Failed to set favorite state for {fileName}." : "تعذّر تعيين حالة \"مُفضّل\" لـ {fileName}.",
     "Could not load photos folder" : "تعذّر رفع مجلد الصِّور",
-    "Default Photos upload and Albums location" : "الموقع الافتراضي لرفع الصور و الألبومات",
-    "Select the default location for your media" : "إختر الموقع الافتراضي لوسائطك",
-    "Invalid location selected" : "الموقع المُختار غير صحيح",
-    "Photos directory" : "دليل الصور",
-    "One of the source folders does not exists" : "أحد المجلدات المصدرية غير موجود"
+    "One of the source folders does not exists" : "أحد المجلدات المصدرية غير موجود",
+    "Add" : "إضافة"
 },"pluralForm" :"nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;"
 }

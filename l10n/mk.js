@@ -62,6 +62,7 @@ OC.L10N.register(
     "View" : "Погледни",
     "_%n photo_::_%n photos_" : ["%n фотографија","%n фотографии"],
     "Unselect all" : "Од-означи се",
+    "Add photos to this album" : "Додади фотографии во овој албум",
     "Manage collaborators for this album" : "Уреди соработници за овој албум",
     "Open actions menu" : "Отвори Мени со акции",
     "Edit album details" : "Уреди ги деталите на албумот",
@@ -70,7 +71,6 @@ OC.L10N.register(
     "Download selected files" : "Преземи ги означените датотеки",
     "Remove selection from album" : "Отстрани ги селектираните од албумот",
     "This album does not have any photos or videos yet!" : "Овој албум сеуште нема фотографии и видеа!",
-    "Add photos to this album" : "Додади фотографии во овој албум",
     "Manage collaborators" : "Уреди соработници",
     "Save collaborators for this album." : "Зачувај соработници за овој албум.",
     "Cover photo for album {albumName}" : "Насловна фотографија за албумот {albumName}",
@@ -101,7 +101,6 @@ OC.L10N.register(
     "No tags yet" : "Сеуште нема ознаки",
     "Photos with tags will show up here" : "Фотографиите со ознаки ќе се појават овде",
     "Popular tags" : "Популарни ознаки",
-    "Add" : "Додади",
     "Add to album" : "Додади во албум",
     "Delete selection" : "Избриши ги селектираните",
     "No photos or videos in here" : "Овде нема фотографии или видеа",
@@ -125,9 +124,6 @@ OC.L10N.register(
     "Failed to delete {fileName}." : "Неуспешно бришење на {fileName}.",
     "Failed to set favorite state for {fileId}." : "Неуспешно поставување на омилен статус за {fileId}.",
     "Failed to set favorite state for {fileName}." : "Неуспешно поставување на омилен статус за {fileName}.",
-    "Default Photos upload and Albums location" : "Стандардна локација за прикачени фотографии и албуми",
-    "Select the default location for your media" : "Изберете стандардна локација за вашите медиа датотеки",
-    "Invalid location selected" : "Избрана невалидна локација",
-    "Photos directory" : "Директориум за фотографии"
+    "Add" : "Додади"
 },
 "nplurals=2; plural=(n % 10 == 1 && n % 100 != 11) ? 0 : 1;");

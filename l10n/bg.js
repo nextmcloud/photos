@@ -61,6 +61,7 @@ OC.L10N.register(
     "View" : "Изглед",
     "_%n photo_::_%n photos_" : ["%n снимки","%n снимки"],
     "Unselect all" : "Отмяна на избора на всички",
+    "Add photos to this album" : "Добавяне на снимки към този албум",
     "Manage collaborators for this album" : "Управление на сътрудници за този албум",
     "Open actions menu" : "Отворяне на менюто с действия",
     "Edit album details" : "Редактиране на подробности за албума",
@@ -69,7 +70,6 @@ OC.L10N.register(
     "Download selected files" : "Изтегляне на избраните файлове",
     "Remove selection from album" : "Премахване на селекция от албума",
     "This album does not have any photos or videos yet!" : "Този албум все още няма снимки или видеоклипове!",
-    "Add photos to this album" : "Добавяне на снимки към този албум",
     "Manage collaborators" : "Управление на сътрудници",
     "Save collaborators for this album." : "Запис на сътрудници за този албум.",
     "Cover photo for album {albumName}" : "Снимка на корицата на албум {albumName}",
@@ -100,7 +100,6 @@ OC.L10N.register(
     "No tags yet" : "Все още няма етикети",
     "Photos with tags will show up here" : " Снимки с етикети ще се покажат тук",
     "Popular tags" : "Популярни етикети",
-    "Add" : "Добавяне",
     "Add to album" : "Добавяне към албум",
     "Delete selection" : "Изтриите селекцията",
     "No photos or videos in here" : "Тук няма снимки или видеоклипове",
@@ -124,9 +123,6 @@ OC.L10N.register(
     "Failed to delete {fileName}." : "Неуспешно изтриване на {fileName}.",
     "Failed to set favorite state for {fileId}." : "Неуспешно задаване на предпочитано/любимо/ състояние за {fileId}.",
     "Failed to set favorite state for {fileName}." : "Неуспешно задаване на предпочитано/любимо/ състояние за {fileName}.",
-    "Default Photos upload and Albums location" : "Качване на снимки и местоположение на албуми по подразбиране",
-    "Select the default location for your media" : "Избор на местоположение по подразбиране за вашата медия",
-    "Invalid location selected" : "Избрано е невалидно местоположение",
-    "Photos directory" : "Директория със снимки"
+    "Add" : "Добавяне"
 },
 "nplurals=2; plural=(n != 1);");

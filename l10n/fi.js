@@ -81,6 +81,7 @@ OC.L10N.register(
     "Choose the folder where photos and albums are uploaded to." : "Valitse kansio, johon kuvat ja albumit lähetetään.",
     "_%n photo_::_%n photos_" : ["%n kuva","%n kuvaa"],
     "Unselect all" : "Poista valinnat",
+    "Add photos to this album" : "Lisää kuvia tähän albumiin",
     "Manage collaborators for this album" : "Hallitse albumin osanottajia",
     "Open actions menu" : "Avaa toimintovalikko",
     "Edit album details" : "Muokkaa albumin tietoja",
@@ -89,7 +90,6 @@ OC.L10N.register(
     "Download selected files" : "Lataa valitut tiedostot",
     "Remove selection from album" : "Poista valinta albumista",
     "This album does not have any photos or videos yet!" : "Tässä albumissa ei ole kuvia tai videoita!",
-    "Add photos to this album" : "Lisää kuvia tähän albumiin",
     "Add photos to {albumName}" : "Lisää kuvia albumiin {albumName}",
     "Manage collaborators" : "Hallitse osanottajia",
     "Save collaborators for this album." : "Tallenna albumin osanottajat.",
@@ -123,7 +123,6 @@ OC.L10N.register(
     "No tags yet" : "Ei vielä tunnisteita",
     "Photos with tags will show up here" : "Tunnisteilla varustetut kuvat näkyvät täällä",
     "Popular tags" : "Suositut tunnisteet",
-    "Add" : "Lisää",
     "Add to album" : "Lisää albumiin",
     "Delete selection" : "Poista valinta",
     "No photos or videos in here" : "Ei kuvia tai videoita",
@@ -148,10 +147,7 @@ OC.L10N.register(
     "Failed to delete {fileName}." : "Tiedoston {fileName} poisto epäonnistui.",
     "Failed to set favorite state for {fileId}." : "Suosikkimääritelmän asettaminen kohteelle {fileId} epäonnistui.",
     "Failed to set favorite state for {fileName}." : "Suosikkimääritelmän asettaminen kohteelle {fileName} epäonnistui.",
-    "Default Photos upload and Albums location" : "Kuvien ja albumien oletusarvoinen lähetyssijainti",
-    "Select the default location for your media" : "Valitse oletussijainti medialle",
-    "Invalid location selected" : "Virheellinen sijainti valittu",
-    "Photos directory" : "Kuvat-kansio",
-    "One of the source folders does not exists" : "Yksi lähdekansioista ei ole olemassa"
+    "One of the source folders does not exists" : "Yksi lähdekansioista ei ole olemassa",
+    "Add" : "Lisää"
 },
 "nplurals=2; plural=(n != 1);");

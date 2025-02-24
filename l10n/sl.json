@@ -62,6 +62,7 @@
     "View" : "Poglej",
     "_%n photo_::_%n photos_" : ["%n fotografija","%n fotografiji","%n fotografije","%n fotografij"],
     "Unselect all" : "Odstrani izbor",
+    "Add photos to this album" : "Dodaj fotografije v ta album",
     "Manage collaborators for this album" : "Upravljanje sodelujočih za izbran album",
     "Open actions menu" : "Odpri meni dejanj",
     "Edit album details" : "Uredi podrobnosti albuma",
@@ -70,7 +71,6 @@
     "Download selected files" : "Prejmi izbrane datoteke",
     "Remove selection from album" : "Odstrani izbor iz albuma",
     "This album does not have any photos or videos yet!" : "V ta album ni še naloženih fotografij in posnetkov!",
-    "Add photos to this album" : "Dodaj fotografije v ta album",
     "Manage collaborators" : "Upravljanje s sodelujočimi",
     "Save collaborators for this album." : "Shrani sodelujoče za izbran album",
     "Cover photo for album {albumName}" : "Naslovna fotografija za album {albumName}",
@@ -91,7 +91,6 @@
     "No tags yet" : "Ni še dodane nobene oznake",
     "Photos with tags will show up here" : "Na tem mestu bodo prikazane fotografije z oznakami.",
     "Popular tags" : "Priljubljene oznake",
-    "Add" : "Dodaj",
     "Add to album" : "Dodaj album",
     "Delete selection" : "Izbriši izbor",
     "No photos or videos in here" : "Ni še nobenih slik in posnetkov",
@@ -109,9 +108,6 @@
     "Details" : "Podrobnosti",
     "Failed to delete {fileId}." : "Brisanje polja {fileId} je spodletelo.",
     "Failed to delete {fileName}." : "Brisanje datoteke {fileName} je spodletelo.",
-    "Default Photos upload and Albums location" : "Privzeto mesto albuma in odložišča",
-    "Select the default location for your media" : "Izbor privzetega mesta za predstavne datoteke",
-    "Invalid location selected" : "Izbrano je neveljavno mesto",
-    "Photos directory" : "Slikovna mapa"
+    "Add" : "Dodaj"
 },"pluralForm" :"nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n%100==4 ? 2 : 3);"
 }

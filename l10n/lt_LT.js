@@ -52,6 +52,7 @@ OC.L10N.register(
     "Home" : "Namai",
     "View" : "Rodyti",
     "_%n photo_::_%n photos_" : ["%n nuotrauka","%n nuotraukos","%n nuotraukų","%n nuotrauka"],
+    "Add photos to this album" : "Pridėti į šį albumą nuotraukų",
     "Open actions menu" : "Atverti veiksmų meniu",
     "Edit album details" : "Taisyti išsamesnę albumo informaciją",
     "Download all files in album" : "Atsisiųsti visus failus šiame albume",
@@ -59,7 +60,6 @@ OC.L10N.register(
     "Download selected files" : "Atsisiųsti pažymėtus failus",
     "Remove selection from album" : "Šalinti žymėjimą iš albumo",
     "This album does not have any photos or videos yet!" : "Šiame albume kol kas nėra jokių nuotraukų ar vaizdo įrašų!",
-    "Add photos to this album" : "Pridėti į šį albumą nuotraukų",
     "There is no album yet!" : "Kol kas nėra jokių albumų!",
     "This person could not be found" : "Nepavyko rasti šio žmogaus",
     "Rename person" : "Pervadinti žmogų",
@@ -81,7 +81,6 @@ OC.L10N.register(
     "Photos with tags will show up here" : "Čia bus rodomos nuotraukos su žymėmis",
     "Popular tags" : "Populiarios žymės",
     "All tags" : "Visos žymės",
-    "Add" : "Pridėti",
     "Add to album" : "Pridėti į albumą",
     "Delete selection" : "Ištrinti žymėjimą",
     "No photos or videos in here" : "Čia nėra jokių nuotraukų ar vaizdo įrašų",
@@ -96,7 +95,6 @@ OC.L10N.register(
     "Failed to delete {faceName}." : "Nepavyko ištrinti {faceName}.",
     "Failed to delete {fileId}." : "Nepavyko ištrinti {fileId}.",
     "Failed to delete {fileName}." : "Nepavyko ištrinti {fileName}.",
-    "Invalid location selected" : "Pasirinkta neteisinga vieta",
-    "Photos directory" : "Nuotraukų katalogas"
+    "Add" : "Pridėti"
 },
 "nplurals=4; plural=(n % 10 == 1 && (n % 100 > 19 || n % 100 < 11) ? 0 : (n % 10 >= 2 && n % 10 <=9) && (n % 100 > 19 || n % 100 < 11) ? 1 : n % 1 != 0 ? 2: 3);");

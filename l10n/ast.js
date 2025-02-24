@@ -84,6 +84,7 @@ OC.L10N.register(
     "Choose the folder where photos and albums are uploaded to." : "Escueyu la carpeta a onde se xuben les semeyes y los álbumes.",
     "_%n photo_::_%n photos_" : ["%n semeya","%n semeyes"],
     "Unselect all" : "Deseleicionar too",
+    "Add photos to this album" : "Amestar semeyes a esti álbum",
     "Manage collaborators for this album" : "Xestiona los collaboradores d'esti álbum",
     "Open actions menu" : "Abrir el menú d'aiciones",
     "Edit album details" : "Editar los detalles del álbum",
@@ -92,7 +93,6 @@ OC.L10N.register(
     "Download selected files" : "Baxar los ficheros seleicionaos",
     "Remove selection from album" : "Quitar la seleición del álbum",
     "This album does not have any photos or videos yet!" : "¡Esti álbum nun tien nenguna semeya nin nengún videu!",
-    "Add photos to this album" : "Amestar semeyes a esti álbum",
     "Add photos to {albumName}" : "Amestar semeyes a «{albumName}»",
     "Manage collaborators" : "Xestionar los collaboradores",
     "Save collaborators for this album." : "Guarda los collaboradores d'esti álbum.",
@@ -126,7 +126,6 @@ OC.L10N.register(
     "No tags yet" : "Nun hai nenguna etiqueta",
     "Photos with tags will show up here" : "Equí apaecen les semeyes etiquetaes",
     "Popular tags" : "Etiquetes populares",
-    "Add" : "Amestar",
     "Add to album" : "Amestar al álbum",
     "Delete selection" : "Desaniciar la seleición",
     "No photos or videos in here" : "Equí nun hai nenguna semeya nin nengún videu",
@@ -152,10 +151,7 @@ OC.L10N.register(
     "Failed to set favorite state for {fileId}." : "Nun se pue afitar l'estáu favoritu de: {fileId}",
     "Failed to set favorite state for {fileName}." : "Nun se pue afitar l'estáu favoritu de: {fileName}",
     "Could not load photos folder" : "Nun se puen cargar la carpeta de semeyes",
-    "Default Photos upload and Albums location" : "Llocalización predeterminada de los álbumes y la xuba de semeyes",
-    "Select the default location for your media" : "Seleiciona la llocalización predeterminada pa los elementos multimedia",
-    "Invalid location selected" : "Seleicionóse una llocalización inválida",
-    "Photos directory" : "Direutoriu de datos",
-    "One of the source folders does not exists" : "Nun esiste una de les carpetes d'orixe"
+    "One of the source folders does not exists" : "Nun esiste una de les carpetes d'orixe",
+    "Add" : "Amestar"
 },
 "nplurals=2; plural=(n != 1);");

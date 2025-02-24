@@ -71,6 +71,7 @@
     "All folders" : "Gach fillteáin",
     "Add a Photos source for the timelines" : "Cuir foinse Grianghraif leis do na hamlínte",
     "Add folder" : "Cuir fillteán leis",
+    "Pick folder" : "Pioc fillteán",
     "Select a source folder for your media" : "Roghnaigh fillteán foinse do na meáin",
     "Home" : "Baile",
     "Choose default Photos upload and Albums location" : "Roghnaigh suíomh réamhshocraithe uaslódála Grianghraif agus Albaim",
@@ -83,6 +84,7 @@
     "Choose the folder where photos and albums are uploaded to." : "Roghnaigh an fillteán ina ndéantar grianghraif agus albam a uaslódáil.",
     "_%n photo_::_%n photos_" : ["%n grianghraf","%n grianghraif","%n grianghraif","%n grianghraif","%n grianghraif"],
     "Unselect all" : "Díroghnaigh go léir",
+    "Add photos to this album" : "Cuir grianghraif leis an albam seo",
     "Manage collaborators for this album" : "Bainistigh comhoibrithe don albam seo",
     "Open actions menu" : "Oscail roghchlár gníomhartha",
     "Edit album details" : "Cuir sonraí albam in eagar",
@@ -91,7 +93,6 @@
     "Download selected files" : "Íoslódáil comhaid roghnaithe",
     "Remove selection from album" : "Bain an rogha ón albam",
     "This album does not have any photos or videos yet!" : "Níl aon ghrianghraif nó físeáin ar an albam seo fós!",
-    "Add photos to this album" : "Cuir grianghraif leis an albam seo",
     "Add photos to {albumName}" : "Cuir grianghraif le {albumName}",
     "Manage collaborators" : "Bainistigh comhoibrithe",
     "Save collaborators for this album." : "Sábháil comhoibrithe don albam seo.",
@@ -127,7 +128,6 @@
     "Popular tags" : "Clibeanna Coitianta",
     "All tags" : "Gach clibeanna",
     "One of the source folders does not exist" : "Níl ceann de na fillteáin foinse ann",
-    "Add" : "Cuir",
     "Add to album" : "Cuir leis an albam",
     "Delete selection" : "Scrios an roghnúchán",
     "No photos or videos in here" : "Níl grianghraif nó físeáin ar bith anseo",
@@ -153,10 +153,7 @@
     "Failed to set favorite state for {fileId}." : "Theip ar an staid is fearr leat a shocrú le haghaidh {fileId}.",
     "Failed to set favorite state for {fileName}." : "Theip ar an staid is fearr leat a shocrú le haghaidh {fileName}.",
     "Could not load photos folder" : "Níorbh fhéidir fillteán na ngrianghraf a lódáil",
-    "Default Photos upload and Albums location" : "Réamhshocrú uaslódála Grianghraif agus suíomh Albaim",
-    "Select the default location for your media" : "Roghnaigh an suíomh réamhshocraithe do na meáin",
-    "Invalid location selected" : "Suíomh neamhbhailí roghnaithe",
-    "Photos directory" : "Eolaire grianghraif",
-    "One of the source folders does not exists" : "Níl ceann de na fillteáin foinse ann"
+    "One of the source folders does not exists" : "Níl ceann de na fillteáin foinse ann",
+    "Add" : "Cuir"
 },"pluralForm" :"nplurals=5; plural=(n==1 ? 0 : n==2 ? 1 : n<7 ? 2 : n<11 ? 3 : 4);"
 }

@@ -9,7 +9,7 @@
 			"bamarni/composer-bin-plugin": true
 		},
 		"platform": {
-			"php": "8.0.2"
+			"php": "8.3"
 		}
 	},
 	"autoload": {
@@ -28,6 +28,9 @@
 		"test:unit": "phpunit -c tests/phpunit.xml --color --fail-on-warning --fail-on-risky",
 		"post-install-cmd": [
 			"[ $COMPOSER_DEV_MODE -eq 0 ] || composer bin all install --ansi"
+		],
+		"post-update-cmd": [
+			"[ $COMPOSER_DEV_MODE -eq 0 ] || composer bin all update --ansi"
 		]
 	},
 	"require-dev": {

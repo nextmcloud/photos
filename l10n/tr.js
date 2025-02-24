@@ -85,6 +85,7 @@ OC.L10N.register(
     "Choose the folder where photos and albums are uploaded to." : "Fotoğraf ve albümlerin yükleneceği klasörü seçin.",
     "_%n photo_::_%n photos_" : ["%n fotoğraf","%n fotoğraf"],
     "Unselect all" : "Tümünü bırak",
+    "Add photos to this album" : "Bu albüme fotoğraflar ekle",
     "Manage collaborators for this album" : "Bu albümün katılımcılarını yönet",
     "Open actions menu" : "İşlemler menüsünü aç",
     "Edit album details" : "Albüm ayrıntılarını düzenle",
@@ -93,7 +94,6 @@ OC.L10N.register(
     "Download selected files" : "Seçilmiş dosyaları indir",
     "Remove selection from album" : "Seçilmişleri albümden kaldır",
     "This album does not have any photos or videos yet!" : "Bu albümde henüz bir fotoğraf ya da görüntü yok!",
-    "Add photos to this album" : "Bu albüme fotoğraflar ekle",
     "Add photos to {albumName}" : "{albumName} albümüne fotoğraflar ekle",
     "Manage collaborators" : "Katılımcı yönetimi",
     "Save collaborators for this album." : "Bu albümün katılımcılarını kaydet.",
@@ -128,7 +128,7 @@ OC.L10N.register(
     "Photos with tags will show up here" : "Etiketlenmiş fotoğraflar burada görüntülenir",
     "Popular tags" : "Sık kullanılan etiketler",
     "All tags" : "Tüm etiketler",
-    "Add" : "Ekle",
+    "One of the source folders does not exist" : "Kaynak klasörlerden biri bulunamadı",
     "Add to album" : "Albüme ekle",
     "Delete selection" : "Seçilmişleri sil",
     "No photos or videos in here" : "Henüz bir fotoğraf ya da görüntü yok",
@@ -154,10 +154,7 @@ OC.L10N.register(
     "Failed to set favorite state for {fileId}." : "{fileId} için sık kullanılan durumu ayarlanamadı.",
     "Failed to set favorite state for {fileName}." : "{fileName} için sık kullanılan durumu ayarlanamadı.",
     "Could not load photos folder" : "Fotoğraflar klasörü yüklenemedi",
-    "Default Photos upload and Albums location" : "Varsayılan Fotoğraflar yükleme ve Albümler konumu",
-    "Select the default location for your media" : "Ortamlarınızın varsayılan konumunu seçin",
-    "Invalid location selected" : "Seçilen konum geçersiz",
-    "Photos directory" : "Fotoğraflar klasörü",
-    "One of the source folders does not exists" : "Kaynak klasörlerden biri bulunamadı"
+    "One of the source folders does not exists" : "Kaynak klasörlerden biri bulunamadı",
+    "Add" : "Ekle"
 },
 "nplurals=2; plural=(n > 1);");

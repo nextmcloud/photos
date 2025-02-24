@@ -84,6 +84,7 @@ OC.L10N.register(
     "Choose the folder where photos and albums are uploaded to." : "Velg mappen der bilder og album lastes opp.",
     "_%n photo_::_%n photos_" : ["%n bilde","%n bilder"],
     "Unselect all" : "Fravelg alle",
+    "Add photos to this album" : "Legg til bilder i dette albumet",
     "Manage collaborators for this album" : "Administrer samarbeidspartnere for dette albumet",
     "Open actions menu" : "Åpne handlingsmenyen",
     "Edit album details" : "Rediger albumdetaljer",
@@ -92,7 +93,6 @@ OC.L10N.register(
     "Download selected files" : "Last ned valgte filer",
     "Remove selection from album" : "Fjern utvalg fra album",
     "This album does not have any photos or videos yet!" : "Dette albumet har ingen bilder eller videoer ennå!",
-    "Add photos to this album" : "Legg til bilder i dette albumet",
     "Add photos to {albumName}" : "Legg bilder til {albumName}",
     "Manage collaborators" : "Administrer samarbeidspartnere",
     "Save collaborators for this album." : "Lagre samarbeidspartnere for dette albumet.",
@@ -127,7 +127,6 @@ OC.L10N.register(
     "Photos with tags will show up here" : "Bilder med etiketter vises her",
     "Popular tags" : "Populære merkelapper",
     "All tags" : "Alle tagger",
-    "Add" : "Legg til",
     "Add to album" : "Legg til i album",
     "Delete selection" : "Slett utvalg",
     "No photos or videos in here" : "Ingen bilder eller videoer her",
@@ -153,10 +152,7 @@ OC.L10N.register(
     "Failed to set favorite state for {fileId}." : "Kunne ikke angi favorittstatus for {fileId}.",
     "Failed to set favorite state for {fileName}." : "Kunne ikke angi favorittstatus for {fileName}.",
     "Could not load photos folder" : "Kunne ikke laste bildemappen",
-    "Default Photos upload and Albums location" : "Standard bildeopplasting og albumplassering",
-    "Select the default location for your media" : "Velg standardplassering for mediefilene dine",
-    "Invalid location selected" : "Invalid location selected",
-    "Photos directory" : "Bildemappe",
-    "One of the source folders does not exists" : "En av kildemappene finnes ikke"
+    "One of the source folders does not exists" : "En av kildemappene finnes ikke",
+    "Add" : "Legg til"
 },
 "nplurals=2; plural=(n != 1);");

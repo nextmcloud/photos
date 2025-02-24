@@ -84,6 +84,7 @@ OC.L10N.register(
     "Choose the folder where photos and albums are uploaded to." : "Выберите папку, в которую загружаются фотографии и альбомы.",
     "_%n photo_::_%n photos_" : ["%n фотография","%n фотографии","%n фотографий","%n фотографии"],
     "Unselect all" : "Отменить выделение для всех",
+    "Add photos to this album" : "Добавить фотографии в альбом",
     "Manage collaborators for this album" : "Управление списком соавторов альбома",
     "Open actions menu" : "Открыть меню действий",
     "Edit album details" : "Изменить альбом",
@@ -92,7 +93,6 @@ OC.L10N.register(
     "Download selected files" : "Скачать выбранные файлы",
     "Remove selection from album" : "Удалить выбранное из альбома",
     "This album does not have any photos or videos yet!" : "Альбом пока не содержит ни одной фотографии или видео.",
-    "Add photos to this album" : "Добавить фотографии в альбом",
     "Add photos to {albumName}" : "Добавить фотографии в {albumName}",
     "Manage collaborators" : "Управление списком соавторов",
     "Save collaborators for this album." : "Сохранить список соавторов альбома.",
@@ -127,7 +127,6 @@ OC.L10N.register(
     "Photos with tags will show up here" : "Здесь будут показаны фотографии, которым присвоены метки",
     "Popular tags" : "Популярные метки",
     "All tags" : "Все теги",
-    "Add" : "Добавить",
     "Add to album" : "Добавить в альбом",
     "Delete selection" : "Удалить выбранное",
     "No photos or videos in here" : "Нет ни одной фотографии или видео",
@@ -153,10 +152,7 @@ OC.L10N.register(
     "Failed to set favorite state for {fileId}." : "Не удалось отметить или снять отметку избранного с «{fileId}».",
     "Failed to set favorite state for {fileName}." : "Не удалось отметить или снять отметку избранного с «{fileId}».",
     "Could not load photos folder" : "Не удалось загрузить папку с фотографиями",
-    "Default Photos upload and Albums location" : "Расположение загружаемых на сервер фотографий и альбомов по умолчанию",
-    "Select the default location for your media" : "Выбор расположения медиафайлов по умолчанию",
-    "Invalid location selected" : "Указано недействительное расположение",
-    "Photos directory" : "Каталог с фотографиями",
-    "One of the source folders does not exists" : "Одна из исходных папок не существует"
+    "One of the source folders does not exists" : "Одна из исходных папок не существует",
+    "Add" : "Добавить"
 },
 "nplurals=4; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : n%10==0 || (n%10>=5 && n%10<=9) || (n%100>=11 && n%100<=14)? 2 : 3);");

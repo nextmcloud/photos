@@ -71,6 +71,7 @@
     "All folders" : "Alla mappar",
     "Add a Photos source for the timelines" : "Lägg till en fotokälla för tidslinjerna",
     "Add folder" : "Lägg till mapp",
+    "Pick folder" : "Välj mapp",
     "Select a source folder for your media" : "Välj en källmapp för ditt media",
     "Home" : "Hem",
     "Choose default Photos upload and Albums location" : "Välj standardplats uppladdning av bilder och plats för album",
@@ -83,6 +84,7 @@
     "Choose the folder where photos and albums are uploaded to." : "Välj mapp dit foton och album laddas upp.",
     "_%n photo_::_%n photos_" : ["%n bild","%n bilder"],
     "Unselect all" : "Avmarkera alla",
+    "Add photos to this album" : "Lägg till bilder i detta album",
     "Manage collaborators for this album" : "Hantera medlemmar för det här albumet",
     "Open actions menu" : "Öppna åtgärdsmenyn",
     "Edit album details" : "Ändra albumdetaljer",
@@ -91,7 +93,6 @@
     "Download selected files" : "Ladda ner de markerade filerna",
     "Remove selection from album" : "Ta bort urval från album",
     "This album does not have any photos or videos yet!" : "Det här albumet har inga bilder eller videor än!",
-    "Add photos to this album" : "Lägg till bilder i detta album",
     "Add photos to {albumName}" : "Lägg till bilder i {albumName}",
     "Manage collaborators" : "Hantera medlemmar",
     "Save collaborators for this album." : "Spara medlemmar för det här albumet.",
@@ -127,7 +128,6 @@
     "Popular tags" : "Populära taggar",
     "All tags" : "Alla taggar",
     "One of the source folders does not exist" : "En av källmapparna finns inte",
-    "Add" : "Lägg till",
     "Add to album" : "Lägg till i album",
     "Delete selection" : "Ta bort urval",
     "No photos or videos in here" : "Inga bilder eller videos här",
@@ -153,10 +153,7 @@
     "Failed to set favorite state for {fileId}." : "Det gick inte att ange favoritstatus för {fileId}.",
     "Failed to set favorite state for {fileName}." : "Det gick inte att ange favoritstatus för {fileName}.",
     "Could not load photos folder" : "Kunde inte ladda fotomappen",
-    "Default Photos upload and Albums location" : "Standardplats för album och bilder",
-    "Select the default location for your media" : "Välj standardplats för din media",
-    "Invalid location selected" : "Ogiltig plats vald",
-    "Photos directory" : "Bildmapp",
-    "One of the source folders does not exists" : "En av källmapparna finns inte"
+    "One of the source folders does not exists" : "En av källmapparna finns inte",
+    "Add" : "Lägg till"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }

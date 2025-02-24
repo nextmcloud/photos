@@ -71,6 +71,7 @@
     "All folders" : "Сви фолдери",
     "Add a Photos source for the timelines" : "Додајте извор који ће Фотографије употребити за временске линије",
     "Add folder" : "Додај фасциклу",
+    "Pick folder" : "Изаберите фолдер",
     "Select a source folder for your media" : "Изаберите извирни фолдер за своје медије",
     "Home" : "Почетна",
     "Choose default Photos upload and Albums location" : "Изаберите подразумевано место за отпремање Фотографија и албума",
@@ -83,6 +84,7 @@
     "Choose the folder where photos and albums are uploaded to." : "Изаберите фолдер у који се отпремају фотографије и албуми.",
     "_%n photo_::_%n photos_" : ["%n фотографија","%n фотографије","%n фотографија"],
     "Unselect all" : "Поништи цео избор",
+    "Add photos to this album" : "Додај фотографије у овај албум",
     "Manage collaborators for this album" : "Управљање сарадницима на овом албуму",
     "Open actions menu" : "Отвори мени са акцијама",
     "Edit album details" : "Уреди детаље о албуму",
@@ -91,7 +93,6 @@
     "Download selected files" : "Преузми изабране фајлове",
     "Remove selection from album" : "Уклони избор са албума",
     "This album does not have any photos or videos yet!" : "Овај албум још увек нема ниједну фотографију или видео снимак!",
-    "Add photos to this album" : "Додај фотографије у овај албум",
     "Add photos to {albumName}" : "Додај фотографије у {albumName}",
     "Manage collaborators" : "Управљај сарадницима",
     "Save collaborators for this album." : "Сачувај сараднике на овом албуму",
@@ -126,7 +127,7 @@
     "Photos with tags will show up here" : "Слике са ознакама ће се појавити овде",
     "Popular tags" : "Популарне ознаке",
     "All tags" : "Све ознаке",
-    "Add" : "Додај",
+    "One of the source folders does not exist" : "Један од изворних фолдера не постоји",
     "Add to album" : "Додај у албум",
     "Delete selection" : "Обриши одабир",
     "No photos or videos in here" : "Овде нема фотографија или видео снимака",
@@ -152,10 +153,7 @@
     "Failed to set favorite state for {fileId}." : "Није успело постављање стања омиљено за {fileId}.",
     "Failed to set favorite state for {fileName}." : "Није успело постављање стања омиљено за {fileName}.",
     "Could not load photos folder" : "Не може да се учита фолдер фотографија",
-    "Default Photos upload and Albums location" : "Подразумевано место за отпремање фотографија и албума",
-    "Select the default location for your media" : "Изаберите подразумевано место за своје медије",
-    "Invalid location selected" : "Изабрана је неисправна локација",
-    "Photos directory" : "Директоријум фотографија",
-    "One of the source folders does not exists" : "Један од изворних фолдера не постоји"
+    "One of the source folders does not exists" : "Један од изворних фолдера не постоји",
+    "Add" : "Додај"
 },"pluralForm" :"nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);"
 }

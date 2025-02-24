@@ -71,6 +71,7 @@
     "All folders" : "全てのフォルダー",
     "Add a Photos source for the timelines" : "タイムラインの写真ソースを追加する",
     "Add folder" : "フォルダーを追加",
+    "Pick folder" : "フォルダーを選択",
     "Select a source folder for your media" : "メディアのソースフォルダーを選択してください",
     "Home" : "ホーム",
     "Choose default Photos upload and Albums location" : "デフォルトの写真のアップロードとアルバムの場所を選択する",
@@ -83,6 +84,7 @@
     "Choose the folder where photos and albums are uploaded to." : "写真やアルバムをアップロードするフォルダを選択します。",
     "_%n photo_::_%n photos_" : ["%n 写真"],
     "Unselect all" : "すべて選択解除",
+    "Add photos to this album" : "このアルバムに写真を追加",
     "Manage collaborators for this album" : "このアルバムのコラボレーターを管理する",
     "Open actions menu" : "アクションメニューを開く",
     "Edit album details" : "アルバム詳細の編集",
@@ -91,7 +93,6 @@
     "Download selected files" : "選択したファイルのダウンロード",
     "Remove selection from album" : "アルバムから選択項目を削除",
     "This album does not have any photos or videos yet!" : "このアルバムにはまだ写真や動画がありません！",
-    "Add photos to this album" : "このアルバムに写真を追加",
     "Add photos to {albumName}" : "{albumName} に写真を追加",
     "Manage collaborators" : "共同作業者の管理",
     "Save collaborators for this album." : "このアルバムの共同作業者を保存。",
@@ -127,7 +128,6 @@
     "Popular tags" : "人気のタグ",
     "All tags" : "全てのタグ",
     "One of the source folders does not exist" : "ソースフォルダーの1つが存在しません",
-    "Add" : "追加",
     "Add to album" : "アルバムに追加",
     "Delete selection" : "選択した項目を削除",
     "No photos or videos in here" : "ここには写真も動画もありません",
@@ -153,10 +153,7 @@
     "Failed to set favorite state for {fileId}." : "{fileId} のお気に入り状態の設定に失敗しました。",
     "Failed to set favorite state for {fileName}." : "{fileName} のお気に入り状態の設定に失敗しました。",
     "Could not load photos folder" : "写真フォルダを読み込めませんでした",
-    "Default Photos upload and Albums location" : "デフォルトの写真アップロードとアルバムの場所",
-    "Select the default location for your media" : "メディアのデフォルトの保存場所を選択する",
-    "Invalid location selected" : "選択した場所が無効",
-    "Photos directory" : "写真ディレクトリ",
-    "One of the source folders does not exists" : "ソースフォルダーの1つが存在しません"
+    "One of the source folders does not exists" : "ソースフォルダーの1つが存在しません",
+    "Add" : "追加"
 },"pluralForm" :"nplurals=1; plural=0;"
 }

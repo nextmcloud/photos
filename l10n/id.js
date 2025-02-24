@@ -64,6 +64,7 @@ OC.L10N.register(
     "View" : "Tampilan",
     "_%n photo_::_%n photos_" : ["%n foto"],
     "Unselect all" : "Batalkan semua pemilihan",
+    "Add photos to this album" : "Tambahkan foto ke album ini",
     "Manage collaborators for this album" : "Kelola kolaborator untuk album ini",
     "Open actions menu" : "Buka menu tindakan",
     "Edit album details" : "Sunting detail album",
@@ -72,7 +73,6 @@ OC.L10N.register(
     "Download selected files" : "Unduh berkas yang dipilih",
     "Remove selection from album" : "Hapus pilihan dari album",
     "This album does not have any photos or videos yet!" : "Album ini belum memiliki foto atau video apa pun!",
-    "Add photos to this album" : "Tambahkan foto ke album ini",
     "Add photos to {albumName}" : "Tambahkan foto ke {albumName}",
     "Manage collaborators" : "Kelola kolaborator",
     "Save collaborators for this album." : "Simpan kolaborator untuk album ini",
@@ -106,7 +106,6 @@ OC.L10N.register(
     "No tags yet" : "Belum ada tag",
     "Photos with tags will show up here" : "Foto dengan tag akan muncul di sini",
     "Popular tags" : "Tag populer",
-    "Add" : "Masukkan",
     "Add to album" : "Tambahkan album",
     "Delete selection" : "Hapus pilihan",
     "No photos or videos in here" : "Tidak ada foto atau video di sini",
@@ -131,9 +130,6 @@ OC.L10N.register(
     "Failed to delete {fileName}." : "Gagal menghapus {fileName}.",
     "Failed to set favorite state for {fileId}." : "Gagal menetapkan keadaan favorit untuk {field}.",
     "Failed to set favorite state for {fileName}." : "Gagal menetapkan keadaan favorit untuk {fileName}.",
-    "Default Photos upload and Albums location" : "Lokasi unggahan Foto dan Album",
-    "Select the default location for your media" : "Pilih lokasi bawaan untuk media Anda",
-    "Invalid location selected" : "Lokasi yang tidak valid dipilih",
-    "Photos directory" : "Direktori Foto"
+    "Add" : "Masukkan"
 },
 "nplurals=1; plural=0;");

@@ -6,7 +6,6 @@
 import { selectMedia } from './photosUtils'
 
 export function createAnAlbumFromTimeline(albumName: string) {
-	cy.contains('Add').click()
 	cy.contains('Create new album').click()
 	cy.get('form [name="name"]').type(albumName)
 	cy.contains('Create album').click()
@@ -51,7 +50,6 @@ export function addFilesToAlbumFromAlbum(albumName: string, itemsIndex: number[]
 }
 
 export function addFilesToAlbumFromAlbumFromHeader(albumName: string, itemsIndex: number[]) {
-	cy.contains('New').click()
 	cy.contains('Add photos to this album').click()
 	cy.get('.photos-picker__file-list').within(() => {
 		selectMedia(itemsIndex)
