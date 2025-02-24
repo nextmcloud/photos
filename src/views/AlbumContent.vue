@@ -47,6 +47,7 @@
 						:destination="albumAsFolder"
 						:root="uploadContext.root"
 						:multiple="true"
+						class="album-content__upload-button"
 						@uploaded="onUpload" />
 				</template>
 
@@ -60,18 +61,19 @@
 					</NcButton>
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
+						<!-- Support sharing
 						<NcActionButton v-if="sharingEnabled"
 							:close-after-click="true"
 							:aria-label="t('photos', 'Manage collaborators for this album')"
 							@click="showManageCollaboratorView = true">
 							{{ t('photos', 'Manage collaborators for this album') }}
 							<ShareVariant slot="icon" />
-						</NcActionButton>
+						</NcActionButton>-->
 
 						<NcActionButton :close-after-click="true"
 							:aria-label="t('photos', 'Edit album details')"
 							@click="showEditAlbumForm = true">
-							{{ t('photos', 'Edit album details') }}
+							{{ t('photos', 'Rename album') }}
 							<Pencil slot="icon" />
 						</NcActionButton>
 

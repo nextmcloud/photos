@@ -67,6 +67,7 @@
     "Jump to {date}" : "Zu {date} springen",
     "Add to {destination}" : "Hinzufügen zu {destination}",
     "Create empty album" : "Leeres Album erstellen",
+    "Rename album" : "Album umbenennen",
     "The destination folder is owned by {owner}" : "Der Zielordner gehört {owner}",
     "There are no photos or videos yet!" : "Es gibt noch keine Fotos oder Videos!",
     "_{years} year ago_::_{years} years ago_" : ["Vor {years} Jahr","Vor {years} Jahren"],

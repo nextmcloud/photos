@@ -30,7 +30,7 @@
 			@click.stop.prevent="emitClick">
 
 			<!-- image and loading placeholder -->
-			<div class="file__images">
+			<div :class="file.favorite ? 'file__images file__favorite' : 'file__images'">
 				<VideoIcon v-if="file.mime.includes('video')" class="icon-overlay" :size="64" />
 				<PlayCircleIcon v-else-if="file.metadataFilesLivePhoto !== undefined" class="icon-overlay" :size="64" />
 				<div v-if="isCollection" class="hover-overlay">
