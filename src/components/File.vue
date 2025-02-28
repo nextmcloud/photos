@@ -34,8 +34,12 @@
 				<VideoIcon v-if="file.mime.includes('video')" class="icon-overlay" :size="64" />
 				<PlayCircleIcon v-else-if="file.metadataFilesLivePhoto !== undefined" class="icon-overlay" :size="64" />
 				<div v-if="isCollection" class="hover-overlay">
-					<Star class="icon-overlay-action" :size="24" @click.stop.prevent="emitFavorite" />
-					<Delete class="icon-overlay-action" :size="24" @click.stop.prevent="emitRemove" />
+					<span class="icon-action" :title="file.favorite ? t('photos', 'Remove from favorites') : t('photos', 'Add to favorites')" @click.stop.prevent="emitFavorite">
+						<Star class="icon-overlay-action" :size="24" />
+					</span>
+					<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', {imageName: file.basename})" @click.stop.prevent="emitRemove">
+						<Delete class="icon-overlay-action" :size="24" />
+					</span>
 				</div>
 				<!-- We have two img elements to load the small and large preview -->
 				<!-- Do not show the small preview if the larger one is loaded -->
@@ -257,7 +261,7 @@ export default {
 			width: 100%;
 			height: 100%;
 			content: '';
-			outline: var(--color-primary-element) solid 4px;
+			outline: var(--color-info) solid 4px;
 			outline-offset: -4px;
 			pointer-events: none;
 		}
