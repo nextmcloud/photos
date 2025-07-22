@@ -159,7 +159,7 @@
 			close-on-click-outside
 			size="normal"
 			@closing="showEditAlbumForm = false">
-			<AlbumForm :album="album" @done="redirectToNewName" />
+			<AlbumForm :album="album" @done="redirectToNewName" @closing="showEditAlbumForm = false" />
 		</NcDialog>
 	</div>
 </template>

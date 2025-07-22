@@ -202,7 +202,7 @@ export default {
 		},
 
 		cancel() {
-			this.$emit('cancel')
+			this.$emit('closing')
 		},
 
 		/** @param {import('../../store/albums.js').Collaborator[]} collaborators */
