@@ -71,8 +71,7 @@
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
-			<AlbumForm @done="handleAlbumCreated"
-				@cancel="handleAlbumCreateCancel" />
+			<AlbumForm @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
 
 		<PhotosPicker :open.sync="showPhotosPicker"
@@ -259,8 +258,11 @@ export default {
 }
 
 .album-creation__heading {
-	padding: calc(var(--default-grid-baseline) * 4);
-	margin-bottom: 0px;
-	padding-bottom: 0px;
+    font-size: 1.5rem;
+    height: unset;
+    line-height: unset;
+    margin-block: 1.5rem 1rem;
+    min-height: unset;
+    text-align: center;
 }
 </style>
