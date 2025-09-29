@@ -42,13 +42,12 @@
 				</template>
 
 				<template v-if="album !== undefined" slot="right">
-					<UploadPicker :accept="allowedMimes"
-						:context="uploadContext"
-						:destination="albumAsFolder"
-						:root="uploadContext.root"
-						:multiple="true"
-						class="album-content__upload-button"
-						@uploaded="onUpload" />
+					<NcButton @click="showAddPhotosModal = true">
+						<template #icon>
+							<Plus :size="20" />
+						</template>
+						{{ t('photos', 'Add' ) }}
+					</NcButton>
 				</template>
 
 				<template v-if="album !== undefined" slot="buttons">
@@ -123,7 +122,7 @@
 					:aria-label="t('photos', 'Add photos to this album')"
 					@click="showAddPhotosModal = true">
 					<Plus slot="icon" />
-					{{ t('photos', "Add") }}
+					{{ t('photos', 'Add photos to this album' ) }}
 				</NcButton>
 			</NcEmptyContent>
 		</CollectionContent>
