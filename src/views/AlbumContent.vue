@@ -35,7 +35,7 @@
 						:aria-label="t('photos', 'Unselect all')"
 						@click="handleRemoveFilesFromAlbum(selectedFileIds)">
 						<template #icon>
-							<Delete />
+							<TrashCan />
 						</template>
 						{{ t('photos', 'Remove selection from album') }}
 					</NcButton>
@@ -86,7 +86,7 @@
 						<NcActionButton :close-after-click="true"
 							@click="handleDeleteAlbum">
 							{{ t('photos', 'Delete album') }}
-							<Delete slot="icon" />
+							<TrashCan slot="icon" />
 						</NcActionButton>
 
 						<template v-if="selectedFileIds.length > 0">
@@ -174,7 +174,7 @@ import { translate } from '@nextcloud/l10n'
 import debounce from 'debounce'
 
 import Close from 'vue-material-design-icons/Close.vue'
-import Delete from 'vue-material-design-icons/Delete.vue'
+import TrashCan from 'vue-material-design-icons/TrashCan.vue'
 // import Download from 'vue-material-design-icons/Download.vue'
 // import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
 import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
@@ -211,7 +211,7 @@ export default {
 		Close,
 		CollaboratorsSelectionForm,
 		CollectionContent,
-		Delete,
+		TrashCan,
 		// Download,
 		// DownloadMultiple,
 		PhotosPicker,
