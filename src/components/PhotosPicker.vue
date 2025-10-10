@@ -8,48 +8,34 @@
 		:open="open"
 		out-transition
 		size="large"
+		@closing="$emit('closed')"
 		@update:open="(open) => $emit('update:open', open)">
-		<!-- Navigation containing the months available -->
-		<template #navigation="{ isCollapsed }">
-			<!-- Mobile view -->
-			<NcSelect v-if="isCollapsed"
-				v-model="targetMonth"
-				:aria-label-listbox="t('photos', 'Dates')"
-				class="photos-picker__navigation__month-select"
-				:clearable="false"
-				:input-label="t('photos', 'Jump to specific date in list')"
-				:options="monthsList">
-				<template #selected-option="{ label }">
-					{{ dateMonthAndYear(label) }}
-				</template>
-				<template #option="{ label }">
-					{{ dateMonthAndYear(label) }}
-				</template>
-			</NcSelect>
-
-			<!-- Default view -->
-			<ul v-else :aria-label="t('photos', 'Dates')">
-				<li v-for="month in monthsList"
-					:key="month"
-					class="photos-picker__navigation__month">
-					<NcButton :type="targetMonth === month ? 'secondary' : 'tertiary'"
-						:aria-label="t('photos', 'Jump to {date}', { date: dateMonthAndYear(month) })"
-						@click="targetMonth = month">
-						{{ dateMonthAndYear(month) }}
-					</NcButton>
-				</li>
-			</ul>
-		</template>
 
 		<!-- The actions on the bottom -->
 		<template #actions>
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
-					<UploadPicker :accept="allowedMimes"
-						:context="uploadContext"
-						:destination="photosLocationFolder"
-						:multiple="true"
-						@uploaded="refreshFiles" />
+					<UploadPicker
+	:accept="allowedMimes"
+	:context="uploadContext"
+	:destination="photosLocationFolder"
+	:t="t"
+	:multiple="true"
+	@uploaded="refreshFiles">
+	<template #default>
+		<UploadIcon class="icon" /> {{ t('photos', 'Upload images') }}
+	</template>
+</UploadPicker>
+					<NcButton v-if="allowempty"
+						type="secondary"
+						:disabled="loading"
+						@click="$emit('closed')">
+						<template #icon>
+							<ImageAlbum v-if="!loading" />
+							<NcLoadingIcon v-if="loading" />
+						</template>
+						{{ t('photos', 'Create empty album') }}
+					</NcButton>
 					<NcButton type="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
 						<template #icon>
 							<ImagePlus v-if="!loading" />
@@ -103,6 +89,7 @@ import { mapGetters } from 'vuex'
 import moment from '@nextcloud/moment'
 import { getCurrentUser } from '@nextcloud/auth'
 
+import ImageAlbum from 'vue-material-design-icons/ImageAlbum.vue'
 import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
 
 import FilesListViewer from './FilesListViewer.vue'
@@ -119,6 +106,7 @@ export default defineComponent({
 	components: {
 		File,
 		FilesListViewer,
+		ImageAlbum,
 		ImagePlus,
 		NcButton,
 		NcDialog,
@@ -167,6 +155,13 @@ export default defineComponent({
 		loading: {
 			type: Boolean,
 			default: false,
+		},
+
+		// Whether we should create empty album.
+		allowempty: {
+			type: Boolean,
+			default: false,
+			required: false,
 		},
 	},
 
@@ -276,7 +271,7 @@ export default defineComponent({
 
 		.section-header {
 			font-weight: bold;
-			font-size: 20px;
+			font-size: 1.5rem;
 			padding: 8px 0 4px 0;
 		}
 
@@ -299,7 +294,7 @@ export default defineComponent({
 		&__buttons {
 			display: flex;
 			align-items: center;
-			justify-content: end;
+			justify-content: flex-end;
 			gap: 16px;
 		}
 	}

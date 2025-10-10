@@ -13,9 +13,18 @@
 			@click.stop.prevent="emitClick">
 
 			<!-- image and loading placeholder -->
-			<div class="file__images">
+			<div :class="file.favorite ? 'file__images file__favorite' : 'file__images'">
 				<VideoIcon v-if="file.mime.includes('video')" class="icon-overlay" :size="64" />
 				<PlayCircleIcon v-else-if="file.metadataFilesLivePhoto !== undefined" class="icon-overlay" :size="64" />
+
+				<div v-if="isCollection" class="hover-overlay">
+					<span class="icon-action" :title="file.favorite ? t('photos', 'Remove from favorites') : t('photos', 'Add to favorites')" @click.stop.prevent="emitFavorite">
+						<Star class="icon-overlay-action" :size="24" />
+					</span>
+					<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', {imageName: file.basename})" @click.stop.prevent="emitRemove">
+						<Delete class="icon-overlay-action" :size="24" />
+					</span>
+				</div>
 
 				<!-- We have two img elements to load the small and large preview -->
 				<!-- Do not show the small preview if the larger one is loaded -->
@@ -74,6 +83,9 @@ import { NcCheckboxRadioSwitch } from '@nextcloud/vue'
 import FavoriteIcon from './FavoriteIcon.vue'
 import { isCachedPreview } from '../services/PreviewService.js'
 
+import Star from 'vue-material-design-icons/Star.vue'
+import Delete from 'vue-material-design-icons/Delete.vue'
+
 export default {
 	name: 'File',
 	components: {
@@ -81,6 +93,8 @@ export default {
 		NcCheckboxRadioSwitch,
 		VideoIcon,
 		PlayCircleIcon,
+		Star,
+		Delete,
 	},
 	inheritAttrs: false,
 	props: {
@@ -99,6 +113,10 @@ export default {
 		distance: {
 			type: Number,
 			default: 0,
+		},
+		isCollection: {
+			type: Boolean,
+			default: false,
 		},
 	},
 
@@ -189,6 +207,14 @@ export default {
 			this.$emit('click', this.file.fileid)
 		},
 
+		emitFavorite() {
+			this.$emit('favorite', this.file.fileid)
+		},
+
+		emitRemove() {
+			this.$emit('remove', this.file.fileid)
+		},
+
 		onLoadSmall() {
 			this.loadedSmall = true
 		},
@@ -259,7 +285,7 @@ export default {
 			width: 100%;
 			height: 100%;
 			content: '';
-			outline: var(--color-primary-element) solid 4px;
+			outline: var(--color-info) solid 4px;
 			outline-offset: -4px;
 			pointer-events: none;
 		}
@@ -309,7 +335,42 @@ export default {
 				position: absolute;
 				color: transparent; /// Hide alt='' text when loading.
 			}
+
+			.star-icon {
+				position: absolute;
+				z-index: 1000;
+				left: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+				svg {
+					color: #fff;
+				}
+			}
+
+			.delete-icon {
+				position: absolute;
+				z-index: 1000;
+				right: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+				svg {
+					color: #fff;
+				}
+			}
 		}
+	}
+
+	.hover-overlay {
+		bottom: 0;
+		cursor: unset;
+		display: none;
+		position: absolute;
+		height: 2.5rem;
+		width: 100%;
+		z-index: 900;
+		background-color: rgba(0,0,0,0.5);
 	}
 
 	// Reveal checkbox on hover.
@@ -320,6 +381,10 @@ export default {
 
 		.favorite-state {
 			display: none;
+		}
+		
+		.hover-overlay {
+			display: flex;
 		}
 	}
 

@@ -84,6 +84,16 @@
 					</NcActions>
 				</template>
 			</div>
+
+			<template slot="buttons">
+				<NcButton :aria-label="t('photos', 'Enable squared photos view')"
+					@click="toggleCroppedLayout(!croppedLayout)">
+					<template #icon>
+						<ViewGridOutline v-if="croppedLayout" />
+						<ViewDashboardOutline v-else />
+					</template>
+				</NcButton>
+			</template>
 		</HeaderNavigation>
 
 		<FilesListViewer ref="filesListViewer"
@@ -139,6 +149,8 @@ import PlusBoxMultiple from 'vue-material-design-icons/PlusBoxMultiple.vue'
 import Download from 'vue-material-design-icons/Download.vue'
 import Close from 'vue-material-design-icons/Close.vue'
 import AlertCircle from 'vue-material-design-icons/AlertCircle.vue'
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 
 import { NcModal, NcActions, NcActionButton, NcButton, NcEmptyContent, isMobile } from '@nextcloud/vue'
 import moment from '@nextcloud/moment'
@@ -182,6 +194,8 @@ export default {
 		HeaderNavigation,
 		PhotosSourceLocationsSettings,
 		AlertCircle,
+		ViewGridOutline,
+		ViewDashboardOutline,
 	},
 
 	filters: {
@@ -251,6 +265,10 @@ export default {
 		...mapGetters([
 			'files',
 		]),
+
+		croppedLayout() {
+			return this.$store.state.userConfig.croppedLayout
+		},
 	},
 
 	methods: {
@@ -279,6 +297,10 @@ export default {
 
 		openUploader() {
 			// TODO: finish when implementing upload
+		},
+
+		toggleCroppedLayout(value) {
+			this.$store.dispatch('updateUserConfig', { key: 'croppedLayout', value })
 		},
 
 		async addSelectionToAlbum(album) {
@@ -328,7 +350,7 @@ export default {
 	&__header {
 		&__left {
 			display: flex;
-			gap: 4px;
+			gap: 1rem;
 		}
 	}
 

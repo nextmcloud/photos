@@ -4,6 +4,11 @@
 -->
 <template>
 	<form v-if="!showCollaboratorView" class="album-form" @submit.prevent="submit">
+		<div class="form-cover">
+			<img class="form-cover__image"
+				:src="albumCreateImage"
+				:alt="t('photos', 'Create album')">
+		</div>
 		<div class="form-inputs">
 			<NcTextField ref="nameInput"
 				:value.sync="albumName"
@@ -28,6 +33,10 @@
 					type="tertiary"
 					@click="back">
 					{{ t('photos', 'Back') }}
+				</NcButton>
+				<NcButton type="secondary"
+					@click="cancel()">
+					{{ t('photos', 'Cancel') }}
 				</NcButton>
 			</span>
 			<span class="right-buttons">
@@ -181,6 +190,13 @@ export default {
 		canSubmit() {
 			return this.albumName !== '' && this.albumNameValidationError === undefined && !this.loading
 		},
+
+		/**
+		 * @return {string} The create album image filename.
+		 */
+		albumCreateImage() {
+			return '/customapps/photos/img/create-album.png'
+		},
 	},
 
 	mounted() {
@@ -270,6 +286,10 @@ export default {
 
 		back() {
 			this.$emit('back')
+		},
+
+		cancel() {
+			this.$emit('closing')
 		},
 
 		t: translate,

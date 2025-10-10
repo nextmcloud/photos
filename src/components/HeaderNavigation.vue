@@ -22,7 +22,6 @@
 				{{ name }}
 			</h1>
 			<div class="photos-navigation__title__sub" />
-			<slot name="subtitle" />
 		</div>
 
 		<!-- Main slot -->
@@ -34,6 +33,14 @@
 
 		<div class="photos-navigation__content-right">
 			<slot name="right" />
+		</div>
+
+		<div class="photos-navigation__content-buttons">
+			<slot name="buttons" />
+		</div>
+
+		<div class="photos-navigation__subtitle" role="subtitle">
+			<slot name="subtitle" />
 		</div>
 	</div>
 </template>
@@ -127,13 +134,20 @@ export default {
 			const path = regex.exec(this.parentPath)[1]
 
 			// apply to current route
-			const { name, params } = Object.assign({}, this.$route, {
+			let { name, params } = Object.assign({}, this.$route, {
 				params: this.params || { path },
 			})
 
 			// return the full object as we don't care about
 			// an empty path if this is route
 			if (path === '') {
+
+				// for the root path of the albums view we have to alter name
+				// as it uses a separate route and component
+				if (name === 'albumsContent') {
+					name = 'albums'
+				}
+
 				return { name }
 			}
 
@@ -170,24 +184,27 @@ export default {
 	display: flex;
 	// We need to wrap on small devices for accessibility
 	flex-wrap: wrap;
-	gap: calc(2 * var(--app-navigation-padding));
+	gap: 1rem;
+	row-gap: 0.5rem;
 	align-items: center;
 	justify-content: flex-start;
 	width: 100%;
 	// Ensure to not overlap with app navigation toggle
-	padding-inline: calc(var(--default-clickable-area) + 2 * var(--app-navigation-padding)) var(--app-navigation-padding);
+	// padding-inline: calc(var(--default-clickable-area) + 2 * var(--app-navigation-padding)) var(--app-navigation-padding);
 	// Align with app navigation toggle
-	padding-block: var(--app-navigation-padding);
+	// padding-block: var(--app-navigation-padding);
+	padding: 1.5rem 1rem 1rem 5rem;
 	background: var(--color-main-background);
 
 	&__back {
 		// Replaces the app navigation button
 		position: absolute !important;
-		left: var(--app-navigation-padding);
+		left: 1rem;
+		top: 1.5rem;
 	}
 
 	&__title {
-		max-width: 45%;
+		max-width: 80%;
 		display: flex;
 		flex-direction: column;
 
@@ -205,14 +222,27 @@ export default {
 		}
 	}
 
-	&__loader {
-		margin-inline-start: 32px;
+	&__subtitle {
+		display: flex;
+		flex-basis: 100%;
 	}
 
-	&__content-right {
+	&__loader {
+		margin-inline-start: 1rem;
+	}
+
+	&__content-right,
+	&__content,
+	&__content-buttons {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin-inline-start: 0;
+		flex-direction: row;
+		gap: 1rem;
+	}
+
+	&__content-buttons {
 		margin-inline-start: auto;
 	}
 }

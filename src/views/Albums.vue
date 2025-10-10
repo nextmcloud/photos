@@ -13,7 +13,8 @@
 				:loading="loadingCollections"
 				:title="t('photos', 'Albums')"
 				:root-title="t('photos', 'Albums')"
-				@refresh="fetchAlbums">
+				@refresh="fetchAlbums" />
+				<!-- 
 				<NcButton :aria-label="isMobile ? t('photos', 'New album') : undefined"
 					@click="showAlbumCreationForm = true">
 					<template #icon>
@@ -24,6 +25,7 @@
 					</template>
 				</NcButton>
 			</HeaderNavigation>
+			-->
 
 			<CollectionCover :key="collection.basename"
 				slot-scope="{collection}"
@@ -33,12 +35,25 @@
 				:cover-url="collection.lastPhoto | coverUrl">
 				<span class="album__name">
 					{{ collection.basename }}
+					<ExportVariant v-if="isShared(collection)" :size="20" />
 				</span>
 
 				<div slot="subtitle" class="album__details">
-					{{ collection.date }} ⸱ {{ n('photos', '%n item', '%n photos and videos', collection.nbItems,) }}
+					{{ n('photos', '%n element', '%n elements', collection.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ collection.date }}
 				</div>
 			</CollectionCover>
+
+			<CollectionAdd slot="collection-add">
+				<NcButton :aria-label="t('photos', 'Create new album')"
+					@click="showAlbumCreationForm = true">
+					<template #icon>
+						<Plus :size="20" />
+					</template>
+					<template #default>
+						{{ t('photos', 'Create new album') }}
+					</template>
+				</NcButton>
+			</CollectionAdd>
 
 			<NcEmptyContent slot="empty-collections-list" :name="t('photos', 'There is no album yet!')">
 				<FolderMultipleImage slot="icon" />
@@ -46,17 +61,29 @@
 		</CollectionsList>
 
 		<NcModal v-if="showAlbumCreationForm"
-			@close="showAlbumCreationForm = false">
+			@close="handleAlbumCreateCancel"
+			key="albumCreationForm"
+			:name="t('photos', 'New album')">
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
-			<AlbumForm @done="handleAlbumCreated" />
+			<AlbumForm @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
+
+		<PhotosPicker :open.sync="showPhotosPicker"
+			:blacklist-ids="blacklistIds"
+			:destination="destination"
+			:name="t('photos', 'Add photos to {albumName}', {albumName: destination})"
+			:allowempty="allowEmpty"
+			@closed="handlePickerClose"
+			@files-picked="handleFilesPicked" />
 	</div>
 </template>
 
 <script>
+import { mapActions } from 'vuex'
 import Plus from 'vue-material-design-icons/Plus.vue'
+import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
 import FolderMultipleImage from 'vue-material-design-icons/FolderMultipleImage.vue'
 
 import { generateUrl } from '@nextcloud/router'
@@ -65,8 +92,10 @@ import { translate, translatePlural } from '@nextcloud/l10n'
 import { getCurrentUser } from '@nextcloud/auth'
 
 import CollectionsList from '../components/Collection/CollectionsList.vue'
+import CollectionAdd from '../components/Collection/CollectionAdd.vue'
 import CollectionCover from '../components/Collection/CollectionCover.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
+import PhotosPicker from '../components/PhotosPicker.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import FetchCollectionsMixin from '../mixins/FetchCollectionsMixin.js'
 
@@ -74,13 +103,16 @@ export default {
 	name: 'Albums',
 	components: {
 		Plus,
+		ExportVariant,
 		FolderMultipleImage,
 		NcModal,
 		NcButton,
 		NcEmptyContent,
 		CollectionsList,
+		CollectionAdd,
 		CollectionCover,
 		HeaderNavigation,
+		PhotosPicker,
 		AlbumForm,
 	},
 
@@ -111,6 +143,12 @@ export default {
 	data() {
 		return {
 			showAlbumCreationForm: false,
+			showPhotosPicker: false,
+			createdAlbum: null,
+			blacklistIds: [],
+			destination: '',
+			collection: '',
+			allowEmpty: true,
 		}
 	},
 
@@ -128,6 +166,11 @@ export default {
 	},
 
 	methods: {
+		...mapActions([
+			'addFilesToCollection',
+			'deleteCollection',
+		]),
+
 		fetchAlbums() {
 			this.fetchCollections(
 				`/photos/${getCurrentUser()?.uid}/albums`,
@@ -137,7 +180,44 @@ export default {
 
 		handleAlbumCreated({ album }) {
 			this.showAlbumCreationForm = false
-			this.$router.push(`albums/${album.basename}`)
+			// this.$router.push(`albums/${album.basename}`)
+						this.destination = album.basename
+			this.collection = album.filename
+			this.showPhotosPicker = true
+		},
+
+		handleAlbumCreateCancel() {
+			this.showAlbumCreationForm = false
+			this.createdAlbum = null
+		},
+
+		handlePickerClose() {
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleFilesPicked(fileIds) {
+			// Add picked files
+			await this.addFilesToCollection({ collectionFileName: this.collection, fileIdsToAdd: fileIds })
+			// Close the PhotosPicker
+			this.showPhotosPicker = false
+			// Re-fetch album to have the proper collection
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleDeleteAlbum() {
+			await this.deleteCollection({ collectionFileName: this.collection })
+			this.$router.push('/albums')
+		},
+
+		/**
+		 * @param {object} album
+		 * @return {boolean}
+		 */
+		isShared(album) {
+			if (album.collaborators.length === 0) {
+				return false
+			}
+			return true
 		},
 
 		t: translate,
@@ -151,20 +231,33 @@ export default {
 	flex-direction: column;
 
 	.album__name {
-		font-weight: normal;
+		font-weight: bold;
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;		
+		font-size: 1.25rem;
+		line-height: 1.5rem;
+		color: var(--color-main-text);
+		
+		.material-design-icon {
+			display: inline-flex;
+			vertical-align: text-top;
+		}
+	}
+
+	.album__details {
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		font-size: 20px;
-		margin-bottom: 12px;
-		line-height: 30px;
-		color: var(--color-main-text);
 	}
 }
 
 .album-creation__heading {
-	padding: calc(var(--default-grid-baseline) * 4);
-	margin-bottom: 0px;
-	padding-bottom: 0px;
+    font-size: 1.5rem;
+    height: unset;
+    line-height: unset;
+    margin-block: 1.5rem 1rem;
+    min-height: unset;
+    text-align: center;
 }
 </style>

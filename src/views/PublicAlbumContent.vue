@@ -3,7 +3,7 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-	<div>
+	<div class="album-container">
 		<CollectionContent ref="collectionContent"
 			:collection="album"
 			:collection-file-ids="albumFileIds"
@@ -14,7 +14,6 @@
 			<HeaderNavigation v-if="albumOriginalName !== ''"
 				key="navigation"
 				slot="header"
-				slot-scope="{selectedFileIds}"
 				:loading="loadingCollection || loadingCollectionFiles"
 				:params="{ token }"
 				path="/"
@@ -24,31 +23,9 @@
 				<div v-if="album.location !== ''" slot="subtitle" class="album__location">
 					<MapMarker />{{ album.location }}
 				</div>
-				<template v-if="album !== undefined" slot="right">
-					<NcActions :force-menu="true" :aria-label="t('photos', 'Open actions menu')">
-						<!-- TODO: enable download on public albums -->
-						<!-- <ActionDownload v-if="albumFileIds.length > 0"
-							:selected-file-ids="albumFileIds"
-							:title="t('photos', 'Download all files in album')">
-							<DownloadMultiple slot="icon" />
-						</ActionDownload> -->
-
-						<template v-if="selectedFileIds.length > 0">
-							<!-- TODO: enable download on public albums -->
-							<!-- <NcActionSeparator />
-
-							<ActionDownload :selected-file-ids="selectedFileIds" :title="t('photos', 'Download selected files')">
-								<Download slot="icon" />
-							</ActionDownload> -->
-
-							<!-- </**  :close */-after-click="true"
-								@click="handleRemoveFilesFromAlbum(selectedFileIds)">
-								{{ t('photos', 'Remove selection from album') }}
-								<Close slot="icon" />
-							<//** > */ -->
-						</template>
-					</NcActions>
-				</template>
+				<div v-if="album !== undefined && album.nbItems !== 0" slot="subtitle" class="album__details">
+					{{ n('photos', '%n item', '%n photos and videos', album.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.date }}
+				</div>
 			</HeaderNavigation>
 
 			<!-- No content -->
@@ -233,8 +210,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .album {
-	display: flex;
-	flex-direction: column;
 
 	&__title {
 		width: 100%;
@@ -250,6 +225,14 @@ export default {
 		margin-left: -4px;
 		display: flex;
 		color: var(--color-text-lighter);
+	}
+}
+
+.album-container {
+	height: 100%;
+
+	:deep(.collection) {
+		height: 100%;
 	}
 }
 </style>

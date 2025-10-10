@@ -43,22 +43,24 @@ const link = computed(() => `${props.parentRoute}/${encodeURIComponent(props.col
 .collection-cover {
 	display: flex;
 	flex-direction: column;
-	padding: 16px;
 	border-radius: var(--border-radius-large);
+	overflow: hidden;
+    box-sizing: border-box;
+	background-color: var(--color-main-background);
+	box-shadow: var(--telekom-shadow-raised-pressed);
 
 	&:hover, &:focus {
-		background: var(--color-background-dark);
+		box-shadow: var(--telekom-shadow-raised-standard);
 	}
 
 	&__image {
-		width: 350px;
-		height: 350px;
+		width: 300px;
+		height: 230px;
 		object-fit: cover;
-		border-radius: var(--border-radius-large);
 
 		@media only screen and (max-width: 1200px) {
-			width: 250px;
-			height: 250px;
+			width: 270px;
+			height: 230px;
 		}
 
 		&--placeholder {
@@ -78,11 +80,11 @@ const link = computed(() => `${props.parentRoute}/${encodeURIComponent(props.col
 	&__details {
 		display: flex;
 		flex-direction: column;
-		margin-top: 16px;
-		width: 350px;
+		padding: 1rem;
+		width: 300px;
 
 		@media only screen and (max-width: 1200px) {
-			width: 250px;
+			width: 270px;
 		}
 
 		&__title {
@@ -91,9 +93,8 @@ const link = computed(() => `${props.parentRoute}/${encodeURIComponent(props.col
 
 		&__subtitle {
 			display: flex;
-			color: var(--color-text-lighter);
+			color: var(--color-main-text);
 		}
 	}
-
 }
 </style>
