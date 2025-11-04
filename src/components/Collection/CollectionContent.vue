@@ -12,7 +12,6 @@
 	<NcEmptyContent v-else-if="error" :name="t('photos', 'An error occurred')">
 		<AlertCircle slot="icon" />
 	</NcEmptyContent>
-
 	<div v-else class="collection">
 		<!-- Header -->
 		<slot class="collection__header"
@@ -24,14 +23,12 @@
 		<slot v-if="sortedCollectionFileIds.length === 0 && !loading" name="empty-content" />
 
 		<!-- Media list -->
-		<FilesListViewer v-if="collection !== undefined"
+		<FilesListViewer v-if="collection !== undefined && sortedCollectionFileIds.length > 0 "
 			:container-element="appContent"
-			class="timeline__file-list"
-			:file-ids-by-section="collectionFileIdsByMonth"
-			:sections="collectionMonthsList"
+			class="collection__media"
+			:file-ids="sortedCollectionFileIds"
 			:base-height="isMobile ? 120 : 200"
-			:loading="loading"
-			:empty-message="t('photos', 'No photos or videos in here')">
+			:loading="loading">
 			<template slot-scope="{file, isHeader, distance}">
 				<h2 v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
@@ -56,7 +53,6 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
 import AlertCircle from 'vue-material-design-icons/AlertCircle.vue'
 import FolderMultipleImage from 'vue-material-design-icons/FolderMultipleImage.vue'
 
@@ -64,8 +60,6 @@ import { NcEmptyContent, isMobile } from '@nextcloud/vue'
 import { translate } from '@nextcloud/l10n'
 import moment from '@nextcloud/moment'
 
-import FetchFilesMixin from '../../mixins/FetchFilesMixin.js'
-import FilesByMonthMixin from '../../mixins/FilesByMonthMixin.js'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
 import FilesListViewer from '.././FilesListViewer.vue'
 import File from '.././File.vue'
@@ -97,8 +91,6 @@ export default {
 	},
 
 	mixins: [
-		FetchFilesMixin,
-		FilesByMonthMixin,
 		FilesSelectionMixin,
 		isMobile,
 	],
@@ -150,19 +142,12 @@ export default {
 	},
 
 	methods: {
-		...mapActions([
-			'removeFileFromCollection',
-		]),
-
 		openViewer(fileId) {
 			const file = this.files[fileId]
-			const allFileIds = Object.values(this.collectionFileIdsByMonth).flat()
 
 			OCA.Viewer.open({
 				fileInfo: file,
-				list: allFileIds
-					.map(fileId => this.files[fileId])
-					.filter(file => !file.sectionHeader),
+				list: this.sortedCollectionFileIds.map(fileId => this.files[fileId]).filter(file => !file.sectionHeader),
 				loadMore: file.loadMore ? async () => await file.loadMore(true) : () => [],
 				canLoop: file.canLoop,
 			})
@@ -175,14 +160,6 @@ export default {
 		
 		async removeFromCollection(fileId) {
 			await this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.filename, fileIdsToRemove: [fileId] })
-		},
-
-		getContent() {
-			this.fetchFiles('', {
-				mimesType: this.mimesType,
-				onThisDay: this.onThisDay,
-				onlyFavorites: this.onlyFavorites,
-			})
 		},
 
 		t: translate,
