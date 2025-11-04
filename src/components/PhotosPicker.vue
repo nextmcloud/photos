@@ -16,16 +16,16 @@
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
 					<UploadPicker
-	:accept="allowedMimes"
-	:context="uploadContext"
-	:destination="photosLocationFolder"
-	:t="t"
-	:multiple="true"
-	@uploaded="refreshFiles">
-	<template #default>
-		<UploadIcon class="icon" /> {{ t('photos', 'Upload images') }}
-	</template>
-</UploadPicker>
+						:accept="allowedMimes"
+						:context="uploadContext"
+						:destination="photosLocationFolder"
+						:t="t"
+						:multiple="true"
+						@uploaded="refreshFiles">
+						<template #default>
+							<UploadIcon class="icon" /> {{ t('photos', 'Upload images') }}
+						</template>
+					</UploadPicker>
 					<NcButton v-if="allowempty"
 						type="secondary"
 						:disabled="loading"
@@ -44,9 +44,6 @@
 						{{ t('photos', 'Add to {destination}', { destination }) }}
 					</NcButton>
 				</div>
-				<NcNoteCard v-if="photosLocationFolder.attributes['owner-id'] !== currentUser" type="warning">
-					{{ t('photos', 'The destination folder is owned by {owner}', { owner: photosLocationFolder.attributes['owner-id'] }) }}
-				</NcNoteCard>
 			</div>
 		</template>
 
@@ -190,6 +187,7 @@ export default defineComponent({
 		]),
 
 		photosLocationFolder() {
+
 			return this.$store.state.userConfig.photosLocationFolder
 		},
 	},
