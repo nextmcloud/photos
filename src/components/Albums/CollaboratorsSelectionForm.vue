@@ -4,69 +4,36 @@
 -->
 <template>
 	<div class="manage-collaborators">
-		<h2 class="manage-collaborators__title">
-			{{ t('photos', 'Add collaborators') }}
-		</h2>
-
-		<form class="manage-collaborators__form" @submit.prevent>
-			<NcSelect v-model="searchText"
-				input-id="sharing-search-input"
-				:input-label="t('photos', 'Add people or groups who can edit your album')"
-				:loading="loadingCollaborators"
-				label="label"
-				:filterable="false"
-				:placeholder="t('photos', 'Search people or groups')"
-				:clear-search-on-blur="() => false"
-				:user-select="true"
-				:append-to-body="false"
-				:options="searchResults"
-				@search="searchCollaborators"
-				@option:selected="({key}) => selectEntity(key)">
-				{{ t('photos', 'No recommendations. Start typing.') }}
-			</NcSelect>
-		</form>
-
-		<ul class="manage-collaborators__selection">
-			<li v-for="collaboratorKey of listableSelectedCollaboratorsKeys"
-				:key="collaboratorKey"
-				class="manage-collaborators__selection__item">
-				<NcListItemIcon :id="availableCollaborators[collaboratorKey].id"
-					:display-name="availableCollaborators[collaboratorKey].label"
-					:name="availableCollaborators[collaboratorKey].label"
-					:user="availableCollaborators[collaboratorKey].id"
-					:is-no-user="availableCollaborators[collaboratorKey].type !== collaboratorTypes.SHARE_TYPE_USER">
-					<AccountGroup v-if="availableCollaborators[collaboratorKey].type === collaboratorTypes.SHARE_TYPE_GROUP" :title="t('photos', 'Group')" />
-					<NcButton type="tertiary"
-						:aria-label="t('photos', 'Remove {collaboratorLabel} from the collaborators list', {collaboratorLabel: availableCollaborators[collaboratorKey].label})"
-						@click="unselectEntity(collaboratorKey)">
-						<Close slot="icon" :size="20" />
-					</NcButton>
-				</NcListItemIcon>
-			</li>
-		</ul>
-
 		<div class="actions">
+			<h2 class="sharing-link-list-caption">
+				{{ t('photos', 'Link to copy') }}
+			</h2>
+			<span>{{ albumName }}</span>
 			<div v-if="allowPublicLink" class="actions__public-link">
+				<div class="actions__sharing-entry">
+					<span class="sharing-entry__title" v-html="title"></span>
+					<SharingInputDetailsLink :file-info="{}"
+								:disabled="true"
+								:share.sync="share" />
+				</div>
 				<template v-if="isPublicLinkSelected && publicLink.id !== ''">
 					<NcButton class="manage-collaborators__public-link-button"
 						:aria-label="t('photos', 'Copy the public link')"
 						:title="publicLinkURL"
+						:type="publicLinkCopied ? 'success' : 'secondary'"
 						@click="copyPublicLink">
-						<template v-if="publicLinkCopied">
-							{{ t('photos', 'Public link copied!') }}
+						<template v-if="publicLinkCopied" #icon>
+							<span class="icon icon-checkmark"></span>
 						</template>
-						<template v-else>
-							{{ t('photos', 'Copy public link') }}
-						</template>
-						<template #icon>
-							<Check v-if="publicLinkCopied" />
-							<ContentCopy v-else />
+						<template #icon v-else>
+							<span class="icon icon-clipboard"></span>
 						</template>
 					</NcButton>
-					<NcButton type="tertiary"
-						:aria-label="t('photos', 'Delete the public link')"
+					<NcButton :aria-label="t('photos', 'Delete the public link')"
 						@click="deletePublicLink">
-						<Close slot="icon" />
+						<template #icon>
+							<span class="icon icon-delete" />
+						</template>
 					</NcButton>
 				</template>
 				<NcButton v-else
@@ -74,8 +41,7 @@
 					:aria-label="t('photos', 'Create public link share')"
 					class="manage-collaborators__public-link-button"
 					@click="createPublicLinkForAlbum">
-					<Earth slot="icon" />
-					{{ t('photos', 'Share via public link') }}
+					{{ t('photos', 'Create new link') }}
 				</NcButton>
 			</div>
 
@@ -96,7 +62,7 @@ import Earth from 'vue-material-design-icons/Earth.vue'
 import AccountGroupSvg from '@mdi/svg/svg/account-group.svg'
 
 import axios from '@nextcloud/axios'
-import { showError } from '@nextcloud/dialogs'
+import { showError, showSuccess } from '@nextcloud/dialogs'
 import { getCurrentUser } from '@nextcloud/auth'
 import { generateOcsUrl, generateUrl } from '@nextcloud/router'
 import { NcButton, NcListItemIcon, NcSelect } from '@nextcloud/vue'
@@ -105,6 +71,8 @@ import { translate } from '@nextcloud/l10n'
 
 import logger from '../../services/logger.js'
 import FetchCollectionContentMixin from '../../mixins/FetchCollectionContentMixin.js'
+import QuickShareSelect from '../../../../nmcsharing/src/components/SharingEntryQuickShareSelect.vue'
+import SharingInputDetailsLink from '../../../../nmcsharing/src/components/SharingInputDetailsLink.vue'
 
 /**
  * @typedef {object} Collaborator
@@ -132,6 +100,8 @@ export default {
 		NcButton,
 		NcListItemIcon,
 		NcSelect,
+		QuickShareSelect,
+		SharingInputDetailsLink,
 	},
 
 	mixins: [FetchCollectionContentMixin],
@@ -170,6 +140,10 @@ export default {
 			config: {
 				minSearchStringLength: parseInt(OC.config['sharing.minSearchStringLength'], 10) || 0,
 			},
+			share: { 
+				permissions: 1,
+				expireDate: new Date(Date.now() - 86400000).toISOString().split('T')[0] + " 00:00:00",
+			}
 		}
 	},
 
@@ -228,6 +202,45 @@ export default {
 		 */
 		albumFileName() {
 			return this.$store.getters.getAlbumName(this.albumName)
+		},
+
+		/**
+		 * Link share label
+		 *
+		 * @return {string}
+		 */
+		title() {
+			// if we have a valid existing share (not pending)
+			if (this.share && this.share.id) {
+				if (!this.isShareOwner && this.share.ownerDisplayName) {
+					if (this.isEmailShareType) {
+						return t('files_sharing', '{shareWith} by {initiator}', {
+							shareWith: this.share.shareWith,
+							initiator: this.share.ownerDisplayName,
+						})
+					}
+					return t('files_sharing', 'Shared via link by {initiator}', {
+						initiator: this.share.ownerDisplayName,
+					})
+				}
+				if (this.share.label && this.share.label.trim() !== '') {
+					if (this.isEmailShareType) {
+						return t('files_sharing', 'Mail share ({label})', {
+							label: this.share.label.trim(),
+						})
+					}
+					return t('files_sharing', 'Share link ({label})', {
+						label: this.share.label.trim(),
+					})
+				}
+				if (this.isEmailShareType) {
+					return this.share.shareWith
+				}
+			}
+			if (this.index > 1) {
+				return t('files_sharing', 'Share link ({index})', { index: this.index })
+			}
+			return t('files_sharing', 'Share link')
 		},
 	},
 
@@ -332,6 +345,7 @@ export default {
 				this.albumFileName,
 				['<nc:location />', '<nc:dateRange />', '<nc:collaborators />']
 			)
+			showSuccess(t('photos', 'Link created'))
 		},
 
 		async deletePublicLink() {
@@ -343,6 +357,7 @@ export default {
 			}
 			this.publicLinkCopied = false
 			await this.updateAlbumCollaborators()
+			showSuccess(t('photos', 'Link deleted'))
 		},
 
 		async updateAlbumCollaborators() {
@@ -361,6 +376,7 @@ export default {
 
 		async copyPublicLink() {
 			await navigator.clipboard.writeText(this.publicLinkURL)
+			showSuccess(t('photos', 'Link copied'))
 			this.publicLinkCopied = true
 			setTimeout(() => {
 				this.publicLinkCopied = false

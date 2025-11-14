@@ -177,6 +177,9 @@ OC.L10N.register(
     "Share this folder" : "Share this folder",
     "Loading folders …" : "Loading folders …",
     "One of the source folders does not exists" : "One of the source folders does not exists",
-    "Add" : "Add"
+    "Add" : "Add",
+    "Share Album" : "Share Album",
+    "Enter Name" : "Enter Name",
+    "Add people who can access your album" : "Add people who can access your album"
 },
 "nplurals=2; plural=(n != 1);");

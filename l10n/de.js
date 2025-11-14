@@ -183,6 +183,14 @@ OC.L10N.register(
     "Share this folder" : "Diesen Ordner teilen",
     "Loading folders …" : "Lade Ordner…",
     "One of the source folders does not exists" : "Einer der Quellordner existiert nicht",
-    "Add" : "Hinzufügen"
+    "Add" : "Hinzufügen",
+    "Share Album" : "Album teilen",
+    "Enter Name" : "Name eingeben",
+    "Add people who can access your album" : "Fügen Sie Personen hinzu, die auf Ihr Album zugreifen können",
+    "Link to copy" : "Link zum Kopieren",
+    "Link created" : "Link erstellt",
+    "Link deleted" : "Link gelöscht",
+    "Link copied" : "Link kopiert",
+    "Create new link" : "Neuen Link erstellen"
 },
 "nplurals=2; plural=(n != 1);");
