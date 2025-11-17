@@ -13,8 +13,8 @@
 				<div class="actions__sharing-entry">
 					<span class="sharing-entry__title" v-html="title"></span>
 					<SharingInputDetailsLink :file-info="{}"
-								:disabled="true"
-								:share.sync="share" />
+						:disabled="true"
+						:share.sync="share" />
 				</div>
 				<template v-if="isPublicLinkSelected && publicLink.id !== ''">
 					<NcButton class="manage-collaborators__public-link-button"
@@ -54,24 +54,18 @@
 <script>
 import { mapActions } from 'vuex'
 
-import Close from 'vue-material-design-icons/Close.vue'
-import Check from 'vue-material-design-icons/Check.vue'
-import ContentCopy from 'vue-material-design-icons/ContentCopy.vue'
-import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
-import Earth from 'vue-material-design-icons/Earth.vue'
 import AccountGroupSvg from '@mdi/svg/svg/account-group.svg'
 
 import axios from '@nextcloud/axios'
 import { showError, showSuccess } from '@nextcloud/dialogs'
 import { getCurrentUser } from '@nextcloud/auth'
 import { generateOcsUrl, generateUrl } from '@nextcloud/router'
-import { NcButton, NcListItemIcon, NcSelect } from '@nextcloud/vue'
+import { NcButton } from '@nextcloud/vue'
 import { Type } from '@nextcloud/sharing'
 import { translate } from '@nextcloud/l10n'
 
 import logger from '../../services/logger.js'
 import FetchCollectionContentMixin from '../../mixins/FetchCollectionContentMixin.js'
-import QuickShareSelect from '../../../../nmcsharing/src/components/SharingEntryQuickShareSelect.vue'
 import SharingInputDetailsLink from '../../../../nmcsharing/src/components/SharingInputDetailsLink.vue'
 
 /**
@@ -92,15 +86,7 @@ export default {
 	name: 'CollaboratorsSelectionForm',
 
 	components: {
-		Close,
-		AccountGroup,
-		ContentCopy,
-		Check,
-		Earth,
 		NcButton,
-		NcListItemIcon,
-		NcSelect,
-		QuickShareSelect,
 		SharingInputDetailsLink,
 	},
 
@@ -140,9 +126,9 @@ export default {
 			config: {
 				minSearchStringLength: parseInt(OC.config['sharing.minSearchStringLength'], 10) || 0,
 			},
-			share: { 
+			share: {
 				permissions: 1,
-				expireDate: new Date(Date.now() - 86400000).toISOString().split('T')[0] + " 00:00:00",
+				expireDate: new Date(Date.now() - 86400000).toISOString().split('T')[0] + ' 00:00:00',
 			}
 		}
 	},
