@@ -45,7 +45,7 @@ const link = computed(() => `${props.parentRoute}/${encodeURIComponent(props.col
 	flex-direction: column;
 	border-radius: var(--border-radius-large);
 	overflow: hidden;
-    box-sizing: border-box;
+	box-sizing: border-box;
 	background-color: var(--color-main-background);
 	box-shadow: var(--telekom-shadow-raised-pressed);
 
