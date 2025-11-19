@@ -253,11 +253,11 @@ export default {
 }
 
 .album-creation__heading {
-    font-size: 1.5rem;
-    height: unset;
-    line-height: unset;
-    margin-block: 1.5rem 1rem;
-    min-height: unset;
-    text-align: center;
+	font-size: 1.5rem;
+	height: unset;
+	line-height: unset;
+	margin-block: 1.5rem 1rem;
+	min-height: unset;
+	text-align: center;
 }
 </style>
