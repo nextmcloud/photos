@@ -191,6 +191,12 @@ OC.L10N.register(
     "Link created" : "Link erstellt",
     "Link deleted" : "Link gelöscht",
     "Link copied" : "Link kopiert",
-    "Create new link" : "Neuen Link erstellen"
+    "Create new link" : "Neuen Link erstellen",
+    "Path" : "Pfad",
+    "Resolution" : "Maße",
+    "Size" : "Größe",
+    "Creation Date" : "Aufnahmedatum",
+    "Last Modified" : "Zuletzt geändert",
+    "Upload Date" : "Hochladedatum"
 },
 "nplurals=2; plural=(n != 1);");

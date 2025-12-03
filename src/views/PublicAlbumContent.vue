@@ -59,7 +59,7 @@ import ImageOff from 'vue-material-design-icons/ImageOff.vue'
 // import Download from 'vue-material-design-icons/Download.vue'
 // import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
 
-import { NcActions, /** NcButton, */ NcEmptyContent, /** NcActionSeparator, */ isMobile } from '@nextcloud/vue'
+import { /** NcActions,  NcButton, */ NcEmptyContent, /** NcActionSeparator, */ isMobile } from '@nextcloud/vue'
 import axios from '@nextcloud/axios'
 import { generateUrl, generateRemoteUrl } from '@nextcloud/router'
 import { translate } from '@nextcloud/l10n'
@@ -89,7 +89,6 @@ export default {
 		// ImagePlus,
 		ImageOff,
 		NcEmptyContent,
-		NcActions,
 		// NcActionSeparator,
 		// NcButton,
 		CollectionContent,

@@ -29,7 +29,7 @@
 			:file-ids="sortedCollectionFileIds"
 			:base-height="isMobile ? 120 : 200"
 			:loading="loading">
-			<template slot-scope="{file, isHeader, distance}">
+			<template slot-scope="{file, isHeader}">
 				<h2 v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
 					class="section-header">
@@ -37,11 +37,10 @@
 					{{ file.id | dateYear }}
 				</h2>
 				<File v-else
-					slot-scope="{file, distance}"
+					slot-scope="{file}"
 					:file="files[file.id]"
 					:allow-selection="allowSelection"
 					:selected="selection[file.id] === true"
-					:distance="distance"
 					:is-collection="true"
 					@click="openViewer"
 					@favorite="toggleFavorite"
@@ -157,7 +156,7 @@ export default {
 			const newState = this.$store.state.files.files[fileId].favorite ? 0 : 1
 			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
 		},
-		
+
 		async removeFromCollection(fileId) {
 			await this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.filename, fileIdsToRemove: [fileId] })
 		},

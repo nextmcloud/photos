@@ -14,7 +14,7 @@
 				:title="t('photos', 'Albums')"
 				:root-title="t('photos', 'Albums')"
 				@refresh="fetchAlbums" />
-				<!-- 
+			<!--
 				<NcButton :aria-label="isMobile ? t('photos', 'New album') : undefined"
 					@click="showAlbumCreationForm = true">
 					<template #icon>
@@ -181,7 +181,7 @@ export default {
 		handleAlbumCreated({ album }) {
 			this.showAlbumCreationForm = false
 			// this.$router.push(`albums/${album.basename}`)
-						this.destination = album.basename
+			this.destination = album.basename
 			this.collection = album.filename
 			this.showPhotosPicker = true
 		},
@@ -234,11 +234,11 @@ export default {
 		font-weight: bold;
 		overflow: hidden;
 		white-space: nowrap;
-		text-overflow: ellipsis;		
+		text-overflow: ellipsis;
 		font-size: 1.25rem;
 		line-height: 1.5rem;
 		color: var(--color-main-text);
-		
+
 		.material-design-icon {
 			display: inline-flex;
 			vertical-align: text-top;

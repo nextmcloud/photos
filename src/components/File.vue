@@ -21,9 +21,14 @@
 					<span class="icon-action" :title="file.favorite ? t('photos', 'Remove from favorites') : t('photos', 'Add to favorites')" @click.stop.prevent="emitFavorite">
 						<Star class="icon-overlay-action" :size="24" />
 					</span>
-					<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', {imageName: file.basename})" @click.stop.prevent="emitRemove">
-						<Delete class="icon-overlay-action" :size="24" />
-					</span>
+					<div class="actions-right">
+						<span class="icon-action" :title="t('photos', 'View Info')" @click.stop.prevent="showModal">
+							<IconInfo class="icon-overlay-action" :size="24" />
+						</span>
+						<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', {imageName: file.basename})" @click.stop.prevent="emitRemove">
+							<Delete class="icon-overlay-action" :size="24" />
+						</span>
+					</div>
 				</div>
 
 				<!-- We have two img elements to load the small and large preview -->
@@ -69,6 +74,37 @@
 		<FavoriteIcon v-if="file.favorite === 1"
 			v-once
 			class="favorite-state" />
+
+		<NcModal size="small"
+			:show.sync="modal"
+			:has-next="false"
+			:has-previous="false"
+			@close="closeModal"
+			id="file-info-exif">
+			<div class="modal__content modal__content--file">
+				<div class="modal__left">
+					<img :src="srcLarge"
+						:alt="file.basename"
+						class="modal__image"
+						v-if="srcLarge && isImage" />
+					<div v-else class="modal__placeholder">{{ t('photos', 'Preview not available') }}</div>
+				</div>
+				<div class="modal__right">
+					<h2 class="modal__title">{{ file.basename }}</h2>
+					<span v-if="fileSize">{{ fileSize }}</span><span v-if="fileSize && lastModifiedDate"> · </span><span v-if="lastModifiedDate"><NcDateTime :timestamp="getModifiedDate" :ignore-seconds="true" /></span>
+
+					<ul class="modal__details">
+						<li><strong>{{ t('photos', 'Path') }}</strong> <p>{{ path }}</p></li>
+						<li v-if="dimensions"><strong>{{ t('photos', 'Resolution') }}</strong> <p>{{ dimensions }} px </p></li>
+						<li v-if="fileSize"><strong>{{ t('photos', 'Size') }}</strong> <p>{{ fileSize }}</p></li>
+						<!-- <li><strong>Kamera:</strong> {{ camera }}</li> -->
+						<li v-if="creationDate"><strong>{{ t('photos', 'Creation Date') }}</strong> <p>{{ creationDate }}</p></li>
+						<li v-if="lastModifiedDate"><strong>{{ t('photos', 'Last Modified') }}</strong> <p>{{ lastModifiedDate }}</p></li>
+						<li v-if="uploadedDate"><strong>{{ t('photos', 'Upload Date') }}</strong> <p>{{ uploadedDate }}</p></li>
+					</ul>
+				</div>
+			</div>
+		</NcModal>
 	</div>
 </template>
 
@@ -78,23 +114,31 @@ import PlayCircleIcon from 'vue-material-design-icons/PlayCircle.vue'
 import { decode } from 'blurhash'
 
 import { generateUrl } from '@nextcloud/router'
-import { NcCheckboxRadioSwitch } from '@nextcloud/vue'
+import { NcCheckboxRadioSwitch /** , NcButton */ } from '@nextcloud/vue'
 
 import FavoriteIcon from './FavoriteIcon.vue'
 import { isCachedPreview } from '../services/PreviewService.js'
 
 import Star from 'vue-material-design-icons/Star.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
+import IconInfo from 'vue-material-design-icons/Information.vue'
+import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
+import NcDateTime from '@nextcloud/vue/dist/Components/NcDateTime.js'
+import { formatFileSize } from '@nextcloud/files'
 
 export default {
 	name: 'File',
 	components: {
 		FavoriteIcon,
 		NcCheckboxRadioSwitch,
+		// NcButton,
 		VideoIcon,
 		PlayCircleIcon,
 		Star,
 		Delete,
+		IconInfo,
+		NcModal,
+		NcDateTime,
 	},
 	inheritAttrs: false,
 	props: {
@@ -127,6 +171,7 @@ export default {
 			errorSmall: false,
 			loadedLarge: false,
 			errorLarge: false,
+			modal: false,
 		}
 	},
 
@@ -140,11 +185,11 @@ export default {
 		},
 		/** @return {boolean} */
 		isImage() {
-			return this.file.mime.startsWith('image')
+			return this.file.mime && this.file.mime.startsWith('image')
 		},
 		/** @return {string} */
 		decodedEtag() {
-			return this.file.etag.replace('&quot;', '').replace('&quot;', '')
+			return (this.file.etag || '').replace('&quot;', '').replace('&quot;', '')
 		},
 		/** @return {string} */
 		srcLarge() {
@@ -160,6 +205,56 @@ export default {
 		},
 		hasBlurhash() {
 			return this.file.metadataBlurhash !== undefined
+		},
+		fileSize() {
+			const size = this.file.size
+			if ((size === undefined || size === null) && size !== 0) {
+				return null
+			}
+			return formatFileSize(size, true)
+		},
+		dimensions() {
+			const sizeObj = this.file.metadataPhotosSize || this.file.metadataPhotos || this.file.metadataPhotos || null
+			let w = null
+			let h = null
+			if (sizeObj) {
+				w = (sizeObj.width || sizeObj.imageWidth) || (sizeObj.get && sizeObj.get.width)
+				h = (sizeObj.height || sizeObj.imageHeight) || (sizeObj.get && sizeObj.get.height)
+			}
+			// fallbacks
+			w = w || this.file.metadataWidth || this.file.width || this.file.imageWidth
+			h = h || this.file.metadataHeight || this.file.height || this.file.imageHeight
+			if (w && h) {
+				return `${w} × ${h}`
+			}
+			return null
+		},
+		path() {
+			return this.file.filename.substring(0, this.file.filename.lastIndexOf('/'))
+		},
+		camera() {
+			// if EXIF camera fields exist
+			return this.file.metadataCamera || this.file.metadataPhotosCamera || this.file.exifCamera || 'nc standard'
+		},
+		creationDate() {
+			const timestamp = this.file.metadataPhotosOriginalDateTime || this.file.timestamp
+			if (!timestamp) return null
+			return this.formatDateFromUnix(timestamp)
+		},
+		lastModifiedDate() {
+			const lm = this.file.getlastmodified || this.file.lastmod
+			if (!lm) return null
+			const parsed = Date.parse(lm)
+			if (isNaN(parsed)) return null
+			return this.formatDate(new Date(parsed))
+		},
+		getModifiedDate() {
+			return Date.parse(this.file.getlastmodified)
+		},
+		uploadedDate() {
+			const timestamp = this.file.timestamp || null
+			if (!timestamp) return null
+			return this.formatDateFromUnix(timestamp)
 		},
 	},
 
@@ -215,6 +310,14 @@ export default {
 			this.$emit('remove', this.file.fileid)
 		},
 
+		showModal() {
+			this.modal = true
+		},
+
+		closeModal() {
+			this.modal = false
+		},
+
 		onLoadSmall() {
 			this.loadedSmall = true
 		},
@@ -243,6 +346,29 @@ export default {
 				return generateUrl(`/apps/photos/api/v1/preview/${this.file.fileid}?etag=${this.decodedEtag}&x=${size}&y=${size}`)
 			}
 		},
+
+		formatDate(date) {
+			try {
+				return new Intl.DateTimeFormat('de-DE', {
+					year: 'numeric',
+					month: '2-digit',
+					day: '2-digit',
+					hour: '2-digit',
+					minute: '2-digit',
+					timeZone: 'UTC'
+				}).format(date)
+			} catch (e) {
+				return date.toString()
+			}
+		},
+
+		formatDateFromUnix(timestamp) {
+			const t = Number(timestamp)
+			if (isNaN(t)) return null
+			const maybeMillis = t > 1e12 ? t : t * 1000
+			return this.formatDate(new Date(maybeMillis))
+		},
+
 		drawBlurhash() {
 			if (!this.hasBlurhash || !this.$refs.canvas) {
 				return
@@ -258,6 +384,7 @@ export default {
 			imageData.data.set(pixels)
 			ctx.putImageData(imageData, 0, 0)
 		},
+		formatFileSize,
 	},
 
 }
@@ -382,7 +509,7 @@ export default {
 		.favorite-state {
 			display: none;
 		}
-		
+
 		.hover-overlay {
 			display: flex;
 		}
@@ -438,5 +565,44 @@ export default {
 		// Fancy calculation to render the start in the middle of narrow images.
 		right: min(2px, calc(50% - 7px));
 	}
+}
+
+/* Modal layout for EXIF */
+.modal__content--file {
+	display: block;
+	gap: 16px;
+}
+.modal__left {
+	flex: 1 1 60%;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.modal__right {
+	flex: 1 1 40%;
+	padding: 8px 0;
+}
+.modal__image {
+	max-width: 100%;
+	max-height: 40vh;
+	object-fit: contain;
+	border-radius: 4px;
+	min-height: 30vh;
+}
+.modal__details {
+	list-style: none;
+	padding: 0;
+	margin: 8px 0;
+}
+.modal__details li {
+	margin-bottom: 6px;
+}
+.modal__title {
+	font-size: 20px;
+	margin: unset;
+	line-height: initial;
+}
+.modal__placeholder {
+	color: var(--color-text-lighter);
 }
 </style>
