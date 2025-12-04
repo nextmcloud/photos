@@ -12,9 +12,15 @@
 			<div v-if="allowPublicLink" class="actions__public-link">
 				<div class="actions__sharing-entry">
 					<span class="sharing-entry__title" v-html="title"></span>
-					<SharingInputDetailsLink :file-info="{}"
+					<!-- <SharingInputDetailsLink :file-info="{}"
 						:disabled="true"
-						:share.sync="share" />
+						:share.sync="share" /> -->
+					<div class="sharing-link">
+						<EyeIcon :size="16" />
+						{{ canViewText }}
+						<CalendarMonthIcon :size="16" />
+						<ChevronRightIcon :size="18" />
+					</div>
 				</div>
 				<template v-if="isPublicLinkSelected && publicLink.id !== ''">
 					<NcButton class="manage-collaborators__public-link-button"
@@ -53,6 +59,9 @@
 </template>
 <script>
 import { mapActions } from 'vuex'
+import EyeIcon from 'vue-material-design-icons/EyeCircleOutline.vue'
+import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
+import CalendarMonthIcon from 'vue-material-design-icons/CalendarMonth.vue'
 
 import AccountGroupSvg from '@mdi/svg/svg/account-group.svg'
 
@@ -66,7 +75,7 @@ import { translate } from '@nextcloud/l10n'
 
 import logger from '../../services/logger.js'
 import FetchCollectionContentMixin from '../../mixins/FetchCollectionContentMixin.js'
-import SharingInputDetailsLink from '../../../../nmcsharing/src/components/SharingInputDetailsLink.vue'
+// import SharingInputDetailsLink from '../../../../nmcsharing/src/components/SharingInputDetailsLink.vue'
 
 /**
  * @typedef {object} Collaborator
@@ -87,7 +96,10 @@ export default {
 
 	components: {
 		NcButton,
-		SharingInputDetailsLink,
+		// SharingInputDetailsLink,
+		EyeIcon,
+		ChevronRightIcon,
+		CalendarMonthIcon,
 	},
 
 	mixins: [FetchCollectionContentMixin],
@@ -227,6 +239,9 @@ export default {
 				return t('files_sharing', 'Share link ({index})', { index: this.index })
 			}
 			return t('files_sharing', 'Share link')
+		},
+		canViewText() {
+			return t('nmcsharing', 'Anyone with the link can only view')
 		},
 	},
 

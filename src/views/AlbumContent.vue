@@ -62,14 +62,12 @@
 						</template>
 					</NcButton>
 
-					<!--
 					<NcButton v-if="sharingEnabled"
 						type="tertiary"
 						:aria-label="t('photos', 'Manage collaborators for this album')"
 						@click="showManageCollaboratorView = true">
 						<ShareVariant slot="icon" />
 					</NcButton>
-					-->
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
 						<NcActionButton :close-after-click="true"
