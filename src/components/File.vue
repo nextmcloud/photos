@@ -572,16 +572,19 @@ export default {
 	display: block;
 	gap: 16px;
 }
+
 .modal__left {
 	flex: 1 1 60%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
+
 .modal__right {
 	flex: 1 1 40%;
 	padding: 8px 0;
 }
+
 .modal__image {
 	max-width: 100%;
 	max-height: 40vh;
@@ -589,19 +592,23 @@ export default {
 	border-radius: 4px;
 	min-height: 30vh;
 }
+
 .modal__details {
 	list-style: none;
 	padding: 0;
 	margin: 8px 0;
 }
+
 .modal__details li {
 	margin-bottom: 6px;
 }
+
 .modal__title {
 	font-size: 20px;
 	margin: unset;
 	line-height: initial;
 }
+
 .modal__placeholder {
 	color: var(--color-text-lighter);
 }
