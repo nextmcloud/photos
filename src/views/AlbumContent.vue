@@ -31,7 +31,7 @@
 						</template>
 						{{ t('photos', 'Unselect all') }}
 					</NcButton>
-					
+
 					<ActionFavoriteButton v-if="selectedFileIds.length > 0" :selected-file-ids="selectedFileIds" />
 
 					<NcButton v-if="selectedFileIds.length > 0"
@@ -62,14 +62,12 @@
 						</template>
 					</NcButton>
 
-					<!--
 					<NcButton v-if="sharingEnabled"
 						type="tertiary"
 						:aria-label="t('photos', 'Manage collaborators for this album')"
 						@click="showManageCollaboratorView = true">
 						<ShareVariant slot="icon" />
 					</NcButton>
-					-->
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
 						<NcActionButton :close-after-click="true"
@@ -177,10 +175,10 @@ import TrashCan from 'vue-material-design-icons/TrashCan.vue'
 // import Download from 'vue-material-design-icons/Download.vue'
 // import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
 import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
-import MapMarker from 'vue-material-design-icons/MapMarker.vue'
+// import MapMarker from 'vue-material-design-icons/MapMarker.vue'
 import Pencil from 'vue-material-design-icons/Pencil.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
-import ShareVariant from 'vue-material-design-icons/ShareVariant.vue'
+// import ShareVariant from 'vue-material-design-icons/ShareVariant.vue'
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 
@@ -214,7 +212,7 @@ export default {
 		PhotosPicker,
 		HeaderNavigation,
 		ImagePlus,
-		MapMarker,
+		// MapMarker,
 		NcActionButton,
 		NcActions,
 		NcActionSeparator,
@@ -225,7 +223,7 @@ export default {
 		NcModal,
 		Pencil,
 		Plus,
-		ShareVariant,
+		// ShareVariant,
 		ViewGridOutline,
 		ViewDashboardOutline,
 	},

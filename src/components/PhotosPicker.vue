@@ -15,8 +15,7 @@
 		<template #actions>
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
-					<UploadPicker
-						:accept="allowedMimes"
+					<UploadPicker :accept="allowedMimes"
 						:context="uploadContext"
 						:destination="photosLocationFolder"
 						:t="t"
@@ -79,7 +78,7 @@
 
 <script>
 import { UploadPicker } from '@nextcloud/upload'
-import { NcButton, NcDialog, NcLoadingIcon, NcSelect, NcNoteCard, useIsMobile } from '@nextcloud/vue'
+import { NcButton, NcDialog, NcLoadingIcon, /** NcSelect,  NcNoteCard */ useIsMobile } from '@nextcloud/vue'
 import { defineComponent } from 'vue'
 import { mapGetters } from 'vuex'
 
@@ -108,8 +107,8 @@ export default defineComponent({
 		NcButton,
 		NcDialog,
 		NcLoadingIcon,
-		NcSelect,
-		NcNoteCard,
+		// NcSelect,
+		// NcNoteCard,
 		UploadPicker,
 	},
 

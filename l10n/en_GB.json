@@ -178,6 +178,7 @@
     "Add" : "Add",
     "Share Album" : "Share Album",
     "Enter Name" : "Enter Name",
-    "Add people who can access your album" : "Add people who can access your album"
+    "Add people who can access your album" : "Add people who can access your album",
+    "Path" : "Path"
 },"pluralForm" :"nplurals=2; plural=(n != 1);"
 }
