@@ -30,7 +30,8 @@
 			v-if="collection !== undefined && sortedCollectionFileIds.length > 0 "
 			:container-element="appContent"
 			class="collection__media"
-			:file-ids="sortedCollectionFileIds"
+			:file-ids-by-section="collectionFileIdsByMonth"
+			:sections="collectionMonthsList"
 			:base-height="isMobile ? 120 : 200"
 			:loading="loading">
 			<FileComponent
@@ -61,6 +62,7 @@ import FileComponent from '../FileComponent.vue'
 import FilesListViewer from '../FilesListViewer.vue'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
 import { toViewerFileInfo } from '../../utils/fileUtils.js'
+import FilesByMonthMixin from '../../mixins/FilesByMonthMixin.js'
 
 export default defineComponent({
 	name: 'CollectionContent',
@@ -73,7 +75,7 @@ export default defineComponent({
 		FileComponent,
 	},
 
-	mixins: [FilesSelectionMixin],
+	mixins: [FilesSelectionMixin, FilesByMonthMixin],
 
 	props: {
 		collection: {
@@ -133,10 +135,10 @@ export default defineComponent({
 	},
 
 	methods: {
-		openViewer(fileId: string) {
+		openViewer(fileId) {
 			window.OCA.Viewer.open({
 				fileInfo: toViewerFileInfo(this.files[fileId]),
-				list: this.sortedCollectionFileIds.map((fileId) => toViewerFileInfo(this.files[fileId])),
+				list: Object.values(this.collectionFileIdsByMonth).flat().map(fileId => this.files[fileId]),
 			})
 		},
 
