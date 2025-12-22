@@ -20,11 +20,8 @@
 				:path="'/' + albumName"
 				:title="albumName"
 				@refresh="fetchAlbumContent">
-				<div
-					v-if="album !== undefined && album.attributes.location !== ''"
-					slot="subtitle"
-					class="album__location">
-					<MapMarkerOutline />{{ album.attributes.location }}
+				<div v-if="album !== undefined && album.attributes.nbItems !== 0" slot="subtitle" class="album__details">
+					{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
 				</div>
 
 				<template slot="default">
@@ -37,6 +34,17 @@
 						</template>
 						{{ t('photos', 'Unselect all') }}
 					</NcButton>
+
+					<ActionFavoriteButton v-if="selectedFileIds.length > 0" :selected-file-ids="selectedFileIds" />
+
+					<NcButton v-if="selectedFileIds.length > 0"
+						:aria-label="t('photos', 'Unselect all')"
+						@click="handleRemoveFilesFromAlbum(selectedFileIds)">
+						<template #icon>
+							<DeleteOutline />
+						</template>
+						{{ t('photos', 'Remove selection from album') }}
+					</NcButton>
 				</template>
 
 				<template v-if="album !== undefined" slot="right">
@@ -46,13 +54,15 @@
 						</template>
 						{{ t('photos', 'Add photos to this album') }}
 					</NcButton>
+				</template>
 
-					<NcButton
-						v-if="sharingEnabled"
-						variant="tertiary"
-						:aria-label="t('photos', 'Manage collaborators for this album')"
-						@click="showManageCollaboratorView = true">
-						<ShareVariantOutline slot="icon" />
+				<template v-if="album !== undefined" slot="buttons">
+					<NcButton :aria-label="t('photos', 'Enable squared photos view')"
+						@click="toggleCroppedLayout(!croppedLayout)">
+						<template #icon>
+							<ViewGridOutline v-if="croppedLayout" />
+							<ViewDashboardOutline v-else />
+						</template>
 					</NcButton>
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
@@ -60,16 +70,24 @@
 							:close-after-click="true"
 							:aria-label="t('photos', 'Edit album details')"
 							@click="showEditAlbumForm = true">
-							{{ t('photos', 'Edit album details') }}
+							{{ t('photos', 'Rename album') }}
 							<PencilOutline slot="icon" />
 						</NcActionButton>
 
-						<!-- Support download from arbitrary origin
 						<ActionDownload v-if="albumFileIds.length > 0"
 							:selected-file-ids="albumFileIds"
 							:title="t('photos', 'Download all files in album')">
 							<DownloadMultiple slot="icon" />
-						</ActionDownload>-->
+						</ActionDownload>
+
+						<NcActionButton
+							v-if="sharingEnabled"
+							:close-after-click="true"
+							:aria-label="t('photos', 'Share album')"
+							@click="showManageCollaboratorView = true">
+							{{ t('photos', 'Share album') }}
+							<ShareVariantOutline slot="icon" />
+						</NcActionButton>
 
 						<NcActionButton
 							:close-after-click="true"
@@ -115,7 +133,7 @@
 					:aria-label="t('photos', 'Add photos to this album')"
 					@click="showAddPhotosModal = true">
 					<Plus slot="icon" />
-					{{ t('photos', "Add") }}
+					{{ t('photos', "Add photos to this album") }}
 				</NcButton>
 			</NcEmptyContent>
 		</CollectionContent>
@@ -132,7 +150,7 @@
 			v-if="showManageCollaboratorView && album !== undefined"
 			:name="t('photos', 'Manage collaborators')"
 			@close="showManageCollaboratorView = false">
-			<CollaboratorsSelectionForm
+			<AlbumShare
 				:album-name="album.basename"
 				:collaborators="album.attributes.collaborators">
 				<template slot-scope="{ collaborators }">
@@ -147,7 +165,7 @@
 						{{ t('photos', 'Save') }}
 					</NcButton>
 				</template>
-			</CollaboratorsSelectionForm>
+			</AlbumShare>
 		</NcModal>
 
 		<NcDialog
@@ -156,7 +174,7 @@
 			close-on-click-outside
 			size="normal"
 			@closing="showEditAlbumForm = false">
-			<AlbumForm :album="album" @done="(event) => handleAlbumUpdate(event)" />
+			<AlbumForm :album="album" @done="redirectToNewName" @closing="showEditAlbumForm = false" />
 		</NcDialog>
 	</div>
 </template>
@@ -164,7 +182,7 @@
 <script lang='ts'>
 import type { Album } from '../store/albums.js'
 
-import { translate } from '@nextcloud/l10n'
+import { translate, translatePlural } from '@nextcloud/l10n'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActions from '@nextcloud/vue/components/NcActions'
@@ -178,7 +196,7 @@ import Close from 'vue-material-design-icons/Close.vue'
 // import Download from 'vue-material-design-icons/TrayArrowDown.vue'
 // import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
 import ImagePlusOutline from 'vue-material-design-icons/ImagePlusOutline.vue'
-import MapMarkerOutline from 'vue-material-design-icons/MapMarkerOutline.vue'
+// import MapMarkerOutline from 'vue-material-design-icons/MapMarkerOutline.vue'
 import PencilOutline from 'vue-material-design-icons/PencilOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import ShareVariantOutline from 'vue-material-design-icons/ShareVariantOutline.vue'
@@ -186,7 +204,7 @@ import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 // import ActionDownload from '../components/Actions/ActionDownload.vue'
 import ActionFavorite from '../components/Actions/ActionFavorite.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
-import CollaboratorsSelectionForm from '../components/Albums/CollaboratorsSelectionForm.vue'
+import AlbumShare from '../components/Albums/AlbumShare.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
@@ -195,6 +213,10 @@ import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import logger from '../services/logger.js'
 import { albumFilesExtraProps, albumsExtraProps } from '../store/albums.ts'
 
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
+import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
+
 export default {
 	name: 'AlbumContent',
 	components: {
@@ -202,7 +224,7 @@ export default {
 		ActionFavorite,
 		AlbumForm,
 		Close,
-		CollaboratorsSelectionForm,
+		AlbumShare,
 		CollectionContent,
 		DeleteOutline,
 		// Download,
@@ -210,7 +232,7 @@ export default {
 		PhotosPicker,
 		HeaderNavigation,
 		ImagePlusOutline,
-		MapMarkerOutline,
+		// MapMarkerOutline,
 		NcActionButton,
 		NcActions,
 		NcActionSeparator,
@@ -222,6 +244,9 @@ export default {
 		PencilOutline,
 		Plus,
 		ShareVariantOutline,
+		ViewGridOutline,
+		ViewDashboardOutline,
+		ActionFavoriteButton,
 	},
 
 	mixins: [
@@ -275,6 +300,10 @@ export default {
 				.map((fileId) => this.$store.state.files.files[fileId])
 				.filter((file) => file.attributes['photos-album-file-origin'] !== 'filters')
 				.map((file) => file.fileid.toString())
+		},
+
+		croppedLayout() {
+			return this.$store.state.userConfig.croppedLayout
 		},
 	},
 
@@ -341,7 +370,12 @@ export default {
 			this.fetchAlbumContent()
 		},
 
+		toggleCroppedLayout(value) {
+			this.$store.dispatch('updateUserConfig', { key: 'croppedLayout', value })
+		},
+
 		t: translate,
+		n: translatePlural,
 	},
 }
 </script>

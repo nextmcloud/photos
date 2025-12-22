@@ -9,42 +9,8 @@
 		:open="open"
 		out-transition
 		size="large"
-		@update:open="(open) => $emit('update:open', open)">
-		<!-- Navigation containing the months available -->
-		<template v-if="monthsList.length > 0" #navigation="{ isCollapsed }">
-			<!-- Mobile view -->
-			<NcSelect
-				v-if="isCollapsed"
-				v-model="targetMonth"
-				:aria-label-listbox="t('photos', 'Dates')"
-				class="photos-picker__navigation__month-select"
-				:clearable="false"
-				:input-label="t('photos', 'Jump to specific date in list')"
-				:options="monthsList">
-				<template #selected-option="{ label }">
-					{{ dateMonthAndYear(label) }}
-				</template>
-				<template #option="{ label }">
-					{{ dateMonthAndYear(label) }}
-				</template>
-			</NcSelect>
-
-			<!-- Default view -->
-			<ul v-else :aria-label="t('photos', 'Dates')">
-				<li
-					v-for="month in monthsList"
-					:key="month"
-					class="photos-picker__navigation__month">
-					<NcButton
-						:variant="targetMonth === month ? 'secondary' : 'tertiary'"
-						:aria-label="t('photos', 'Jump to {date}', { date: dateMonthAndYear(month) })"
-						@click="targetMonth = month">
-						{{ dateMonthAndYear(month) }}
-					</NcButton>
-				</li>
-			</ul>
-		</template>
-
+		@update:open="(open) => $emit('update:open', open)" 
+		@closing="$emit('closed')">
 		<!-- The actions on the bottom -->
 		<template #actions>
 			<div class="photos-picker__actions">
@@ -55,7 +21,17 @@
 						:destination="photosLocationFolder"
 						multiple
 						@uploaded="refreshFiles" />
-					<NcButton variant="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
+					<NcButton v-if="allowempty"
+						type="secondary"
+						:disabled="loading"
+						@click="$emit('closed')">
+						<template #icon>
+							<ImageAlbum v-if="!loading" />
+							<NcLoadingIcon v-if="loading" />
+						</template>
+						{{ t('photos', 'Create empty album') }}
+					</NcButton>
+					<NcButton type="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
 						<template #icon>
 							<ImagePlusOutline v-if="!loading" />
 							<NcLoadingIcon v-if="loading" />
@@ -63,9 +39,6 @@
 						{{ t('photos', 'Add to {destination}', { destination }, undefined, { escape: false, sanitize: false }) }}
 					</NcButton>
 				</div>
-				<NcNoteCard v-if="photosLocationFolder?.attributes['owner-id'] !== currentUser" type="warning">
-					{{ t('photos', 'The destination folder is owned by {owner}', { owner: photosLocationFolder?.attributes['owner-id'] }) }}
-				</NcNoteCard>
 			</div>
 		</template>
 
@@ -120,6 +93,7 @@ import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
 import NcSelect from '@nextcloud/vue/components/NcSelect'
+import ImageAlbum from 'vue-material-design-icons/ImageAlbum.vue'
 import ImagePlusOutline from 'vue-material-design-icons/ImagePlusOutline.vue'
 import FileComponent from './FileComponent.vue'
 import FilesListViewer from './FilesListViewer.vue'
@@ -134,6 +108,7 @@ export default defineComponent({
 	components: {
 		FileComponent,
 		FilesListViewer,
+		ImageAlbum,
 		ImagePlusOutline,
 		NcButton,
 		NcDialog,
@@ -182,6 +157,13 @@ export default defineComponent({
 		loading: {
 			type: Boolean,
 			default: false,
+		},		
+		
+		// Whether we allow to create empty album.
+		allowempty: {
+			type: Boolean,
+			default: false,
+			required: false,
 		},
 	},
 
@@ -298,7 +280,7 @@ export default defineComponent({
 
 		.section-header {
 			font-weight: bold;
-			font-size: 20px;
+			font-size: 1.5rem;
 			padding: 8px 0 4px 0;
 		}
 
