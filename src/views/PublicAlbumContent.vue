@@ -3,7 +3,7 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-	<div>
+	<div class="album-container">
 		<CollectionContent
 			ref="collectionContent"
 			:collection="album"
@@ -16,7 +16,6 @@
 				v-if="albumOriginalName !== ''"
 				key="navigation"
 				slot="header"
-				slot-scope="{ selectedFileIds }"
 				:loading="loadingCollection || loadingCollectionFiles"
 				:params="{ token }"
 				path="/"
@@ -51,7 +50,11 @@
 							<//** > */ -->
 						</template>
 					</NcActions>
-				</template>
+				</template>				
+				
+				<div v-if="album !== undefined && album.attributes.nbItems !== 0" slot="subtitle" class="album__details">
+					{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
+				</div>
 			</HeaderNavigation>
 
 			<!-- No content -->
@@ -209,8 +212,6 @@ export default {
 
 <style lang="scss" scoped>
 .album {
-	display: flex;
-	flex-direction: column;
 
 	&__title {
 		width: 100%;
@@ -226,6 +227,14 @@ export default {
 		margin-inline-start: -4px;
 		display: flex;
 		color: var(--color-text-lighter);
+	}
+}
+
+.album-container {
+	height: 100%;
+	
+	:deep(.collection) {
+		height: 100%;
 	}
 }
 </style>

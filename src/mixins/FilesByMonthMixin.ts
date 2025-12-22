@@ -28,9 +28,33 @@ export default defineComponent({
 			return filesByMonth
 		},
 
+		collectionFileIdsByMonth(): Record<string, string[]> {
+			const filesByMonth = {}
+
+			for (const fileId of this.collectionFileIds) {
+				const file = this.files[fileId]
+				if (file) {
+					filesByMonth[file.month] = filesByMonth[file.month] ?? []
+					filesByMonth[file.month].push(file.fileid)
+				}
+			}
+
+			// Sort files in sections.
+			Object.keys(filesByMonth)
+				.forEach(month => filesByMonth[month].sort(this.sortFilesByTimestamp))
+
+			return filesByMonth
+		},
+
 		monthsList(): string[] {
 			return Object
 				.keys(this.fileIdsByMonth)
+				.sort((month1, month2) => month1 > month2 ? -1 : 1)
+		},
+
+		collectionMonthsList(): string[] {
+			return Object
+				.keys(this.collectionFileIdsByMonth)
 				.sort((month1, month2) => month1 > month2 ? -1 : 1)
 		},
 	},
