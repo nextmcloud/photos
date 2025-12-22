@@ -22,20 +22,25 @@
 			<h1 class="photos-navigation__title__main" @click="refresh">
 				{{ name }}
 			</h1>
-			<div class="photos-navigation__title__sub" />
-			<slot name="subtitle" />
+			<div class="photos-navigation__title__sub" role="subtitle">
+				<slot name="subtitle" />
+			</div>
 		</div>
 
 		<!-- Main slot -->
 		<div class="photos-navigation__content">
+			<NcLoadingIcon v-show="loading" class="photos-navigation__loader" />
+
 			<div v-if="$slots.default" class="photos-navigation__content__left">
 				<slot />
 			</div>
 
-			<NcLoadingIcon v-show="loading" class="photos-navigation__loader" />
-
 			<div class="photos-navigation__content__right">
 				<slot name="right" />
+			</div>
+
+			<div class="photos-navigation__content__buttons">
+				<slot name="buttons" />
 			</div>
 		</div>
 	</div>
@@ -114,18 +119,19 @@ export default {
 	z-index: 20;
 	top: 0;
 	display: flex;
-	gap: calc(2 * var(--app-navigation-padding));
-	align-items: center;
+	gap: 0.5rem;
+	row-gap: 1rem;
+	align-items: flex-start;
 	justify-content: flex-start;
 	width: 100%;
 	// Ensure to not overlap with app navigation toggle
-	padding-inline: calc(var(--default-clickable-area) + 2 * var(--app-navigation-padding)) var(--app-navigation-padding);
+	padding-inline: calc(var(--default-clickable-area) * var(--app-navigation-padding)) var(--app-navigation-padding);
 	// Align with app navigation toggle
-	padding-block: var(--app-navigation-padding);
+	padding: 1rem 1rem 1rem 5rem;
 	background: var(--color-main-background);
 
 	&__title {
-		max-width: 45%;
+		max-width: 50%;
 		display: flex;
 		flex-direction: column;
 
@@ -141,33 +147,34 @@ export default {
 			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
+
+		align-self: flex-start;
+	}
+
+	&__subtitle {
+		display: flex;
+		flex-basis: 100%;
 	}
 
 	&__loader {
-		margin-inline-start: 32px;
+		margin-inline-start: 1rem;
 	}
 
 	&__content {
 		display: flex;
+		flex-direction: row;
 		flex-grow: 1;
 		// We need to wrap on small devices for accessibility
 		flex-wrap: wrap;
-		gap: 16px;
+		gap: .5rem;
+		justify-content: flex-end;
 
-		&__left {
+		&__left, &__right, &__buttons {
 			display: flex;
-			flex-grow: 1;
-			align-items: center;
-			gap: 16px;
-			flex-wrap: wrap;
-		}
-
-		&__right {
-			display: flex;
-			flex-grow: 1;
 			align-items: center;
 			justify-content: flex-end;
 			flex-wrap: wrap;
+			gap: .5rem;
 		}
 	}
 }

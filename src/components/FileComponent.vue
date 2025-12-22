@@ -15,9 +15,26 @@
 			@click.stop.prevent="emitClick">
 
 			<!-- image and loading placeholder -->
-			<div class="file__images">
+			<div :class="file.attributes.favorite ? 'file__images file__favorite' : 'file__images'">
 				<VideoOutline v-if="file.mime?.includes('video')" class="icon-overlay" :size="64" />
 				<PlayCircleOutlineIcon v-else-if="file.attributes['metadata-files-live-photo'] !== undefined" class="icon-overlay" :size="64" />
+
+				<div v-if="isCollection" class="hover-overlay">
+					<span 
+						class="icon-action" 
+						:title="file.attributes.favorite ? t('photos', 'Remove from favorites') : t('photos', 'Add to favorites')" 
+						@click.stop.prevent="emitFavorite">
+						<Star class="icon-overlay-action" :size="24" />
+					</span>
+					<div class="actions-right">
+						<span class="icon-action" :title="t('photos', 'View Info')" @click.stop.prevent="showModal">
+							<IconInfo class="icon-overlay-action" :size="24" />
+						</span>
+						<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', {imageName: file.basename})" @click.stop.prevent="emitRemove">
+							<Delete class="icon-overlay-action" :size="24" />
+						</span>
+					</div>
+				</div>
 
 				<!-- We have two img elements to load the small and large preview -->
 				<!-- Do not show the small preview if the larger one is loaded -->
@@ -70,6 +87,14 @@
 			v-if="file.attributes.favorite === 1"
 			v-once
 			class="favorite-state" />
+
+		<FileInfoExifModal
+			:show="modal"
+			:file="file"
+			:src-large="srcLarge"
+			:is-image="isImage"
+			@close="closeModal" />
+
 	</div>
 </template>
 
@@ -86,6 +111,11 @@ import VideoOutline from 'vue-material-design-icons/VideoOutline.vue'
 import FavoriteIcon from './FavoriteIcon.vue'
 import { isCachedPreview } from '../services/PreviewService.js'
 
+import Star from 'vue-material-design-icons/Star.vue'
+import Delete from 'vue-material-design-icons/Delete.vue'
+import IconInfo from 'vue-material-design-icons/Information.vue'
+import FileInfoExifModal from './FileInfoExifModal.vue'
+
 export default {
 	name: 'FileComponent',
 	components: {
@@ -93,6 +123,10 @@ export default {
 		NcCheckboxRadioSwitch,
 		VideoOutline,
 		PlayCircleOutlineIcon,
+		Star,
+		Delete,
+		IconInfo,
+		FileInfoExifModal,
 	},
 
 	inheritAttrs: false,
@@ -116,6 +150,11 @@ export default {
 			type: Number,
 			default: 0,
 		},
+
+		isCollection: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -125,6 +164,7 @@ export default {
 			errorSmall: false,
 			loadedLarge: false,
 			errorLarge: false,
+			modal: false,
 		}
 	},
 
@@ -250,6 +290,24 @@ export default {
 			ctx.putImageData(imageData, 0, 0)
 		},
 
+		emitFavorite() {
+			this.$emit('favorite', this.file.fileid)
+		},
+
+		emitRemove() {
+			this.$emit('remove', { fileid: this.file.fileid })
+		},
+
+		showModal() {
+			this.modal = true
+			console.log(this.modal)
+		},
+
+		closeModal() {
+			this.modal = false
+			console.log(this.modal)
+		},
+
 		t,
 	},
 
@@ -258,7 +316,6 @@ export default {
 
 <style lang="scss" scoped>
 .file-container {
-	contain: strict;
 	background: var(--color-primary-element-light);
 	position: relative;
 	height: 100%;
@@ -328,7 +385,42 @@ export default {
 				position: absolute;
 				color: transparent; /// Hide alt='' text when loading.
 			}
+
+			.star-icon {
+				position: absolute;
+				z-index: 1000;
+				left: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+				svg {
+					color: #fff;
+				}
+			}
+
+			.delete-icon {
+				position: absolute;
+				z-index: 1000;
+				right: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+				svg {
+					color: #fff;
+				}
+			}
 		}
+	}
+
+	.hover-overlay {
+		bottom: 0;
+		cursor: unset;
+		display: none;
+		position: absolute;
+		height: 2.5rem;
+		width: 100%;
+		z-index: 900;
+		background-color: rgba(0,0,0,0.5);
 	}
 
 	// Reveal checkbox on hover.
@@ -339,6 +431,10 @@ export default {
 
 		.favorite-state {
 			display: none;
+		}
+
+		.hover-overlay {
+			display: flex;
 		}
 	}
 

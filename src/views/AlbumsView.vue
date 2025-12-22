@@ -39,13 +39,14 @@
 					<template #default>
 						<span class="album__name">
 							{{ collection.basename }}
+							<ExportVariant v-if="isShared(collection)" :size="20" />
 						</span>
 						<CogOutline v-if="Object.keys(collection.attributes.filters).length !== 0" fill-color="var(--color-text-lighter)" />
 					</template>
 
 					<template #subtitle>
 						<div class="album__details">
-							{{ collection.attributes.date }} ⸱ {{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
+							{{ n('photos', '%n element', '%n elements', collection.attributes.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ collection.attributes.date }}
 						</div>
 					</template>
 				</CollectionCover>
@@ -63,12 +64,22 @@
 		<NcModal
 			v-if="showAlbumCreationForm"
 			label-id="new-album-form"
-			@close="showAlbumCreationForm = false">
+			@close="handleAlbumCreateCancel"
+			key="albumCreationForm"
+			:name="t('photos', 'New album')">
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
-			<AlbumForm @done="handleAlbumCreated" />
+			<AlbumForm @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
+
+		<PhotosPicker :open.sync="showPhotosPicker"
+			:blacklist-ids="blacklistIds"
+			:destination="destination"
+			:name="t('photos', 'Add photos to {albumName}', {albumName: destination})"
+			:allowempty="allowEmpty"
+			@closed="handlePickerClose"
+			@files-picked="handleFilesPicked" />
 	</div>
 </template>
 
@@ -90,6 +101,11 @@ import HeaderNavigation from '../components/HeaderNavigation.vue'
 import FetchCollectionsMixin from '../mixins/FetchCollectionsMixin.js'
 import { albumsExtraProps, albumsPrefix } from '../store/albums.js'
 
+import { mapActions } from 'vuex'
+import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
+import CollectionAdd from '../components/Collection/CollectionAdd.vue'
+import PhotosPicker from '../components/PhotosPicker.vue'
+
 export default defineComponent({
 	name: 'AlbumsView',
 	components: {
@@ -103,6 +119,9 @@ export default defineComponent({
 		HeaderNavigation,
 		AlbumForm,
 		CogOutline,
+		ExportVariant,
+		CollectionAdd,
+		PhotosPicker,
 	},
 
 	filters: {
@@ -127,6 +146,12 @@ export default defineComponent({
 	data() {
 		return {
 			showAlbumCreationForm: false,
+			showPhotosPicker: false,
+			createdAlbum: null,
+			blacklistIds: [],
+			destination: '',
+			collection: '',
+			allowEmpty: true,
 		}
 	},
 
@@ -141,6 +166,11 @@ export default defineComponent({
 	},
 
 	methods: {
+		...mapActions([
+			'addFilesToCollection',
+			'deleteCollection',
+		]),
+
 		fetchAlbums() {
 			this.fetchCollections(
 				albumsPrefix,
@@ -150,7 +180,43 @@ export default defineComponent({
 
 		handleAlbumCreated({ album }) {
 			this.showAlbumCreationForm = false
-			this.$router.push(`/albums/${album.basename}`)
+			this.destination = album.basename
+			this.collection = album.filename
+			this.showPhotosPicker = true
+		},
+
+		handleAlbumCreateCancel() {
+			this.showAlbumCreationForm = false
+			this.createdAlbum = null
+		},
+
+		handlePickerClose() {
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleFilesPicked(fileIds) {
+			// Add picked files
+			await this.addFilesToCollection({ collectionFileName: this.collection, fileIdsToAdd: fileIds })
+			// Close the PhotosPicker
+			this.showPhotosPicker = false
+			// Re-fetch album to have the proper collection
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleDeleteAlbum() {
+			await this.deleteCollection({ collectionFileName: this.collection })
+			this.$router.push('/albums')
+		},
+
+		/**
+		 * @param {object} album
+		 * @return {boolean}
+		 */
+		isShared(album) {
+			if (album.attributes.collaborators.length === 0) {
+				return false
+			}
+			return true
 		},
 
 		t: translate,
@@ -165,18 +231,32 @@ export default defineComponent({
 	flex-direction: column;
 
 	.album__name {
-		font-weight: normal;
+		font-weight: bold;
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		font-size: 20px;
+		font-size: 1.25rem;
 		color: var(--color-main-text);
+
+		.material-design-icon {
+			display: inline-flex;
+			vertical-align: text-top;
+		}
+	}
+
+	.album__details {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }
 
 .album-creation__heading {
-	padding: calc(var(--default-grid-baseline) * 4);
-	margin-bottom: 0px;
-	padding-bottom: 0px;
+	font-size: 1.5rem;
+	height: unset;
+	line-height: unset;
+	margin-block: 1.5rem 1rem;
+	min-height: unset;
+	text-align: center;
 }
 </style>

@@ -33,14 +33,24 @@
 			:file-ids="sortedCollectionFileIds"
 			:base-height="isMobile ? 120 : 200"
 			:loading="loading">
-			<FileComponent
-				slot-scope="{ file, distance }"
-				:file="files[file.id]"
-				:allow-selection="allowSelection"
-				:selected="selection[file.id] === true"
-				:distance="distance"
-				@click="openViewer"
-				@select-toggled="onFileSelectToggle" />
+			<template slot-scope="{file, isHeader}">
+				<h2 v-if="isHeader"
+					:id="`file-picker-section-header-${file.id}`"
+					class="section-header">
+					<b>{{ file.id | dateMonth }}</b>
+					{{ file.id | dateYear }}
+				</h2>
+				<FileComponent v-else
+					slot-scope="{file}"
+					:file="files[file.id]"
+					:allow-selection="allowSelection"
+					:selected="selection[file.id] === true"
+					:is-collection="true"
+					@click="openViewer"
+					@favorite="toggleFavorite"
+					@remove="handleFileDeleted"
+					@select-toggled="onFileSelectToggle" />
+			</template>
 		</FilesListViewer>
 	</div>
 </template>
@@ -62,6 +72,8 @@ import FilesListViewer from '../FilesListViewer.vue'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
 import { toViewerFileInfo } from '../../utils/fileUtils.js'
 
+import moment from '@nextcloud/moment'
+
 export default defineComponent({
 	name: 'CollectionContent',
 
@@ -71,6 +83,22 @@ export default defineComponent({
 		NcEmptyContent,
 		FilesListViewer,
 		FileComponent,
+	},
+
+	filters: {
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateMonth(date) {
+			return moment(date, 'YYYYMM').format('MMMM')
+		},
+
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateYear(date) {
+			return moment(date, 'YYYYMM').format('YYYY')
+		},
 	},
 
 	mixins: [FilesSelectionMixin],
@@ -142,6 +170,12 @@ export default defineComponent({
 
 		handleFileDeleted({ fileid }: File) {
 			this.$store.commit('removeFilesFromCollection', { collectionFileName: this.collection.root + this.collection.path, fileIdsToRemove: [fileid?.toString()] })
+		},
+
+		async toggleFavorite(fileId) {
+			const newState = this.$store.state.files.files[fileId].attributes.favorite ? 0 : 1
+			console.log(newState)
+			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
 		},
 
 		t: translate,
