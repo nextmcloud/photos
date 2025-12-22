@@ -19,6 +19,7 @@
 						:accept="allowedMimes"
 						:context="uploadContext"
 						:destination="photosLocationFolder"
+						:label="t('photos', 'Upload')"
 						multiple
 						@uploaded="refreshFiles" />
 					<NcButton v-if="allowempty"
