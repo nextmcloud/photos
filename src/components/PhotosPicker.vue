@@ -15,13 +15,18 @@
 		<template #actions>
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
-					<UploadPicker
-						:accept="allowedMimes"
-						:context="uploadContext"
-						:destination="photosLocationFolder"
-						:label="t('photos', 'Upload')"
-						multiple
-						@uploaded="refreshFiles" />
+					<div class="upload-wrapper">
+						<UploadPicker
+							:accept="allowedMimes"
+							:context="uploadContext"
+							:destination="photosLocationFolder"
+							multiple
+							no-label
+							@uploaded="refreshFiles" />
+						<NcButton type="secondary" @click="triggerUploadPicker">
+							{{ t('photos', 'Upload') }}
+						</NcButton>
+					</div>
 					<NcButton v-if="allowempty"
 						type="secondary"
 						:disabled="loading"
@@ -238,6 +243,13 @@ export default defineComponent({
 				return moment(date, 'YYYYMM').format('MMM YYYY')
 			}
 			return moment(date, 'YYYYMM').format('MMMM YYYY')
+		},
+
+		triggerUploadPicker() {
+			const el = this.$el.querySelector('.upload-wrapper .upload-picker button')
+				|| this.$el.querySelector('.upload-wrapper button')
+
+			el?.click()
 		},
 
 		t,
