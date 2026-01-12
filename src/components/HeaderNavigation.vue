@@ -147,7 +147,6 @@ export default {
 			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
-
 		align-self: flex-start;
 	}
 
