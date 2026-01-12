@@ -3,21 +3,22 @@
 		v-if="show"
 		:title="t('photos', 'View Info')"
 		@close="$emit('close')">
-
 		<div class="modal__content modal__content--file">
 			<div class="modal__left">
 				<img
 					v-if="srcLarge && isImage"
 					:src="srcLarge"
 					:alt="file.basename"
-					class="modal__image" />
+					class="modal__image">
 				<div v-else class="modal__placeholder">
 					{{ t('photos', 'Preview not available') }}
 				</div>
 			</div>
 
 			<div class="modal__right">
-				<h2 class="modal__title">{{ file.basename }}</h2>
+				<h2 class="modal__title">
+					{{ file.basename }}
+				</h2>
 				<span v-if="fileSize">{{ fileSize }}</span>
 				<span v-if="fileSize && lastModifiedDate"> · </span>
 				<span v-if="lastModifiedDate">
@@ -26,26 +27,35 @@
 
 				<ul class="modal__details">
 					<li><strong>{{ t('photos', 'Path') }}</strong> <p>{{ path }}</p></li>
-					<li v-if="dimensions"><strong>{{ t('photos', 'Resolution') }}</strong> <p>{{ dimensions }} px</p></li>
-					<li v-if="fileSize"><strong>{{ t('photos', 'Size') }}</strong> <p>{{ fileSize }}</p></li>
-					<li v-if="creationDate"><strong>{{ t('photos', 'Creation Date') }}</strong> <p>{{ creationDate }}</p></li>
-					<li v-if="lastModifiedDate"><strong>{{ t('photos', 'Last Modified') }}</strong> <p>{{ lastModifiedDate }}</p></li>
-					<li v-if="uploadedDate"><strong>{{ t('photos', 'Upload Date') }}</strong> <p>{{ uploadedDate }}</p></li>
+					<li v-if="dimensions">
+						<strong>{{ t('photos', 'Resolution') }}</strong> <p>{{ dimensions }} px</p>
+					</li>
+					<li v-if="fileSize">
+						<strong>{{ t('photos', 'Size') }}</strong> <p>{{ fileSize }}</p>
+					</li>
+					<li v-if="creationDate">
+						<strong>{{ t('photos', 'Creation Date') }}</strong> <p>{{ creationDate }}</p>
+					</li>
+					<li v-if="lastModifiedDate">
+						<strong>{{ t('photos', 'Last Modified') }}</strong> <p>{{ lastModifiedDate }}</p>
+					</li>
+					<li v-if="uploadedDate">
+						<strong>{{ t('photos', 'Upload Date') }}</strong> <p>{{ uploadedDate }}</p>
+					</li>
 				</ul>
 			</div>
 		</div>
 	</NcModal>
 </template>
 
-
 <script lang="ts">
 import type { PropType } from 'vue'
 import type { PhotoFile } from '../store/files.js'
 
-import { t } from '@nextcloud/l10n'
-import NcModal from '@nextcloud/vue/dist/Components/NcModal.js'
-import NcDateTime from '@nextcloud/vue/dist/Components/NcDateTime.js'
 import { formatFileSize } from '@nextcloud/files'
+import { t } from '@nextcloud/l10n'
+import NcDateTime from '@nextcloud/vue/components/NcDateTime'
+import NcModal from '@nextcloud/vue/components/NcModal'
 
 export default {
 	name: 'FileInfoExifModal',
@@ -60,14 +70,17 @@ export default {
 			type: Boolean,
 			required: true,
 		},
+
 		file: {
 			type: Object as PropType<PhotoFile>,
 			required: true,
 		},
+
 		srcLarge: {
 			type: String,
 			required: true,
 		},
+
 		isImage: {
 			type: Boolean,
 			required: true,
@@ -84,10 +97,10 @@ export default {
 		},
 
 		dimensions() {
-			const sizeObj =
-				this.file.attributes.metadataPhotosSize ||
-				this.file.attributes.metadataPhotos ||
-				null
+			const sizeObj
+				= this.file.attributes.metadataPhotosSize
+					|| this.file.attributes.metadataPhotos
+					|| null
 
 			let w = null
 			let h = null
@@ -106,19 +119,23 @@ export default {
 		path() {
 			return this.file.attributes.filename.substring(
 				0,
-				this.file.attributes.filename.lastIndexOf('/')
+				this.file.attributes.filename.lastIndexOf('/'),
 			)
 		},
 
 		creationDate() {
 			const ts = this.file.attributes.metadataPhotosOriginalDateTime || this.file.attributes.timestamp
-			if (!ts) return null
+			if (!ts) {
+				return null
+			}
 			return this.formatDateFromUnix(ts)
 		},
 
 		lastModifiedDate() {
 			const lm = this.file.attributes.getlastmodified || this.file.attributes.lastmod
-			if (!lm) return null
+			if (!lm) {
+				return null
+			}
 
 			const parsed = Date.parse(lm)
 			return isNaN(parsed) ? null : this.formatDate(new Date(parsed))
@@ -129,7 +146,9 @@ export default {
 		},
 
 		uploadedDate() {
-			if (!this.file.attributes.timestamp) return null
+			if (!this.file.attributes.timestamp) {
+				return null
+			}
 			return this.formatDateFromUnix(this.file.attributes.timestamp)
 		},
 	},
@@ -152,7 +171,9 @@ export default {
 
 		formatDateFromUnix(timestamp: number | string) {
 			const t = Number(timestamp)
-			if (isNaN(t)) return null
+			if (isNaN(t)) {
+				return null
+			}
 			const millis = t > 1e12 ? t : t * 1000
 			return this.formatDate(new Date(millis))
 		},

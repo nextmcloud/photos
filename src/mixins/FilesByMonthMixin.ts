@@ -41,7 +41,7 @@ export default defineComponent({
 
 			// Sort files in sections.
 			Object.keys(filesByMonth)
-				.forEach(month => filesByMonth[month].sort(this.sortFilesByTimestamp))
+				.forEach((month) => filesByMonth[month].sort(this.sortFilesByTimestamp))
 
 			return filesByMonth
 		},

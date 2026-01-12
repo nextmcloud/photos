@@ -5,7 +5,8 @@
 <template>
 	<form v-if="!showCollaboratorView" class="album-form" @submit.prevent="submit()">
 		<div class="form-cover">
-			<img class="form-cover__image"
+			<img
+				class="form-cover__image"
 				:src="albumCreateImage"
 				:alt="t('photos', 'Create album')">
 		</div>
@@ -20,7 +21,7 @@
 				:required="true"
 				:label="t('photos', 'Name of the album')" />
 			<NcTextField
-				:value.sync="albumLocation"
+				v-model="albumLocation"
 				name="location"
 				type="text"
 				:label="t('photos', 'Location of the album')">
@@ -41,11 +42,12 @@
 			<span class="left-buttons">
 				<NcButton
 					v-if="displayBackButton"
-					type="tertiary"
+					variant="tertiary"
 					@click="back">
 					{{ t('photos', 'Back') }}
 				</NcButton>
-				<NcButton type="secondary"
+				<NcButton
+					variant="secondary"
 					@click="cancel()">
 					{{ t('photos', 'Cancel') }}
 				</NcButton>
@@ -53,7 +55,7 @@
 			<span class="right-buttons">
 				<NcButton
 					v-if="sharingEnabled && !editMode"
-					type="secondary"
+					variant="secondary"
 					:disabled="!canSubmit"
 					@click="showCollaboratorView = true">
 					<template #icon>
@@ -62,7 +64,7 @@
 					{{ t('photos', 'Add collaborators') }}
 				</NcButton>
 				<NcButton
-					type="primary"
+					variant="primary"
 					:disabled="!canSubmit"
 					@click="submit()">
 					<template #icon>
@@ -81,14 +83,14 @@
 		<template #default="{ collaborators }">
 			<span class="left-buttons">
 				<NcButton
-					type="tertiary"
+					variant="tertiary"
 					@click="showCollaboratorView = false">
 					{{ t('photos', 'Back') }}
 				</NcButton>
 			</span>
 			<span class="right-buttons">
 				<NcButton
-					type="primary"
+					variant="primary"
 					:disabled="!canSubmit"
 					@click="submit(collaborators)">
 					<template #icon>
