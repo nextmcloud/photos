@@ -33,15 +33,17 @@
 			:file-ids="sortedCollectionFileIds"
 			:base-height="isMobile ? 120 : 200"
 			:loading="loading">
-			<template slot-scope="{file, isHeader}">
-				<h2 v-if="isHeader"
+			<template slot-scope="{ file, isHeader }">
+				<h2
+					v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
 					class="section-header">
 					<b>{{ file.id | dateMonth }}</b>
 					{{ file.id | dateYear }}
 				</h2>
-				<FileComponent v-else
-					slot-scope="{file}"
+				<FileComponent
+					v-else
+					slot-scope="{ file }"
 					:file="files[file.id]"
 					:allow-selection="allowSelection"
 					:selected="selection[file.id] === true"
@@ -62,6 +64,7 @@ import type { Collection } from '../../services/collectionFetcher.js'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { translate } from '@nextcloud/l10n'
+import moment from '@nextcloud/moment'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { defineComponent } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
@@ -71,8 +74,6 @@ import FileComponent from '../FileComponent.vue'
 import FilesListViewer from '../FilesListViewer.vue'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
 import { toViewerFileInfo } from '../../utils/fileUtils.js'
-
-import moment from '@nextcloud/moment'
 
 export default defineComponent({
 	name: 'CollectionContent',
@@ -174,7 +175,6 @@ export default defineComponent({
 
 		async toggleFavorite(fileId) {
 			const newState = this.$store.state.files.files[fileId].attributes.favorite ? 0 : 1
-			console.log(newState)
 			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
 		},
 

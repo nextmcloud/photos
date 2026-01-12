@@ -21,7 +21,7 @@
 				:title="albumName"
 				@refresh="fetchAlbumContent">
 				<div v-if="album !== undefined && album.attributes.nbItems !== 0" slot="subtitle" class="album__details">
-					{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
+					{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
 				</div>
 
 				<template slot="default">
@@ -37,7 +37,8 @@
 
 					<ActionFavoriteButton v-if="selectedFileIds.length > 0" :selected-file-ids="selectedFileIds" />
 
-					<NcButton v-if="selectedFileIds.length > 0"
+					<NcButton
+						v-if="selectedFileIds.length > 0"
 						:aria-label="t('photos', 'Unselect all')"
 						@click="handleRemoveFilesFromAlbum(selectedFileIds)">
 						<template #icon>
@@ -57,7 +58,8 @@
 				</template>
 
 				<template v-if="album !== undefined" slot="buttons">
-					<NcButton :aria-label="t('photos', 'Enable squared photos view')"
+					<NcButton
+						:aria-label="t('photos', 'Enable squared photos view')"
 						@click="toggleCroppedLayout(!croppedLayout)">
 						<template #icon>
 							<ViewGridOutline v-if="croppedLayout" />
@@ -74,7 +76,8 @@
 							<PencilOutline slot="icon" />
 						</NcActionButton>
 
-						<ActionDownload v-if="albumFileIds.length > 0"
+						<ActionDownload
+							v-if="albumFileIds.length > 0"
 							:selected-file-ids="albumFileIds"
 							:title="t('photos', 'Download all files in album')">
 							<DownloadMultiple slot="icon" />
@@ -201,8 +204,11 @@ import PencilOutline from 'vue-material-design-icons/PencilOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import ShareVariantOutline from 'vue-material-design-icons/ShareVariantOutline.vue'
 import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 // import ActionDownload from '../components/Actions/ActionDownload.vue'
 import ActionFavorite from '../components/Actions/ActionFavorite.vue'
+import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import AlbumShare from '../components/Albums/AlbumShare.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
@@ -212,10 +218,6 @@ import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.j
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import logger from '../services/logger.js'
 import { albumFilesExtraProps, albumsExtraProps } from '../store/albums.ts'
-
-import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
-import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
-import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
 
 export default {
 	name: 'AlbumContent',
