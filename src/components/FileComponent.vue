@@ -20,9 +20,9 @@
 				<PlayCircleOutlineIcon v-else-if="file.attributes['metadata-files-live-photo'] !== undefined" class="icon-overlay" :size="64" />
 
 				<div v-if="isCollection" class="hover-overlay">
-					<span 
-						class="icon-action" 
-						:title="file.attributes.favorite ? t('photos', 'Remove from favorites') : t('photos', 'Add to favorites')" 
+					<span
+						class="icon-action"
+						:title="file.attributes.favorite ? t('photos', 'Remove from favorites') : t('photos', 'Add to favorites')"
 						@click.stop.prevent="emitFavorite">
 						<Star class="icon-overlay-action" :size="24" />
 					</span>
@@ -30,7 +30,7 @@
 						<span class="icon-action" :title="t('photos', 'View Info')" @click.stop.prevent="showModal">
 							<IconInfo class="icon-overlay-action" :size="24" />
 						</span>
-						<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', {imageName: file.basename})" @click.stop.prevent="emitRemove">
+						<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', { imageName: file.basename })" @click.stop.prevent="emitRemove">
 							<Delete class="icon-overlay-action" :size="24" />
 						</span>
 					</div>
@@ -81,7 +81,7 @@
 			class="selection-checkbox"
 			:aria-label="t('photos', 'Select image {imageName}', { imageName: file.basename })"
 			:model-value="selected"
-			@update:model-value="onToggle" />
+			@update:checked="onToggle" />
 
 		<FavoriteIcon
 			v-if="file.attributes.favorite === 1"
@@ -94,7 +94,6 @@
 			:src-large="srcLarge"
 			:is-image="isImage"
 			@close="closeModal" />
-
 	</div>
 </template>
 
@@ -106,15 +105,14 @@ import { t } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
 import { decode } from 'blurhash'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/components/NcCheckboxRadioSwitch'
-import PlayCircleOutlineIcon from 'vue-material-design-icons/PlayCircleOutline.vue'
-import VideoOutline from 'vue-material-design-icons/VideoOutline.vue'
-import FavoriteIcon from './FavoriteIcon.vue'
-import { isCachedPreview } from '../services/PreviewService.js'
-
-import Star from 'vue-material-design-icons/Star.vue'
 import Delete from 'vue-material-design-icons/Delete.vue'
 import IconInfo from 'vue-material-design-icons/Information.vue'
+import PlayCircleOutlineIcon from 'vue-material-design-icons/PlayCircleOutline.vue'
+import Star from 'vue-material-design-icons/Star.vue'
+import VideoOutline from 'vue-material-design-icons/VideoOutline.vue'
+import FavoriteIcon from './FavoriteIcon.vue'
 import FileInfoExifModal from './FileInfoExifModal.vue'
+import { isCachedPreview } from '../services/PreviewService.js'
 
 export default {
 	name: 'FileComponent',
@@ -300,12 +298,10 @@ export default {
 
 		showModal() {
 			this.modal = true
-			console.log(this.modal)
 		},
 
 		closeModal() {
 			this.modal = false
-			console.log(this.modal)
 		},
 
 		t,

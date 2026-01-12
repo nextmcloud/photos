@@ -5,7 +5,8 @@
 <template>
 	<form v-if="!showCollaboratorView" class="album-form" @submit.prevent="submit()">
 		<div class="form-cover">
-			<img class="form-cover__image"
+			<img
+				class="form-cover__image"
 				:src="albumCreateImage"
 				:alt="t('photos', 'Create album')">
 		</div>
@@ -45,7 +46,8 @@
 					@click="back">
 					{{ t('photos', 'Back') }}
 				</NcButton>
-				<NcButton type="secondary"
+				<NcButton
+					variant="secondary"
 					@click="cancel()">
 					{{ t('photos', 'Cancel') }}
 				</NcButton>
