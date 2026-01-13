@@ -10,7 +10,7 @@
 			v-if="!isRoot"
 			class="photos-navigation__back"
 			:aria-label="t('photos', 'Go back')"
-			type="tertiary"
+			variant="tertiary"
 			@click="folderUp">
 			<template #icon>
 				<ArrowLeft :size="20" />
@@ -147,7 +147,6 @@ export default {
 			white-space: nowrap;
 			text-overflow: ellipsis;
 		}
-
 		align-self: flex-start;
 	}
 

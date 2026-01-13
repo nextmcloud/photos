@@ -50,11 +50,22 @@
 							<//** > */ -->
 						</template>
 					</NcActions>
-				</template>				
-				
+				</template>
+
 				<div v-if="album !== undefined && album.attributes.nbItems !== 0" slot="subtitle" class="album__details">
-					{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
+					{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
 				</div>
+
+				<template slot="buttons">
+					<NcButton
+						:aria-label="t('photos', 'Enable squared photos view')"
+						@click="toggleCroppedLayout(!croppedLayout)">
+						<template #icon>
+							<ViewGridOutline v-if="croppedLayout" />
+							<ViewDashboardOutline v-else />
+						</template>
+					</NcButton>
+				</template>
 			</HeaderNavigation>
 
 			<!-- No content -->
@@ -86,15 +97,18 @@ import { getClient } from '@nextcloud/files/dav'
 // import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
 import { translate } from '@nextcloud/l10n'
 import { generateRemoteUrl, generateUrl } from '@nextcloud/router'
-import { isMobile, /** NcButton, */ NcActions, /** NcActionSeparator, */ NcEmptyContent } from '@nextcloud/vue'
+import { isMobile, NcActions, NcButton, /** NcActionSeparator, */ NcEmptyContent } from '@nextcloud/vue'
 // import Plus from 'vue-material-design-icons/Plus.vue'
 // import ImagePlus from 'vue-material-design-icons/ImagePlus.vue'
 import ImageOffOutline from 'vue-material-design-icons/ImageOffOutline.vue'
 import MapMarkerOutline from 'vue-material-design-icons/MapMarkerOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 // import ActionDownload from '../components/Actions/ActionDownload.vue'
 import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.ts'
+import FilesSelectionMixin from '../mixins/FilesSelectionMixin.ts'
 import { albumFilesExtraProps } from '../store/albums.ts'
 import { publicAlbumsExtraProps, publicAlbumsPrefix } from '../store/publicAlbums.ts'
 
@@ -114,11 +128,15 @@ export default {
 		CollectionContent,
 		// ActionDownload,
 		HeaderNavigation,
+		NcButton,
+		ViewGridOutline,
+		ViewDashboardOutline,
 	},
 
 	mixins: [
 		FetchCollectionContentMixin,
 		isMobile,
+		FilesSelectionMixin,
 	],
 
 	props: {
@@ -155,6 +173,10 @@ export default {
 
 		publicAlbumFileName(): string {
 			return this.$store.getters.getPublicAlbumName(this.albumName)
+		},
+
+		croppedLayout() {
+			return this.$store.state.userConfig.croppedLayout
 		},
 	},
 
@@ -205,6 +227,10 @@ export default {
 			await this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.album.root + this.albumName, fileIdsToRemove: fileIds })
 		},
 
+		toggleCroppedLayout(value) {
+			this.$store.dispatch('updateUserConfig', { key: 'croppedLayout', value })
+		},
+
 		t: translate,
 	},
 }
@@ -232,7 +258,7 @@ export default {
 
 .album-container {
 	height: 100%;
-	
+
 	:deep(.collection) {
 		height: 100%;
 	}

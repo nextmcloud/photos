@@ -46,7 +46,7 @@
 
 					<template #subtitle>
 						<div class="album__details">
-							{{ n('photos', '%n element', '%n elements', collection.attributes.nbItems,) }} ⸱ {{ t('photos', 'Created') }} {{ collection.attributes.date }}
+							{{ n('photos', '%n element', '%n elements', collection.attributes.nbItems) }} ⸱ {{ t('photos', 'Created') }} {{ collection.attributes.date }}
 						</div>
 					</template>
 				</CollectionCover>
@@ -63,20 +63,21 @@
 
 		<NcModal
 			v-if="showAlbumCreationForm"
-			label-id="new-album-form"
-			@close="handleAlbumCreateCancel"
 			key="albumCreationForm"
-			:name="t('photos', 'New album')">
+			label-id="new-album-form"
+			:name="t('photos', 'New album')"
+			@close="handleAlbumCreateCancel">
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
 			<AlbumForm @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
 
-		<PhotosPicker :open.sync="showPhotosPicker"
+		<PhotosPicker
+			:open.sync="showPhotosPicker"
 			:blacklist-ids="blacklistIds"
 			:destination="destination"
-			:name="t('photos', 'Add photos to {albumName}', {albumName: destination})"
+			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
 			:allowempty="allowEmpty"
 			@closed="handlePickerClose"
 			@files-picked="handleFilesPicked" />
@@ -88,23 +89,22 @@ import { translate, translatePlural } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
 import { useIsSmallMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { defineComponent } from 'vue'
+import { mapActions } from 'vuex'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcModal from '@nextcloud/vue/components/NcModal'
 import CogOutline from 'vue-material-design-icons/Cog.vue'
+import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
 import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
+// import CollectionAdd from '../components/Collection/CollectionAdd.vue'
 import CollectionCover from '../components/Collection/CollectionCover.vue'
 import CollectionsList from '../components/Collection/CollectionsList.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
+import PhotosPicker from '../components/PhotosPicker.vue'
 import FetchCollectionsMixin from '../mixins/FetchCollectionsMixin.js'
 import { albumsExtraProps, albumsPrefix } from '../store/albums.js'
-
-import { mapActions } from 'vuex'
-import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
-import CollectionAdd from '../components/Collection/CollectionAdd.vue'
-import PhotosPicker from '../components/PhotosPicker.vue'
 
 export default defineComponent({
 	name: 'AlbumsView',
@@ -120,7 +120,7 @@ export default defineComponent({
 		AlbumForm,
 		CogOutline,
 		ExportVariant,
-		CollectionAdd,
+		// CollectionAdd,
 		PhotosPicker,
 	},
 

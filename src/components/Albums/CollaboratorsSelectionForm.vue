@@ -9,7 +9,7 @@
 		</h2>
 
 		<form class="manage-collaborators__form" @submit.prevent>
-			<NcSelect
+			<NcSelectUsers
 				v-model="searchText"
 				input-id="sharing-search-input"
 				:input-label="t('photos', 'Add people or groups who can edit your album')"
@@ -18,13 +18,12 @@
 				:filterable="false"
 				:placeholder="t('photos', 'Search people or groups')"
 				:clear-search-on-blur="() => false"
-				:user-select="true"
 				:append-to-body="false"
 				:options="searchResults"
 				@search="searchCollaborators"
 				@option:selected="({ key }) => selectEntity(key)">
 				{{ t('photos', 'No recommendations. Start typing.') }}
-			</NcSelect>
+			</NcSelectUsers>
 		</form>
 
 		<ul class="manage-collaborators__selection">
@@ -40,7 +39,7 @@
 					:is-no-user="availableCollaborators[collaboratorKey].type !== collaboratorTypes.User">
 					<AccountGroupOutline v-if="availableCollaborators[collaboratorKey].type === collaboratorTypes.Group" :title="t('photos', 'Group')" />
 					<NcButton
-						type="tertiary"
+						variant="tertiary"
 						:aria-label="t('photos', 'Remove {collaboratorLabel} from the collaborators list', { collaboratorLabel: availableCollaborators[collaboratorKey].label })"
 						@click="unselectEntity(collaboratorKey)">
 						<Close slot="icon" :size="20" />
@@ -69,7 +68,7 @@
 						</template>
 					</NcButton>
 					<NcButton
-						type="tertiary"
+						variant="tertiary"
 						:aria-label="t('photos', 'Delete the public link')"
 						@click="deletePublicLink">
 						<Close slot="icon" />
@@ -107,7 +106,7 @@ import { generateOcsUrl, generateUrl } from '@nextcloud/router'
 import { ShareType } from '@nextcloud/sharing'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcListItemIcon from '@nextcloud/vue/components/NcListItemIcon'
-import NcSelect from '@nextcloud/vue/components/NcSelect'
+import NcSelectUsers from '@nextcloud/vue/components/NcSelectUsers'
 import AccountGroupOutline from 'vue-material-design-icons/AccountGroupOutline.vue'
 import Check from 'vue-material-design-icons/Check.vue'
 import Close from 'vue-material-design-icons/Close.vue'
@@ -134,7 +133,7 @@ export default {
 		Earth,
 		NcButton,
 		NcListItemIcon,
-		NcSelect,
+		NcSelectUsers,
 	},
 
 	mixins: [FetchCollectionContentMixin],

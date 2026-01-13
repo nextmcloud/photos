@@ -9,7 +9,7 @@
 		:open="open"
 		out-transition
 		size="large"
-		@update:open="(open) => $emit('update:open', open)" 
+		@update:open="(open) => $emit('update:open', open)"
 		@closing="$emit('closed')">
 		<!-- The actions on the bottom -->
 		<template #actions>
@@ -23,12 +23,13 @@
 							multiple
 							no-label
 							@uploaded="refreshFiles" />
-						<NcButton type="secondary" @click="triggerUploadPicker">
+						<NcButton variant="secondary" @click="triggerUploadPicker">
 							{{ t('photos', 'Upload') }}
 						</NcButton>
 					</div>
-					<NcButton v-if="allowempty"
-						type="secondary"
+					<NcButton
+						v-if="allowempty"
+						variant="secondary"
 						:disabled="loading"
 						@click="$emit('closed')">
 						<template #icon>
@@ -37,7 +38,7 @@
 						</template>
 						{{ t('photos', 'Create empty album') }}
 					</NcButton>
-					<NcButton type="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
+					<NcButton variant="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
 						<template #icon>
 							<ImagePlusOutline v-if="!loading" />
 							<NcLoadingIcon v-if="loading" />
@@ -97,8 +98,8 @@ import {
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
-import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
-import NcSelect from '@nextcloud/vue/components/NcSelect'
+// import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
+// import NcSelect from '@nextcloud/vue/components/NcSelect'
 import ImageAlbum from 'vue-material-design-icons/ImageAlbum.vue'
 import ImagePlusOutline from 'vue-material-design-icons/ImagePlusOutline.vue'
 import FileComponent from './FileComponent.vue'
@@ -119,8 +120,8 @@ export default defineComponent({
 		NcButton,
 		NcDialog,
 		NcLoadingIcon,
-		NcSelect,
-		NcNoteCard,
+		// NcSelect,
+		// NcNoteCard,
 		UploadPicker,
 	},
 
@@ -163,8 +164,8 @@ export default defineComponent({
 		loading: {
 			type: Boolean,
 			default: false,
-		},		
-		
+		},
+
 		// Whether we allow to create empty album.
 		allowempty: {
 			type: Boolean,
@@ -238,7 +239,7 @@ export default defineComponent({
 		/**
 		 * @param date - In the following format: YYYYMM
 		 */
-		dateMonthAndYear(date) {
+		dateMonthAndYear(date: string) {
 			if (this.isMobile) {
 				return moment(date, 'YYYYMM').format('MMM YYYY')
 			}
