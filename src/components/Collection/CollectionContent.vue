@@ -149,7 +149,7 @@ export default defineComponent({
 		},
 
 		sortedCollectionFileIds() {
-			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1].attributes.timestamp < this.files[fileId2].attributes.timestamp ? -1 : 1)
+			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1]?.attributes.timestamp < this.files[fileId2]?.attributes.timestamp ? -1 : 1)
 		},
 	},
 
@@ -170,7 +170,7 @@ export default defineComponent({
 		},
 
 		handleFileDeleted({ fileid }: File) {
-			this.$store.commit('removeFilesFromCollection', { collectionFileName: this.collection.root + this.collection.path, fileIdsToRemove: [fileid?.toString()] })
+			this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.root + this.collection.path, fileIdsToRemove: [fileid?.toString()] })
 		},
 
 		async toggleFavorite(fileId) {

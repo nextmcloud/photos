@@ -30,7 +30,7 @@
 						<span class="icon-action" :title="t('photos', 'View Info')" @click.stop.prevent="showModal">
 							<IconInfo class="icon-overlay-action" :size="24" />
 						</span>
-						<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', { imageName: file.basename })" @click.stop.prevent="emitRemove">
+						<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', { imageName: file.basename })" @click.stop.prevent="openConfirmationDialog">
 							<Delete class="icon-overlay-action" :size="24" />
 						</span>
 					</div>
@@ -94,6 +94,14 @@
 			:src-large="srcLarge"
 			:is-image="isImage"
 			@close="closeModal" />
+
+		<NcDialog
+			:open.sync="showDialog"
+			name="Confirmation"
+			:message="t('photos', 'You are about to delete {imageName}. Are you sure?', { imageName: file.basename })"
+			:buttons="buttons"
+			close-on-click-outside
+			out-transition />
 	</div>
 </template>
 
@@ -105,6 +113,7 @@ import { t } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
 import { decode } from 'blurhash'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/components/NcCheckboxRadioSwitch'
+import NcDialog from '@nextcloud/vue/components/NcDialog'
 import Delete from 'vue-material-design-icons/Delete.vue'
 import IconInfo from 'vue-material-design-icons/Information.vue'
 import PlayCircleOutlineIcon from 'vue-material-design-icons/PlayCircleOutline.vue'
@@ -125,6 +134,7 @@ export default {
 		Delete,
 		IconInfo,
 		FileInfoExifModal,
+		NcDialog,
 	},
 
 	inheritAttrs: false,
@@ -163,6 +173,18 @@ export default {
 			loadedLarge: false,
 			errorLarge: false,
 			modal: false,
+			showDialog: false,
+			buttons: [
+				{
+					label: 'Cancel',
+					callback: this.hideDialog,
+				},
+				{
+					label: 'Ok',
+					type: 'primary',
+					callback: this.handleRemoveConfirm,
+				},
+			],
 		}
 	},
 
@@ -302,6 +324,19 @@ export default {
 
 		closeModal() {
 			this.modal = false
+		},
+
+		handleRemoveConfirm() {
+			this.emitRemove()
+			this.showDialog = false
+		},
+
+		openConfirmationDialog() {
+			this.showDialog = true
+		},
+
+		hideDialog() {
+			this.showDialog = false
 		},
 
 		t,

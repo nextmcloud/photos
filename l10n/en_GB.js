@@ -184,9 +184,6 @@ OC.L10N.register(
     "Choose the folder where photos and albums are uploaded to." : "Choose the folder where photos and albums are uploaded to.",
     "Loading folders …" : "Loading folders …",
     "Add" : "Add",
-<<<<<<< HEAD
-    "Loading folders …" : "Loading folders …"
-=======
     "_%n element_::_%n elements_" : ["%n element","%n elements"],
     "Created" : "Created",
     "Create empty album" : "Create empty album",
@@ -205,7 +202,7 @@ OC.L10N.register(
     "Size" : "Size",
     "Creation Date" : "Creation Date",
     "Last Modified" : "Last Modified",
-    "Upload Date" : "Upload Date"
->>>>>>> 5912f3c09 (magentacloud customization)
+    "Upload Date" : "Upload Date",
+    "You are about to delete {imageName}. Are you sure?" : "You are about to delete {imageName}. Are you sure?"
 },
 "nplurals=2; plural=(n != 1);");
