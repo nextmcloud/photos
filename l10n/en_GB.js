@@ -178,6 +178,7 @@ OC.L10N.register(
     "View" : "View",
     "Choose the folder where photos and albums are uploaded to." : "Choose the folder where photos and albums are uploaded to.",
     "Loading folders …" : "Loading folders …",
+    "Add" : "Add",
     "Details" : "Details",
     "Cancel" : "Cancel",
     "Confirm" : "Confirm",
@@ -199,6 +200,7 @@ OC.L10N.register(
     "Size" : "Size",
     "Creation Date" : "Creation Date",
     "Last Modified" : "Last Modified",
-    "Upload Date" : "Upload Date"
+    "Upload Date" : "Upload Date",
+    "You are about to delete {imageName}. Are you sure?" : "You are about to delete {imageName}. Are you sure?"
 },
 "nplurals=2; plural=(n != 1);");

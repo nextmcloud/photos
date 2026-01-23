@@ -135,7 +135,10 @@
 					:allow-selection="true"
 					:selected="selection[file.id] === true"
 					:distance="distance"
+					:is-collection="true"
 					@click="openViewer"
+					@favorite="toggleFavorite"
+					@remove="handleFileDeleted"
 					@select-toggled="onFileSelectToggle" />
 			</template>
 		</FilesListViewer>
@@ -382,6 +385,15 @@ export default {
 			const fileIds = this.selectedFileIds
 			this.onUncheckFiles(fileIds)
 			downloadFiles(fileIds.map((fileId) => this.files[fileId]))
+		},
+
+		async handleFileDeleted({ fileid }: File) {
+			await this.$store.dispatch('deleteFiles', fileid ? [fileid.toString()] : [])
+		},
+
+		async toggleFavorite(fileId) {
+			const newState = this.$store.state.files.files[fileId].attributes.favorite ? 0 : 1
+			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
 		},
 
 		t,
