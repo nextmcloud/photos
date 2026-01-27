@@ -118,6 +118,7 @@ class PageController extends Controller {
 
 		$this->initialState->provideInitialState('nomedia-paths', $paths);
 
+		Util::addScript(Application::APP_ID, 'photos-settings');
 		Util::addScript(Application::APP_ID, 'photos-main');
 		Util::addStyle(Application::APP_ID, 'photos-main');
 

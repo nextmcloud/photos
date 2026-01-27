@@ -13,6 +13,7 @@ export default createAppConfig({
 	public: join(__dirname, 'src', 'public.js'),
 	sidebar: join(__dirname, 'src', 'sidebar.js'),
 	dashboard: join(__dirname, 'src', 'dashboard.js'),
+	settings: join(__dirname, 'src', 'settings.js'),
 }, {
 	thirdPartyLicense: false,
 	extractLicenseInformation: true,

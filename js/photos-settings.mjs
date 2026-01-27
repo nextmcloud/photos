@@ -1,0 +1,2 @@
+window.addEventListener("DOMContentLoaded",()=>{const n=document.querySelector(".app-photos .app-navigation__footer button"),a=document.querySelector(".app-photos .app-navigation__list");if(!n||!a)return;const e=document.createElement("li");e.classList.add("app-navigation-entry-wrapper");const t=document.createElement("div");t.classList.add("app-navigation-entry"),t.appendChild(n),e.appendChild(t),a.appendChild(e)});
+//# sourceMappingURL=photos-settings.mjs.map
