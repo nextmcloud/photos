@@ -5,12 +5,13 @@
 
 <template>
 	<div class="photos-location">
-		<PhotosFolder :path="photosLocation" :root-folder-label="t('photos', 'Home')" :root-folder-icon="HomeOutline" />
-
 		<NcButton
 			:aria-label="t('photos', 'Choose default Photos upload and Albums location')"
 			@click="debounceSelectPhotosFolder">
-			{{ t('photos', 'Choose a different folder') }}
+			<template #icon>
+				<FolderOutline :size="20" />
+			</template>
+			{{ photosLocation }}
 		</NcButton>
 	</div>
 </template>
@@ -22,6 +23,7 @@ import debounce from 'debounce'
 import { defineComponent } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import HomeOutline from 'vue-material-design-icons/HomeOutline.vue'
+import FolderOutline from 'vue-material-design-icons/FolderOutline.vue'
 import PhotosFolder from './PhotosFolder.vue'
 import logger from '../../services/logger.js'
 
@@ -31,6 +33,7 @@ export default defineComponent({
 	components: {
 		NcButton,
 		PhotosFolder,
+		FolderOutline,
 	},
 
 	data() {
