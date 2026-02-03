@@ -305,11 +305,7 @@ export default {
 		},
 
 		createAlbumButtonLabel() {
-			if (Object.keys(this.selectedFilters).length > 0) {
-				return this.t('photos', 'Create new album from filters')
-			} else {
-				return this.t('photos', 'Create new album')
-			}
+			return this.t('photos', 'Create new album')
 		},
 
 		croppedLayout() {

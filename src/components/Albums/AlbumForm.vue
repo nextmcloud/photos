@@ -32,9 +32,11 @@
 		</div>
 
 		<PhotosFiltersInput
+			v-if="false"
 			:selected-filters="albumFilters"
 			@select-filter="selectFilter" />
 		<PhotosFiltersDisplay
+			v-if="false"
 			:selected-filters="albumFilters"
 			@deselect-filter="deselectFilter" />
 
