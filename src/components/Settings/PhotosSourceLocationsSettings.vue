@@ -12,7 +12,7 @@
 				<PhotosFolder
 					:path="source"
 					:can-delete="photosSourceFolders.length !== 1"
-					:root-folder-label="t('photos', 'All folders')"
+					:root-folder-label="t('photos', 'Entire MagentaCLOUD')"
 					:root-folder-icon="FolderMultipleOutline"
 					@remove-folder="removeSourceFolder(index)" />
 			</li>
