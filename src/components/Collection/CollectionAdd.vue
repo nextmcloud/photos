@@ -18,6 +18,7 @@ export default {
 
 <style lang="scss" scoped>
 #collection-add {
+
 	.button-vue {
 		display: flex;
 		flex-direction: column;
@@ -25,7 +26,6 @@ export default {
 		box-sizing: border-box;
 		background-color: var(--color-main-background);
 		border-radius: var(--border-radius-large);
-		box-shadow: var(--telekom-shadow-raised-pressed);
 		width: 300px;
 		height: 308px;
 		margin: 0;
@@ -38,6 +38,7 @@ export default {
 			box-shadow: var(--telekom-shadow-raised-standard);
 		}
 	}
+	
 	.button-vue__wrapper {
 		flex-direction: column;
 	}
