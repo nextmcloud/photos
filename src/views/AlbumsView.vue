@@ -53,11 +53,21 @@
 			</template>
 
 			<template #empty-collections-list>
-				<NcEmptyContent :name="t('photos', 'There is no album yet!')">
-					<template #icon>
-						<ImageMultipleOutline />
-					</template>
-				</NcEmptyContent>
+				<div class="albums__empty-content">
+					<div class="empty-collection-content">
+						<div class="empty-content__wrapper"><div class="empty-content__image empty-collection-content__image"></div></div>
+						<div class="empty-content__name">{{ t('photos', 'Create Albums for your Photos and Videos') }}</div>
+						<div class="empty-content__action">{{ t('photos', 'You can organize all your photos in as many albums as you like. You have not created an album yet.') }}</div>
+						<NcButton
+							:aria-label="isMobile ? t('photos', 'New album') : undefined"
+							@click="showAlbumCreationForm = true">
+							<template #icon>
+								<Plus :size="20" />
+							</template>
+							{{ t('photos', 'New album') }}
+						</NcButton>
+					</div>
+				</div>
 			</template>
 		</CollectionsList>
 

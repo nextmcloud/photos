@@ -43,6 +43,8 @@ import logger from '../../services/logger.js'
 export default defineComponent({
 	name: 'PhotosSourceLocationsSettings',
 
+	emits: ['folders-update'],
+
 	components: {
 		NcButton,
 		PhotosFolder,
@@ -56,8 +58,20 @@ export default defineComponent({
 	},
 
 	computed: {
+		photosLocation(): string {
+			return this.$store.state.userConfig.photosLocation
+		},
 		photosSourceFolders(): string[] {
 			return this.$store.state.userConfig.photosSourceFolders
+		},
+		isPhotosLocationInphotosSourceFolders(): boolean {
+			const normalizedPath = this.photosLocation.replace(/\/+$/, '')
+			const isPhotosLocationInphotosSourceFolders = this.photosSourceFolders.some((source) => {
+				const normalizedSource = source.replace(/\/+$/, '')
+				return normalizedPath === normalizedSource
+					|| normalizedPath.startsWith(normalizedSource + '/')
+			})
+			return isPhotosLocationInphotosSourceFolders
 		},
 	},
 
@@ -86,12 +100,14 @@ export default defineComponent({
 				return
 			}
 			this.$store.dispatch('updateUserConfig', { key: 'photosSourceFolders', value: [...this.photosSourceFolders, pickedFolder] })
+			this.$emit('folders-update', this.isPhotosLocationInphotosSourceFolders)
 		},
 
 		removeSourceFolder(index) {
 			const folders = [...this.photosSourceFolders]
 			folders.splice(index, 1)
 			this.$store.dispatch('updateUserConfig', { key: 'photosSourceFolders', value: folders })
+			this.$emit('folders-update', this.isPhotosLocationInphotosSourceFolders)
 		},
 
 		t,
