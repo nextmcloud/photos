@@ -16,8 +16,8 @@ use OCP\IUserSession;
 class UserConfigService {
 	public const DEFAULT_CONFIGS = [
 		'croppedLayout' => 'false',
-		'photosLocation' => '/Photos',
-		'photosSourceFolders' => '["/Photos"]',
+		'photosLocation' => '/Camera-media',
+		'photosSourceFolders' => '["/Camera-media"]',
 		/** If you add any new configs, make sure to validate the contents in {@see \OCA\Photos\Controller\ApiController::setUserConfig} */
 	];
 

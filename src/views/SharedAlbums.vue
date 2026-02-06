@@ -35,9 +35,15 @@
 			</div>
 		</CollectionCover>
 
-		<NcEmptyContent slot="empty-collections-list" :name="t('photos', 'There is no album yet!')">
-			<ImageMultipleOutline slot="icon" />
-		</NcEmptyContent>
+		<template #empty-collections-list>
+			<div class="albums__empty-content">
+				<div class="empty-collection-content">
+					<div class="empty-content__wrapper"><div class="empty-content__image empty-collection-content__image"></div></div>
+					<div class="empty-content__name">{{ t('photos', 'Create Albums for your Photos and Videos') }}</div>
+					<div class="empty-content__action">{{ t('photos', 'You can organize all your photos in as many albums as you like. You have not created an album yet.') }}</div>
+				</div>
+			</div>
+		</template>
 	</CollectionsList>
 </template>
 

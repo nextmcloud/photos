@@ -3,41 +3,45 @@
   - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-	<div>
-		<CollectionsList
-			:collections="places"
+	<CollectionsList
+		:collections="places"
+		:loading="loadingCollections"
+		:error="errorFetchingCollections"
+		class="places-list">
+		<HeaderNavigation
+			key="navigation"
+			slot="header"
 			:loading="loadingCollections"
-			:error="errorFetchingCollections"
-			class="places-list">
-			<HeaderNavigation
-				key="navigation"
-				slot="header"
-				:loading="loadingCollections"
-				:title="t('photos', 'Places')"
-				:root-title="t('photos', 'Places')"
-				@refresh="fetchPlaces" />
+			:title="t('photos', 'Places')"
+			:root-title="t('photos', 'Places')"
+			@refresh="fetchPlaces" />
 
-			<CollectionCover
-				:key="collection.basename"
-				slot-scope="{ collection }"
-				parent-route="/places"
-				:collection-name="collection.basename"
-				:alt-img="t('photos', 'Cover photo for place {placeName}', { placeName: collection.basename })"
-				:cover-url="collection.attributes['last-photo'] | coverUrl">
-				<span class="place__name">
-					{{ collection.basename }}
-				</span>
+		<CollectionCover
+			:key="collection.basename"
+			slot-scope="{ collection }"
+			parent-route="/places"
+			:collection-name="collection.basename"
+			:alt-img="t('photos', 'Cover photo for place {placeName}', { placeName: collection.basename })"
+			:cover-url="collection.attributes['last-photo'] | coverUrl">
+			<span class="place__name">
+				{{ collection.basename }}
+			</span>
 
-				<div slot="subtitle" class="place__details">
-					{{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
+			<div slot="subtitle" class="place__details">
+				{{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
+			</div>
+		</CollectionCover>
+
+		<template #empty-collections-list>
+			<div class="albums__empty-content">
+				<div class="empty-collection-content">
+					<div class="empty-content__wrapper"><div class="empty-content__image empty-collection-content__image"></div></div>
+					<div class="empty-content__name">{{ t('photos', 'Create Albums for your Photos and Videos') }}</div>
+					<div class="empty-content__action">{{ t('photos', 'You can organize all your photos in as many albums as you like. You have not created an album yet.') }}</div>
 				</div>
-			</CollectionCover>
-
-			<NcEmptyContent slot="empty-collections-list" :name="t('photos', 'There is no place yet!')">
-				<ImageMultipleOutline slot="icon" />
-			</NcEmptyContent>
-		</CollectionsList>
-	</div>
+			</div>
+		</template>
+	</CollectionsList>
 </template>
 
 <script lang='ts'>
