@@ -36,7 +36,9 @@
 					:aria-label="createAlbumButtonLabel"
 					data-cy-header-action="create-album"
 					@click="showAlbumCreationForm = true">
-					{{ createAlbumButtonLabel }}
+					<template v-if="!isMobile" #default>
+						{{ createAlbumButtonLabel }}
+					</template>
 					<template #icon>
 						<PlusBoxMultipleOutline />
 					</template>
@@ -111,7 +113,29 @@
 			</template>
 		</HeaderNavigation>
 
-		<FilesListViewer
+		<div v-if="filesCount === 0 && !loadingFiles" 
+			:key="emptyType"
+			class="timeline__empty-content">
+			<div class="empty-collection-content" :data-title="emptyType">
+				<div class="empty-content__wrapper"><div class="empty-content__image"></div></div>
+				<div class="empty-content__name">{{ emptyName }}</div>
+				<div class="empty-content__action">{{ emptyAction }}</div>
+				<NcButton
+					v-if="selectedFileIds.length === 0"
+					ref="newAlbumButton"
+					:aria-label="createAlbumButtonLabel"
+					data-cy-header-action="create-album"
+					type="primary"
+					@click="showAlbumCreationForm = true">
+					{{ createAlbumButtonLabel }}
+					<template #icon>
+						<PlusBoxMultipleOutline />
+					</template>
+				</NcButton>
+			</div>
+		</div>
+
+		<FilesListViewer v-else
 			ref="filesListViewer"
 			:container-element="appContent"
 			class="timeline__file-list"
@@ -120,6 +144,7 @@
 			:loading="loadingFiles"
 			:base-height="isMobile ? 120 : 200"
 			:empty-message="t('photos', 'No photos or videos in here')"
+			:root-title="rootTitle"
 			@need-content="getContent">
 			<template slot-scope="{ file, isHeader, distance }">
 				<h2
@@ -310,6 +335,35 @@ export default {
 
 		croppedLayout() {
 			return this.$store.state.userConfig.croppedLayout
+		},
+
+		filesCount(): number {
+			return Object.values(this.fileIdsByMonth)
+				.reduce((sum, ids) => sum + ids.length, 0)
+		},
+
+		emptyType() {
+			return this.$store.state.route.name
+		},
+
+		emptyName() {
+			if(this.$store.state.route.name == 'photos') {
+				return this.t('photos', 'No photos available yet.')
+			}
+			if(this.$store.state.route.name == 'videos') {
+				return this.t('photos', 'No videos available yet.')
+			}
+			return this.t('photos', 'No media available yet.')
+		},
+
+		emptyAction() {
+			if(this.$store.state.route.name == 'photos') {
+				return this.t('photos', 'Create an album and add your photos there.')
+			}
+			if(this.$store.state.route.name == 'videos') {
+				return this.t('photos', 'Create an album and add your videos there.')
+			}
+			return this.t('photos', 'Create an album and add your media there.')
 		},
 	},
 

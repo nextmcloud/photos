@@ -4,13 +4,6 @@
 -->
 <template>
 	<div class="files-list-viewer">
-		<NcEmptyContent
-			v-if="emptyMessage !== '' && photosCount === 0 && !loading"
-			key="emptycontent"
-			:name="emptyMessage">
-			<PackageVariant slot="icon" />
-		</NcEmptyContent>
-
 		<TiledLayout :base-height="baseHeight" :sections="itemsBySections">
 			<VirtualScrolling
 				slot-scope="{ tiledSections }"
