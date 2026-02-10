@@ -3,7 +3,30 @@
  - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
+
+	
 	<div class="files-list-viewer">
+		<div v-if="emptyMessage !== '' && photosCount === 0 && !loading"
+			:key="routeName"
+			class="timeline__empty-content">
+			<div class="empty-collection-content" :data-title="routeName">
+				<div class="empty-content__wrapper"><div class="empty-content__image"></div></div>
+				<div class="empty-content__name">{{ emptyName }}</div>
+				<div class="empty-content__action">{{ emptyAction }}</div>
+				<NcButton
+					ref="newAlbumButton"
+					:aria-label="emptyMessage"
+					data-cy-header-action="create-album"
+					type="primary"
+					@click="$emit('add-collection', true)">
+					{{ emptyMessage }}
+					<template #icon>
+						<PlusBoxMultipleOutline />
+					</template>
+				</NcButton>
+			</div>
+		</div>		
+
 		<TiledLayout :base-height="baseHeight" :sections="itemsBySections">
 			<VirtualScrolling
 				slot-scope="{ tiledSections }"
@@ -64,9 +87,11 @@ import type { TiledItem } from '../services/TiledLayout.ts'
 import type { PhotoFile } from '../store/files.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
+import { t } from '@nextcloud/l10n'
+import NcButton from '@nextcloud/vue/components/NcButton'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
-import PackageVariant from 'vue-material-design-icons/PackageVariant.vue'
+import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
 import TiledLayout from '../components/TiledLayout/TiledLayout.vue'
 import VirtualScrolling from '../components/VirtualScrolling.vue'
 import { fetchFile } from '../services/fileFetcher.ts'
@@ -75,7 +100,8 @@ export default {
 	name: 'FilesListViewer',
 
 	components: {
-		PackageVariant,
+		PlusBoxMultipleOutline,
+		NcButton,
 		NcEmptyContent,
 		NcLoadingIcon,
 		TiledLayout,
@@ -213,6 +239,30 @@ export default {
 		croppedLayout(): boolean {
 			return this.$store.state.userConfig.croppedLayout
 		},
+
+		routeName() {
+			return this.$store.state.route.name
+		},
+
+		emptyName() {
+			if(this.routeName == 'photos') {
+				return this.t('photos', 'No photos available yet.')
+			}
+			if(this.routeName == 'videos') {
+				return this.t('photos', 'No videos available yet.')
+			}
+			return this.t('photos', 'No media available yet.')
+		},
+
+		emptyAction() {
+			if(this.routeName == 'photos') {
+				return this.t('photos', 'Create an album and add your photos there.')
+			}
+			if(this.routeName == 'videos') {
+				return this.t('photos', 'Create an album and add your videos there.')
+			}
+			return this.t('photos', 'Create an album and add your media there.')
+		},
 	},
 
 	mounted() {
@@ -249,6 +299,8 @@ export default {
 		handleFileDeleted({ fileid }: File) {
 			this.$store.commit('deleteFile', fileid)
 		},
+
+		t,
 	},
 }
 </script>
