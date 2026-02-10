@@ -60,6 +60,7 @@
 						<div class="empty-content__action">{{ t('photos', 'You can organize all your photos in as many albums as you like. You have not created an album yet.') }}</div>
 						<NcButton
 							:aria-label="isMobile ? t('photos', 'New album') : undefined"
+							type="primary"
 							@click="showAlbumCreationForm = true">
 							<template #icon>
 								<Plus :size="20" />
