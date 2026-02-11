@@ -240,6 +240,6 @@ export default {
 }
 
 .actions__slot {
-	margin-left: auto;
+	margin-inline-start: auto;
 }
 </style>
