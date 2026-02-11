@@ -22,21 +22,20 @@ import { t } from '@nextcloud/l10n'
 import debounce from 'debounce'
 import { defineComponent } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
-import HomeOutline from 'vue-material-design-icons/HomeOutline.vue'
 import FolderOutline from 'vue-material-design-icons/FolderOutline.vue'
-import PhotosFolder from './PhotosFolder.vue'
+import HomeOutline from 'vue-material-design-icons/HomeOutline.vue'
 import logger from '../../services/logger.js'
 
 export default defineComponent({
 	name: 'PhotosUploadLocationSettings',
 
-	emits: ['folders-update'],
-
 	components: {
 		NcButton,
-		PhotosFolder,
+
 		FolderOutline,
 	},
+
+	emits: ['folders-update'],
 
 	data() {
 		return {
@@ -48,9 +47,11 @@ export default defineComponent({
 		photosLocation(): string {
 			return this.$store.state.userConfig.photosLocation
 		},
+
 		photosSourceFolders(): string[] {
 			return this.$store.state.userConfig.photosSourceFolders
 		},
+
 		isPhotosLocationInphotosSourceFolders(): boolean {
 			const normalizedPath = this.photosLocation.replace(/\/+$/, '')
 			const isPhotosLocationInphotosSourceFolders = this.photosSourceFolders.some((source) => {
