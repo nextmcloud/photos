@@ -28,9 +28,12 @@
 			:title="rootTitle"
 			:root-title="rootTitle"
 			@refresh="resetFetchFilesState">
+			<div slot="subtitle" class="album__details">
+				{{ n('photos', '%n photo and', '%n photos and', photosCount) }} {{ n('photos', '%n video', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
+			</div>
 			<div class="timeline__header__left">
 				<!-- TODO: UploadPicker -->
-				<NcButton
+				<!-- <NcButton
 					v-if="selectedFileIds.length === 0"
 					ref="newAlbumButton"
 					:aria-label="createAlbumButtonLabel"
@@ -42,10 +45,25 @@
 					<template #icon>
 						<PlusBoxMultipleOutline />
 					</template>
+				</NcButton> -->
+
+				<NcButton
+					v-if="true"
+					:close-after-click="true"
+					variant="primary"
+					:aria-label="t('photos', 'Add')"
+					data-cy-header-action="add-to-album"
+					@click="showAlbumPicker = true">
+					<template #icon>
+						<Plus />
+					</template>
+					<template v-if="!isMobile" #default>
+						{{ t('photos', 'Add') }}
+					</template>
 				</NcButton>
 
 				<template v-else>
-					<NcButton
+					<!-- <NcButton
 						:close-after-click="true"
 						variant="primary"
 						:aria-label="t('photos', 'Add to album')"
@@ -57,9 +75,9 @@
 						<template v-if="!isMobile" #default>
 							{{ t('photos', 'Add to album') }}
 						</template>
-					</NcButton>
+					</NcButton> -->
 
-					<NcButton
+					<!-- <NcButton
 						v-if="selectedFileIds.length > 0"
 						:aria-label="t('photos', 'Unselect all')"
 						data-cy-header-action="unselect-all"
@@ -70,7 +88,7 @@
 						<template v-if="!isMobile" #default>
 							{{ t('photos', 'Unselect all') }}
 						</template>
-					</NcButton>
+					</NcButton> -->
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
 						<NcActionButton
@@ -112,6 +130,56 @@
 				</NcButton>
 			</template>
 		</HeaderNavigation>
+
+		<!-- Filters -->
+		<div v-if="selectedFileIds.length > 0" class="timeline__filters">
+			<span class="icon-minus" />
+			<span class="timeline__filters__count">
+				{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
+			</span>
+			<NcActions :force-name="true" :inline="3">
+				<NcActionButton
+					:close-after-click="true"
+					:aria-label="t('photos', 'Add to album')"
+					data-cy-header-action="add-to-album"
+					@click="showAlbumPicker = true">
+					<template #icon>
+						<ImageMultipleOutline />
+					</template>
+					{{ t('photos', 'Add to album') }}
+				</NcActionButton>
+
+				<NcActionButton
+					data-cy-header-action="download-selection"
+					:aria-label="t('photos', 'Download selected files')"
+					@click="downloadSelectedFiles">
+					<template #icon>
+						<DownloadOutline />
+					</template>
+					{{ t('photos', 'Download') }}
+				</NcActionButton>
+
+				<NcActionButton
+					:aria-label="t('photos', 'Delete selection')"
+					data-cy-header-action="delete-selection"
+					@click="deleteSelection">
+					<template #icon>
+						<DeleteOutline />
+					</template>
+					{{ t('photos', 'Delete') }}
+				</NcActionButton>
+
+				<NcActionButton
+					:aria-label="t('photos', 'Unselect all')"
+					data-cy-header-action="unselect-all"
+					@click="resetSelection">
+					<template #icon>
+						<Close />
+					</template>
+					{{ t('photos', 'Unselect all') }}
+				</NcActionButton>
+			</NcActions>
+		</div>
 
 		<FilesListViewer
 			ref="filesListViewer"
@@ -173,7 +241,7 @@ import type { PropType } from 'vue'
 import type { Album } from '../store/albums.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
-import { t } from '@nextcloud/l10n'
+import { t, translatePlural } from '@nextcloud/l10n'
 import moment from '@nextcloud/moment'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { storeToRefs } from 'pinia'
@@ -185,8 +253,8 @@ import NcModal from '@nextcloud/vue/components/NcModal'
 import AlertCircleOutline from 'vue-material-design-icons/AlertCircleOutline.vue'
 import Close from 'vue-material-design-icons/Close.vue'
 import FolderAlertOutline from 'vue-material-design-icons/FolderAlertOutline.vue'
+import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
-import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
 import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import DownloadOutline from 'vue-material-design-icons/TrayArrowDown.vue'
 import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
@@ -211,7 +279,6 @@ export default {
 	name: 'TimelineView',
 	components: {
 		DeleteOutline,
-		PlusBoxMultipleOutline,
 		DownloadOutline,
 		Close,
 		Plus,
@@ -231,6 +298,7 @@ export default {
 		AlertCircleOutline,
 		ViewGridOutline,
 		ViewDashboardOutline,
+		ImageMultipleOutline,
 	},
 
 	filters: {
@@ -319,6 +387,43 @@ export default {
 			return Object.values(this.fileIdsByMonth)
 				.reduce((sum, ids) => sum + ids.length, 0)
 		},
+
+		photosCount(): number {
+			return Object.values(this.fileIdsByMonth).flat().filter((fileId) => {
+				const file = this.files[fileId]
+				return file?.mime?.startsWith('image/')
+			}).length
+		},
+
+		videosCount(): number {
+			return Object.values(this.fileIdsByMonth).flat().filter((fileId) => {
+				const file = this.files[fileId]
+				return file?.mime?.startsWith('video/')
+			}).length
+		},
+
+		dateCreated(): string {
+			const fileIds = Object.values(this.fileIdsByMonth).flat()
+			if (fileIds.length === 0) {
+				return ''
+			}
+
+			const mtimes = fileIds
+				.map((fileId) => this.files[fileId]?.mtime)
+				.filter((mtime) => mtime !== undefined && mtime > 0)
+
+			if (mtimes.length === 0) {
+				return ''
+			}
+
+			const minTime = Math.min(...mtimes)
+			const maxTime = Math.max(...mtimes)
+
+			const minFormatted = moment(minTime).format('MMMM YYYY')
+			const maxFormatted = moment(maxTime).format('MMMM YYYY')
+
+			return minFormatted === maxFormatted ? minFormatted : `${minFormatted} to ${maxFormatted}`
+		},
 	},
 
 	watch: {
@@ -401,6 +506,7 @@ export default {
 		},
 
 		t,
+		n: translatePlural,
 	},
 }
 </script>

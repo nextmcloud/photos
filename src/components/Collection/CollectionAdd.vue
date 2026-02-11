@@ -38,7 +38,7 @@ export default {
 			box-shadow: var(--telekom-shadow-raised-standard);
 		}
 	}
-	
+
 	.button-vue__wrapper {
 		flex-direction: column;
 	}

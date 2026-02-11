@@ -55,12 +55,18 @@
 			<template #empty-collections-list>
 				<div class="albums__empty-content">
 					<div class="empty-collection-content">
-						<div class="empty-content__wrapper"><div class="empty-content__image empty-collection-content__image"></div></div>
-						<div class="empty-content__name">{{ t('photos', 'Create Albums for your Photos and Videos') }}</div>
-						<div class="empty-content__action">{{ t('photos', 'You can organize all your photos in as many albums as you like. You have not created an album yet.') }}</div>
+						<div class="empty-content__wrapper">
+							<div class="empty-content__image empty-collection-content__image" />
+						</div>
+						<div class="empty-content__name">
+							{{ t('photos', 'Create Albums for your Photos and Videos') }}
+						</div>
+						<div class="empty-content__action">
+							{{ t('photos', 'You can organize all your photos in as many albums as you like. You have not created an album yet.') }}
+						</div>
 						<NcButton
 							:aria-label="isMobile ? t('photos', 'New album') : undefined"
-							type="primary"
+							variant="primary"
 							@click="showAlbumCreationForm = true">
 							<template #icon>
 								<Plus :size="20" />
@@ -102,11 +108,9 @@ import { useIsSmallMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { defineComponent } from 'vue'
 import { mapActions } from 'vuex'
 import NcButton from '@nextcloud/vue/components/NcButton'
-import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcModal from '@nextcloud/vue/components/NcModal'
 import CogOutline from 'vue-material-design-icons/Cog.vue'
 import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
-import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 // import CollectionAdd from '../components/Collection/CollectionAdd.vue'
@@ -121,10 +125,8 @@ export default defineComponent({
 	name: 'AlbumsView',
 	components: {
 		Plus,
-		ImageMultipleOutline,
 		NcModal,
 		NcButton,
-		NcEmptyContent,
 		CollectionsList,
 		CollectionCover,
 		HeaderNavigation,

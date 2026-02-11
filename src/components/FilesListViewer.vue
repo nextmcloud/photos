@@ -3,21 +3,26 @@
  - SPDX-License-Identifier: AGPL-3.0-or-later
 -->
 <template>
-
-	
 	<div class="files-list-viewer">
-		<div v-if="emptyMessage !== '' && photosCount === 0 && !loading"
+		<div
+			v-if="emptyMessage !== '' && photosCount === 0 && !loading"
 			:key="routeName"
 			class="timeline__empty-content">
 			<div class="empty-collection-content" :data-title="routeName">
-				<div class="empty-content__wrapper"><div class="empty-content__image"></div></div>
-				<div class="empty-content__name">{{ emptyName }}</div>
-				<div class="empty-content__action">{{ emptyAction }}</div>
+				<div class="empty-content__wrapper">
+					<div class="empty-content__image" />
+				</div>
+				<div class="empty-content__name">
+					{{ emptyName }}
+				</div>
+				<div class="empty-content__action">
+					{{ emptyAction }}
+				</div>
 				<NcButton
 					ref="newAlbumButton"
 					:aria-label="emptyMessage"
 					data-cy-header-action="create-album"
-					type="primary"
+					variant="primary"
 					@click="$emit('add-collection', true)">
 					{{ emptyMessage }}
 					<template #icon>
@@ -25,7 +30,7 @@
 					</template>
 				</NcButton>
 			</div>
-		</div>		
+		</div>
 
 		<TiledLayout :base-height="baseHeight" :sections="itemsBySections">
 			<VirtualScrolling
@@ -89,7 +94,6 @@ import type { PhotoFile } from '../store/files.ts'
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { t } from '@nextcloud/l10n'
 import NcButton from '@nextcloud/vue/components/NcButton'
-import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
 import TiledLayout from '../components/TiledLayout/TiledLayout.vue'
@@ -102,7 +106,6 @@ export default {
 	components: {
 		PlusBoxMultipleOutline,
 		NcButton,
-		NcEmptyContent,
 		NcLoadingIcon,
 		TiledLayout,
 		VirtualScrolling,
@@ -245,20 +248,20 @@ export default {
 		},
 
 		emptyName() {
-			if(this.routeName == 'photos') {
+			if (this.routeName === 'photos') {
 				return this.t('photos', 'No photos available yet.')
 			}
-			if(this.routeName == 'videos') {
+			if (this.routeName === 'videos') {
 				return this.t('photos', 'No videos available yet.')
 			}
 			return this.t('photos', 'No media available yet.')
 		},
 
 		emptyAction() {
-			if(this.routeName == 'photos') {
+			if (this.routeName === 'photos') {
 				return this.t('photos', 'Create an album and add your photos there.')
 			}
-			if(this.routeName == 'videos') {
+			if (this.routeName === 'videos') {
 				return this.t('photos', 'Create an album and add your videos there.')
 			}
 			return this.t('photos', 'Create an album and add your media there.')

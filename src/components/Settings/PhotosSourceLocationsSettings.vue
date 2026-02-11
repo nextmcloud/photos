@@ -43,13 +43,13 @@ import logger from '../../services/logger.js'
 export default defineComponent({
 	name: 'PhotosSourceLocationsSettings',
 
-	emits: ['folders-update'],
-
 	components: {
 		NcButton,
 		PhotosFolder,
 		Plus,
 	},
+
+	emits: ['folders-update'],
 
 	data() {
 		return {
@@ -61,9 +61,11 @@ export default defineComponent({
 		photosLocation(): string {
 			return this.$store.state.userConfig.photosLocation
 		},
+
 		photosSourceFolders(): string[] {
 			return this.$store.state.userConfig.photosSourceFolders
 		},
+
 		isPhotosLocationInphotosSourceFolders(): boolean {
 			const normalizedPath = this.photosLocation.replace(/\/+$/, '')
 			const isPhotosLocationInphotosSourceFolders = this.photosSourceFolders.some((source) => {

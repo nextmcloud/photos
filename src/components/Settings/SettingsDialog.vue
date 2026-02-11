@@ -8,7 +8,7 @@
 		:open="open"
 		:show-navigation="false"
 		:name="t('photos', 'Photos settings')"
-		:noVersion="true"
+		:no-version="true"
 		@update:open="onClose">
 		<NcAppSettingsSection id="layout-settings" :name="t('photos', 'View')">
 			<CroppedLayoutSettings />
@@ -30,12 +30,12 @@
 			<PhotosUploadLocationSettings @folders-update="handleFoldersUpdate" />
 		</NcAppSettingsSection>
 
-		<NcNoteCard v-if="showFoldersWarning || !isPhotosLocationInphotosSourceFolders"
+		<NcNoteCard
+			v-if="showFoldersWarning || !isPhotosLocationInphotosSourceFolders"
 			class="notecard"
 			type="warning"
 			:show-alert="true"
 			:heading="t('photos', 'Upload folder not part of media folder')">
-
 			{{ t('photos', 'Uploaded items will not appear in the Photos & Videos section.') }}
 		</NcNoteCard>
 	</NcAppSettingsDialog>
@@ -79,9 +79,11 @@ export default {
 		photosLocation(): string {
 			return this.$store.state.userConfig.photosLocation
 		},
+
 		photosSourceFolders(): string[] {
 			return this.$store.state.userConfig.photosSourceFolders
 		},
+
 		isPhotosLocationInphotosSourceFolders(): boolean {
 			const normalizedPath = this.photosLocation.replace(/\/+$/, '')
 			const isPhotosLocationInphotosSourceFolders = this.photosSourceFolders.some((source) => {

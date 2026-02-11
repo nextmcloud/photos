@@ -420,7 +420,7 @@ export default {
 			.star-icon {
 				position: absolute;
 				z-index: 1000;
-				left: 0;
+				inset-inline-start: 0;
 				bottom: 0;
 				width: 2.5rem;
 				height: 2.5rem;
@@ -432,7 +432,7 @@ export default {
 			.delete-icon {
 				position: absolute;
 				z-index: 1000;
-				right: 0;
+				inset-inline-end: 0;
 				bottom: 0;
 				width: 2.5rem;
 				height: 2.5rem;
