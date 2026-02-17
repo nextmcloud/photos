@@ -60,6 +60,7 @@
 				<template v-if="album !== undefined" slot="buttons">
 					<NcButton
 						:aria-label="t('photos', 'Enable squared photos view')"
+						version="tertiary"
 						@click="toggleCroppedLayout(!croppedLayout)">
 						<template #icon>
 							<ViewGridOutline v-if="croppedLayout" />

@@ -81,6 +81,7 @@ export default defineComponent({
 				.startAt(this.photosLocation)
 				.addButton({
 					label: t('photos', 'Pick folder'),
+					variant: 'primary',
 					callback: (nodes) => logger.debug('Picked', { nodes }),
 				})
 				.build()
