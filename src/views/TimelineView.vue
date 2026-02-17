@@ -122,6 +122,7 @@
 			<template slot="buttons">
 				<NcButton
 					:aria-label="t('photos', 'Enable squared photos view')"
+					variant="tertiary"
 					@click="toggleCroppedLayout(!croppedLayout)">
 					<template #icon>
 						<ViewGridOutline v-if="croppedLayout" />
