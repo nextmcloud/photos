@@ -20,6 +20,7 @@
 
 		<NcButton
 			:aria-label="t('photos', 'Add a Photos source for the timelines')"
+			variant="tertiary"
 			@click="debounceAddSourceFolder">
 			<template #icon>
 				<Plus :size="20" />
