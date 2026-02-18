@@ -8,7 +8,7 @@ OC.L10N.register(
     "All media" : "All media",
     "Videos" : "Videos",
     "Albums" : "Albums",
-    "Collaborative albums" : "Shared albums",
+    "Collaborative albums" : "Collaborative albums",
     "People" : "People",
     "Folders" : "Folders",
     "Favorites" : "Favourites",
