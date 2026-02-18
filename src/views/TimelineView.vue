@@ -189,8 +189,7 @@
 					v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
 					class="section-header">
-					<b>{{ file.id | dateMonth }}</b>
-					{{ file.id | dateYear }}
+					{{ file.id | dateMonth }} {{ file.id | dateYear }}
 				</h2>
 				<FileComponent
 					v-else
