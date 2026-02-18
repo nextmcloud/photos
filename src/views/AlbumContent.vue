@@ -24,32 +24,43 @@
 					{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
 				</div>
 
-				<template slot="default">
-					<NcButton
-						v-if="selectedFileIds.length > 0"
-						:aria-label="t('photos', 'Unselect all')"
-						@click="resetSelection">
-						<template #icon>
-							<Close />
-						</template>
-						{{ t('photos', 'Unselect all') }}
-					</NcButton>
+				<template v-if="selectedFileIds.length > 0" slot="bulk">
+					<!-- Filters -->
+					<span class="photos-navigation__bulk-operations__selected">
+						<span class="icon-minus" />
+						<span class="selected__count">
+							{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
+						</span>
+					</span>
+					<NcActions :force-name="true" :force-menu="false" :inline="6">
 
-					<ActionFavoriteButton v-if="selectedFileIds.length > 0" :selected-file-ids="selectedFileIds" />
+						<NcActionButton
+							:aria-label="t('photos', 'Unselect all')"
+							data-cy-header-action="unselect-all"
+							@click="resetSelection">
+							<template #icon>
+								<Close />
+							</template>
+							{{ t('photos', 'Unselect all') }}
+						</NcActionButton>
 
-					<NcButton
-						v-if="selectedFileIds.length > 0"
-						:aria-label="t('photos', 'Unselect all')"
-						@click="handleRemoveFilesFromAlbum(selectedFileIds)">
-						<template #icon>
-							<DeleteOutline />
-						</template>
-						{{ t('photos', 'Remove selection from album') }}
-					</NcButton>
+						<NcActionButton
+							:aria-label="t('photos', 'Remove selection')"
+							data-cy-header-action="remove-selection"
+							@click="handleRemoveFilesFromAlbum(selectedFileIds)">
+							<template #icon>
+								<DeleteOutline />
+							</template>
+							{{ t('photos', 'Remove selection from album') }}
+						</NcActionButton>
+
+						<ActionFavoriteButton :selected-file-ids="selectedFileIds" />
+					</NcActions>
 				</template>
 
 				<template v-if="album !== undefined" slot="right">
-					<NcButton @click="showAddPhotosModal = true">
+					<NcButton @click="showAddPhotosModal = true"
+						variant="primary">
 						<template #icon>
 							<Plus :size="20" />
 						</template>
@@ -60,7 +71,7 @@
 				<template v-if="album !== undefined" slot="buttons">
 					<NcButton
 						:aria-label="t('photos', 'Enable squared photos view')"
-						version="tertiary"
+						variant="tertiary"
 						@click="toggleCroppedLayout(!croppedLayout)">
 						<template #icon>
 							<ViewGridOutline v-if="croppedLayout" />
