@@ -7,6 +7,7 @@
 	<div class="photos-location">
 		<NcButton
 			:aria-label="t('photos', 'Choose default Photos upload and Albums location')"
+			variant="tertiary"
 			@click="debounceSelectPhotosFolder">
 			<template #icon>
 				<FolderOutline :size="20" />
