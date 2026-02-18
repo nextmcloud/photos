@@ -33,10 +33,11 @@
 			</div>
 			<div class="timeline__header__left">
 				<!-- TODO: UploadPicker -->
-				<!-- <NcButton
-					v-if="selectedFileIds.length === 0"
+				<NcButton
+					v-if="true"
 					ref="newAlbumButton"
 					:aria-label="createAlbumButtonLabel"
+					variant="primary"
 					data-cy-header-action="create-album"
 					@click="showAlbumCreationForm = true">
 					<template v-if="!isMobile" #default>
@@ -45,25 +46,10 @@
 					<template #icon>
 						<PlusBoxMultipleOutline />
 					</template>
-				</NcButton> -->
-
-				<NcButton
-					v-if="true"
-					:close-after-click="true"
-					variant="primary"
-					:aria-label="t('photos', 'Add')"
-					data-cy-header-action="add-to-album"
-					@click="showAlbumPicker = true">
-					<template #icon>
-						<Plus />
-					</template>
-					<template v-if="!isMobile" #default>
-						{{ t('photos', 'Add') }}
-					</template>
 				</NcButton>
 
 				<template v-else>
-					<!-- <NcButton
+					<NcButton
 						:close-after-click="true"
 						variant="primary"
 						:aria-label="t('photos', 'Add to album')"
@@ -75,9 +61,9 @@
 						<template v-if="!isMobile" #default>
 							{{ t('photos', 'Add to album') }}
 						</template>
-					</NcButton> -->
+					</NcButton>
 
-					<!-- <NcButton
+					<NcButton
 						v-if="selectedFileIds.length > 0"
 						:aria-label="t('photos', 'Unselect all')"
 						data-cy-header-action="unselect-all"
@@ -88,7 +74,7 @@
 						<template v-if="!isMobile" #default>
 							{{ t('photos', 'Unselect all') }}
 						</template>
-					</NcButton> -->
+					</NcButton>
 
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
 						<NcActionButton
@@ -130,57 +116,62 @@
 					</template>
 				</NcButton>
 			</template>
+
+			<template v-if="selectedFileIds.length > 0" slot="bulk">
+				<!-- Filters -->
+				<span class="photos-navigation__bulk-operations__selected">
+					<span class="icon-minus" />
+					<span class="selected__count">
+						{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
+					</span>
+				</span>
+				<NcActions :force-name="true" :inline="6">
+
+					<NcActionButton
+						:close-after-click="true"
+						:aria-label="t('photos', 'Add to album')"
+						data-cy-header-action="add-to-album"
+						@click="showAlbumPicker = true">
+						<template #icon>
+							<ImageMultipleOutline />
+						</template>
+						{{ t('photos', 'Add to album') }}
+					</NcActionButton>
+
+					<NcActionButton
+						data-cy-header-action="download-selection"
+						:aria-label="t('photos', 'Download selected files')"
+						@click="downloadSelectedFiles">
+						<template #icon>
+							<DownloadOutline />
+						</template>
+						{{ t('photos', 'Download') }}
+					</NcActionButton>
+
+					<NcActionButton
+						:aria-label="t('photos', 'Delete selection')"
+						data-cy-header-action="delete-selection"
+						@click="deleteSelection">
+						<template #icon>
+							<DeleteOutline />
+						</template>
+						{{ t('photos', 'Delete') }}
+					</NcActionButton>
+
+					<NcActionButton
+						:aria-label="t('photos', 'Unselect all')"
+						data-cy-header-action="unselect-all"
+						@click="resetSelection">
+						<template #icon>
+							<Close />
+						</template>
+						{{ t('photos', 'Unselect all') }}
+					</NcActionButton>
+
+					<ActionFavoriteButton :selected-file-ids="selectedFileIds" />
+				</NcActions>
+			</template>
 		</HeaderNavigation>
-
-		<!-- Filters -->
-		<div v-if="selectedFileIds.length > 0" class="timeline__filters">
-			<span class="icon-minus" />
-			<span class="timeline__filters__count">
-				{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
-			</span>
-			<NcActions :force-name="true" :inline="3">
-				<NcActionButton
-					:close-after-click="true"
-					:aria-label="t('photos', 'Add to album')"
-					data-cy-header-action="add-to-album"
-					@click="showAlbumPicker = true">
-					<template #icon>
-						<ImageMultipleOutline />
-					</template>
-					{{ t('photos', 'Add to album') }}
-				</NcActionButton>
-
-				<NcActionButton
-					data-cy-header-action="download-selection"
-					:aria-label="t('photos', 'Download selected files')"
-					@click="downloadSelectedFiles">
-					<template #icon>
-						<DownloadOutline />
-					</template>
-					{{ t('photos', 'Download') }}
-				</NcActionButton>
-
-				<NcActionButton
-					:aria-label="t('photos', 'Delete selection')"
-					data-cy-header-action="delete-selection"
-					@click="deleteSelection">
-					<template #icon>
-						<DeleteOutline />
-					</template>
-					{{ t('photos', 'Delete') }}
-				</NcActionButton>
-
-				<NcActionButton
-					:aria-label="t('photos', 'Unselect all')"
-					data-cy-header-action="unselect-all"
-					@click="resetSelection">
-					<template #icon>
-						<Close />
-					</template>
-					{{ t('photos', 'Unselect all') }}
-				</NcActionButton>
-			</NcActions>
-		</div>
 
 		<FilesListViewer
 			ref="filesListViewer"
@@ -261,6 +252,7 @@ import DownloadOutline from 'vue-material-design-icons/TrayArrowDown.vue'
 import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 import ActionFavorite from '../components/Actions/ActionFavorite.vue'
+import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import AlbumPicker from '../components/Albums/AlbumPicker.vue'
 import FileComponent from '../components/FileComponent.vue'
@@ -294,6 +286,7 @@ export default {
 		FilesListViewer,
 		FileComponent,
 		ActionFavorite,
+		ActionFavoriteButton,
 		HeaderNavigation,
 		PhotosSourceLocationsSettings,
 		AlertCircleOutline,

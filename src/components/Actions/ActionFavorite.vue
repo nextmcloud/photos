@@ -54,7 +54,6 @@ export default defineComponent({
 
 		shouldFavoriteSelection() {
 			// Favorite all selection if at least one file is not in the favorites.
-			console.log(this.selectedFileIds)
 			return this.selectedFileIds.some((fileId) => this.files[fileId].attributes.favorite === 0)
 		},
 	},

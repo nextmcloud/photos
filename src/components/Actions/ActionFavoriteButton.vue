@@ -1,5 +1,5 @@
 <template>
-	<NcButton
+	<NcActionButton
 		v-if="shouldFavoriteSelection"
 		:aria-label="t('photos', 'Add selection to favorites')"
 		@click="favoriteSelection">
@@ -7,8 +7,8 @@
 			<Star />
 		</template>
 		{{ t('photos', 'Add selection to favorites') }}
-	</NcButton>
-	<NcButton
+	</NcActionButton>
+	<NcActionButton
 		v-else
 		:aria-label="t('photos', 'Remove selection from favorites')"
 		@click="unFavoriteSelection">
@@ -16,11 +16,11 @@
 			<Star />
 		</template>
 		{{ t('photos', 'Remove selection from favorites') }}
-	</NcButton>
+	</NcActionButton>
 </template>
 
 <script>
-import { NcButton } from '@nextcloud/vue'
+import { NcButton, NcActionButton } from '@nextcloud/vue'
 import { mapActions, mapGetters } from 'vuex'
 import Star from 'vue-material-design-icons/Star.vue'
 export default {
@@ -28,6 +28,7 @@ export default {
 	components: {
 		Star,
 		NcButton,
+		NcActionButton,
 	},
 
 	props: {
@@ -45,7 +46,7 @@ export default {
 		/** @return {boolean} */
 		shouldFavoriteSelection() {
 			// Favorite all selection if at least one file is not in the favorites.
-			return this.selectedFileIds.some((fileId) => this.files[fileId].favorite === 0)
+			return this.selectedFileIds.some((fileId) => this.files[fileId].attributes.favorite === 0)
 		},
 	},
 

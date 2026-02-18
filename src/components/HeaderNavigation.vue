@@ -43,6 +43,10 @@
 				<slot name="buttons" />
 			</div>
 		</div>
+
+		<div v-if="$slots.bulk" class="photos-navigation__bulk-operations">
+			<slot name="bulk" />
+		</div>
 	</div>
 </template>
 
