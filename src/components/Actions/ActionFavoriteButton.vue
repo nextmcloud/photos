@@ -20,14 +20,13 @@
 </template>
 
 <script>
-import { NcButton, NcActionButton } from '@nextcloud/vue'
+import { NcActionButton } from '@nextcloud/vue'
 import { mapActions, mapGetters } from 'vuex'
 import Star from 'vue-material-design-icons/Star.vue'
 export default {
 	name: 'ActionFavoriteButton',
 	components: {
 		Star,
-		NcButton,
 		NcActionButton,
 	},
 
