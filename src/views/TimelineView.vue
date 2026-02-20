@@ -28,9 +28,19 @@
 			:title="rootTitle"
 			:root-title="rootTitle"
 			@refresh="resetFetchFilesState">
-			<div slot="subtitle" class="album__details">
-				{{ n('photos', '%n photo and', '%n photos and', photosCount) }} {{ n('photos', '%n video', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
+
+			<div v-if="photosCount > 0 && filesCount > photosCount" slot="subtitle" class="album__details album__details_all">
+				{{ n('photos', '%n item', '%n photos', photosCount) }} {{ t('photos', 'and') }} {{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
 			</div>
+
+			<div v-else-if="photosCount > 0 && filesCount == photosCount" slot="subtitle" class="album__details album__details_photos">
+				{{ n('photos', '%n item', '%n photos', photosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
+			</div>
+
+			<div v-else-if="videosCount > 0 && filesCount == videosCount" slot="subtitle" class="album__details album__details__videos">
+				{{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
+			</div>
+
 			<div class="timeline__header__left">
 				<!-- TODO: UploadPicker -->
 				<NcButton
@@ -206,23 +216,24 @@
 		</FilesListViewer>
 
 		<NcModal
-			v-if="showAlbumCreationForm"
-			key="albumCreationForm"
-			label-id="new-album-form"
-			:set-return-focus="$refs.newAlbumButton?.$el"
-			@close="showAlbumCreationForm = false">
-			<h2 class="timeline__heading">
-				{{ t('photos', 'New album') }}
-			</h2>
-			<AlbumForm :filters-value="selectedFilters" @done="handleFormCreationDone" />
-		</NcModal>
-
-		<NcModal
 			v-if="showAlbumPicker"
 			key="albumPicker"
 			label-id="album-picker"
 			@close="showAlbumPicker = false">
 			<AlbumPicker @album-picked="addSelectionToAlbum" />
+		</NcModal>
+
+		<NcModal
+			v-if="showAlbumCreationForm"
+			key="albumCreationForm"
+			label-id="new-album-form"
+			:name="t('photos', 'New album')"
+			:lightBackdrop="true"
+			@close="handleAlbumCreateCancel">
+			<h2 class="album-creation__heading">
+				{{ t('photos', 'New album') }}
+			</h2>
+			<AlbumForm @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
 	</div>
 </template>
@@ -356,8 +367,13 @@ export default {
 	data() {
 		return {
 			loadingCount: 0,
-			showAlbumCreationForm: false,
 			showAlbumPicker: false,
+			showAlbumCreationForm: false,
+			createdAlbum: null,
+			blacklistIds: [],
+			destination: '',
+			collection: '',
+			allowEmpty: true,
 			appContent: document.getElementById('app-content-vue'),
 			showFilters: false,
 		}
@@ -415,7 +431,9 @@ export default {
 			const minFormatted = moment(minTime).format('MMMM YYYY')
 			const maxFormatted = moment(maxTime).format('MMMM YYYY')
 
-			return minFormatted === maxFormatted ? minFormatted : `${minFormatted} to ${maxFormatted}`
+			const to = this.t('photos', 'to')
+
+			return minFormatted === maxFormatted ? minFormatted : `${minFormatted} ${to} ${maxFormatted}`
 		},
 	},
 
@@ -457,6 +475,18 @@ export default {
 
 		toggleCroppedLayout(value) {
 			this.$store.dispatch('updateUserConfig', { key: 'croppedLayout', value })
+		},
+
+		handleAlbumCreated({ album }) {
+			this.showAlbumCreationForm = false
+			this.destination = album.basename
+			// Re-fetch album to have the proper collection
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		handleAlbumCreateCancel() {
+			this.showAlbumCreationForm = false
+			this.createdAlbum = null
 		},
 
 		async addSelectionToAlbum(album: Album) {
