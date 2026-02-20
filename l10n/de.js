@@ -106,6 +106,8 @@ OC.L10N.register(
     "Merge with different person" : "Mit einer anderen Person zusammenführen",
     "Download selected photos" : "Ausgwählte Fotos herunterladen",
     "Remove from favorites" : "Von Favoriten entfernen",
+    "Add to favorites" : "Zu Favoriten hinzufügen",
+    "View Info" : "Info anzeigen",
     "Remove person" : "Person entfernen",
     "Name of this person" : "Name dieser Person",
     "Save." : "Speichern",
