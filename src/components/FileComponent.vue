@@ -97,7 +97,7 @@
 
 		<NcDialog
 			:open.sync="showDialog"
-			name="Confirmation"
+			:name="t('photos', 'Confirmation')"
 			:message="t('photos', 'You are about to delete {imageName}. Are you sure?', { imageName: file.basename })"
 			:buttons="buttons"
 			close-on-click-outside
@@ -176,11 +176,11 @@ export default {
 			showDialog: false,
 			buttons: [
 				{
-					label: 'Cancel',
+					label: t('photos', 'Cancel'),
 					callback: this.hideDialog,
 				},
 				{
-					label: 'Ok',
+					label: 'OK',
 					type: 'primary',
 					callback: this.handleRemoveConfirm,
 				},

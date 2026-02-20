@@ -117,10 +117,10 @@ export default {
 		},
 
 		path() {
-			return this.file.attributes.filename.substring(
-				0,
-				this.file.attributes.filename.lastIndexOf('/'),
-			)
+			const full = this.file.attributes.filename || ''
+			const parts = full.split('/').filter(Boolean)
+			const cleanedParts = parts.slice(2, -1)
+			return '/' + cleanedParts.join('/')
 		},
 
 		creationDate() {

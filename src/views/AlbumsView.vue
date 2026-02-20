@@ -17,13 +17,14 @@
 					:root-title="t('photos', 'Albums')"
 					@refresh="fetchAlbums">
 					<NcButton
-						:aria-label="isMobile ? t('photos', 'New album') : undefined"
+						:aria-label="isMobile ? t('photos', 'Create new album') : undefined"
+						variant="primary"
 						@click="showAlbumCreationForm = true">
 						<template #icon>
 							<Plus :size="20" />
 						</template>
 						<template v-if="!isMobile" #default>
-							{{ t('photos', 'New album') }}
+							{{ t('photos', 'Create new album') }}
 						</template>
 					</NcButton>
 				</HeaderNavigation>
@@ -83,6 +84,7 @@
 			key="albumCreationForm"
 			label-id="new-album-form"
 			:name="t('photos', 'New album')"
+			:lightBackdrop="true"
 			@close="handleAlbumCreateCancel">
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
