@@ -235,6 +235,15 @@
 			</h2>
 			<AlbumForm @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
+
+		<PhotosPicker
+			:open.sync="showPhotosPicker"
+			:blacklist-ids="blacklistIds"
+			:destination="destination"
+			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
+			:allowempty="allowEmpty"
+			@closed="handlePickerClose"
+			@files-picked="handleFilesPicked" />
 	</div>
 </template>
 
@@ -268,6 +277,7 @@ import AlbumPicker from '../components/Albums/AlbumPicker.vue'
 import FileComponent from '../components/FileComponent.vue'
 import FilesListViewer from '../components/FilesListViewer.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
+import PhotosPicker from '../components/PhotosPicker.vue'
 import PhotosSourceLocationsSettings from '../components/Settings/PhotosSourceLocationsSettings.vue'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.ts'
 import FilesByMonthMixin from '../mixins/FilesByMonthMixin.ts'
@@ -303,6 +313,7 @@ export default {
 		ViewGridOutline,
 		ViewDashboardOutline,
 		ImageMultipleOutline,
+		PhotosPicker,
 	},
 
 	filters: {
@@ -369,6 +380,7 @@ export default {
 			loadingCount: 0,
 			showAlbumPicker: false,
 			showAlbumCreationForm: false,
+			showPhotosPicker: false,
 			createdAlbum: null,
 			blacklistIds: [],
 			destination: '',
@@ -480,6 +492,19 @@ export default {
 		handleAlbumCreated({ album }) {
 			this.showAlbumCreationForm = false
 			this.destination = album.basename
+			this.collection = album.attributes.filename
+			this.showPhotosPicker = true
+		},
+
+		handlePickerClose() {
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleFilesPicked(fileIds) {
+			// Add picked files
+			await this.$store.dispatch('addFilesToCollection', { collectionFileName: this.collection, fileIdsToAdd: fileIds })
+			// Close the PhotosPicker
+			this.showPhotosPicker = false
 			// Re-fetch album to have the proper collection
 			this.$router.push(`/albums/${this.destination}`)
 		},

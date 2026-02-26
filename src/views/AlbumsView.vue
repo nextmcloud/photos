@@ -196,7 +196,7 @@ export default defineComponent({
 		handleAlbumCreated({ album }) {
 			this.showAlbumCreationForm = false
 			this.destination = album.basename
-			this.collection = album.filename
+			this.collection = album.attributes.filename
 			this.showPhotosPicker = true
 		},
 
