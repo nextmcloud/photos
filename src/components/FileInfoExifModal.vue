@@ -1,12 +1,12 @@
 <template>
 	<NcModal
 		v-if="show"
-		:title="t('photos', 'View Info')"
+		name="fileInfoExifModal"
 		@close="$emit('close')">
 		<div class="modal__content modal__content--file">
 			<div class="modal__left">
 				<img
-					v-if="srcLarge && isImage"
+					v-if="srcLarge"
 					:src="srcLarge"
 					:alt="file.basename"
 					class="modal__image">
