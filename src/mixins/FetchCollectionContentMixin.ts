@@ -41,11 +41,13 @@ export default defineComponent({
 				return null
 			}
 
+			const normalizedCollectionFileName = collectionFileName.startsWith('/') ? collectionFileName : `/${collectionFileName}`
+
 			try {
 				this.loadingCollection = true
 				this.errorFetchingCollection = null
 
-				const collection = await fetchCollection(collectionFileName, { signal: this.abortController.signal }, extraProps, client)
+				const collection = await fetchCollection(normalizedCollectionFileName, { signal: this.abortController.signal }, extraProps, client)
 				this.$store.dispatch('addCollections', { collections: [collection] })
 				return collection
 			} catch (error) {
@@ -73,16 +75,18 @@ export default defineComponent({
 
 			const fetchSemaphoreSymbol = await this.fetchSemaphore.acquire()
 
+			const normalizedCollectionFileName = collectionFileName.startsWith('/') ? collectionFileName : `/${collectionFileName}`
+
 			try {
 				this.errorFetchingCollectionFiles = null
 				this.loadingCollectionFiles = true
 
-				const fetchedFiles = await fetchCollectionFiles(collectionFileName, { signal: this.abortController.signal }, extraProps, client)
+				const fetchedFiles = await fetchCollectionFiles(normalizedCollectionFileName, { signal: this.abortController.signal }, extraProps, client)
 				const fileIds = fetchedFiles.map((file) => file.fileid?.toString())
 
 				this.$store.dispatch('appendFiles', fetchedFiles)
 
-				await this.$store.commit('setCollectionFiles', { collectionFileName, fileIds })
+				await this.$store.commit('setCollectionFiles', { collectionFileName: normalizedCollectionFileName, fileIds })
 
 				return fetchedFiles
 			} catch (error) {

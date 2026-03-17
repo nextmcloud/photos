@@ -75,6 +75,14 @@ function getCollectionFilesDavRequest(extraProps: string[] = []): string {
 			</d:propfind>`
 }
 
+function normalizePath(path: string): string {
+	if (path.startsWith('/')) {
+		return path
+	}
+
+	return `/${path}`
+}
+
 /**
  *
  * @param path
@@ -83,8 +91,10 @@ function getCollectionFilesDavRequest(extraProps: string[] = []): string {
  * @param client
  */
 export async function fetchCollection(path: string, options: StatOptions, extraProps: string[] = [], client: WebDAVClient = davClient): Promise<Collection | null> {
+	const normalizedPath = normalizePath(path)
+
 	try {
-		const response = await client.stat(path, {
+		const response = await client.stat(normalizedPath, {
 			data: getCollectionDavRequest(extraProps),
 			details: true,
 			...options,
@@ -92,7 +102,7 @@ export async function fetchCollection(path: string, options: StatOptions, extraP
 
 		logger.debug('[Collections] Fetched a collection: ', { data: response.data })
 
-		return formatCollection(response.data, path.split('/').slice(0, -1).join('/'))
+		return formatCollection(response.data, normalizedPath.split('/').slice(0, -1).join('/'))
 	} catch (error) {
 		if (error instanceof DOMException && error.code === error.ABORT_ERR) {
 			return null
@@ -177,14 +187,16 @@ function formatCollection(rawCollection: RawCollection, root: string): Collectio
  * @param client
  */
 export async function fetchCollectionFiles(path: string, options: StatOptions, extraProps: string[] = [], client: WebDAVClient = davClient): Promise<File[]> {
+	const normalizedPath = normalizePath(path)
+
 	try {
-		const response = await client.getDirectoryContents(path, {
+		const response = await client.getDirectoryContents(normalizedPath, {
 			data: getCollectionFilesDavRequest(extraProps),
 			details: true,
 			...options,
 		}) as ResponseDataDetailed<Array<FileStat>>
 
-		const filesRoot = path.split('/').slice(0, -1).join('/')
+		const filesRoot = normalizedPath.split('/').slice(0, -1).join('/')
 		const fetchedFiles = response.data
 			.map((file) => resultToNode(file, filesRoot, generateRemoteUrl('dav')) as File)
 			.filter((file) => file.fileid !== undefined)
