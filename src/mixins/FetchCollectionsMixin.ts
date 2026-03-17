@@ -33,11 +33,13 @@ export default defineComponent({
 				return []
 			}
 
+			const normalizedCollectionHome = collectionHome.startsWith('/') ? collectionHome : `/${collectionHome}`
+
 			try {
 				this.loadingCollections = true
 				this.errorFetchingCollections = null
 
-				const collections = await fetchCollections(collectionHome, { signal: this.abortController.signal }, extraProps, client)
+				const collections = await fetchCollections(normalizedCollectionHome, { signal: this.abortController.signal }, extraProps, client)
 
 				this.$store.dispatch('addCollections', { collections })
 

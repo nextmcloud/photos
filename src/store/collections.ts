@@ -249,13 +249,19 @@ const actions = {
 	 * @param root0.newBaseName
 	 */
 	async renameCollection(context: PhotosContext<CollectionState>, { collectionFileName, newBaseName }: { collectionFileName: string, newBaseName: string }) {
-		const collection = state.collections[collectionFileName]
+		const collection = context.state.collections[collectionFileName]
+		if (!collection) {
+			logger.error(t('photos', 'Collection {collectionFileName} not found for rename', { collectionFileName }))
+			showError(t('photos', 'Collection {collectionFileName} not found for rename', { collectionFileName }))
+			return undefined
+		}
+
 		const newCollection = collection.clone()
 		newCollection.rename(newBaseName)
 
 		try {
 			context.commit('addCollections', { collections: [newCollection] })
-			context.commit('setCollectionFiles', { collectionFileName: newCollection.root + newCollection.path, fileIds: context.state.collectionsFiles[collectionFileName] })
+			context.commit('setCollectionFiles', { collectionFileName: newCollection.root + newCollection.path, fileIds: context.state.collectionsFiles[collectionFileName] || [] })
 			await davClient.moveFile(collection.root + collection.path, collection.root + newCollection.path, { overwrite: false })
 			context.commit('removeCollections', { collectionFileNames: [collectionFileName] })
 			return newCollection
