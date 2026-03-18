@@ -351,6 +351,10 @@ export default {
 			}
 		},
 
+		redirectToNewName(payload) {
+			return this.handleAlbumUpdate(payload)
+		},
+
 		async handleFilesPicked(fileIds: string[]) {
 			this.showAddPhotosModal = false
 			await this.$store.dispatch('addFilesToCollection', { collectionFileName: this.album?.root + this.album?.path, fileIdsToAdd: fileIds })
