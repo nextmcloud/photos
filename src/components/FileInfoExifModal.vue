@@ -1,6 +1,7 @@
 <template>
 	<NcModal
 		v-if="show"
+		:lightBackdrop="true"
 		@close="$emit('close')">
 		<div class="modal__content modal__content--file">
 			<div class="modal__left">
