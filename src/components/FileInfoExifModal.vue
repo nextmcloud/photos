@@ -1,7 +1,6 @@
 <template>
 	<NcModal
 		v-if="show"
-		name="fileInfoExifModal"
 		@close="$emit('close')">
 		<div class="modal__content modal__content--file">
 			<div class="modal__left">
