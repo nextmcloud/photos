@@ -91,6 +91,7 @@ OC.L10N.register(
     "Manage collaborators for this album" : "Mitbearbeitende für dieses Album verwalten",
     "Open actions menu" : "Aktionsmenü öffnen",
     "Edit album details" : "Albumdetails bearbeiten",
+    "Share album" : "Album teilen",
     "Download all files in album" : "Alle Dateien im Album herunterladen",
     "Delete album" : "Album löschen",
     "Download selected files" : "Ausgewählte Dateien herunterladen",
