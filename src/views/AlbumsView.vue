@@ -172,8 +172,20 @@ export default defineComponent({
 
 	computed: {
 		albums() {
-			return this.$store.getters.albums
-		},
+			const albums = this.$store.getters.albums
+
+			if (!albums || typeof albums !== 'object') {
+				return []
+			}
+
+			const list = Array.isArray(albums)
+				? albums
+				: Object.values(albums)
+
+			return list.sort((a, b) =>
+				a.basename.localeCompare(b.basename, 'de', { sensitivity: 'base' })
+			)
+		}
 	},
 
 	async beforeMount() {
