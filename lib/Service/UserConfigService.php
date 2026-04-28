@@ -16,8 +16,8 @@ use OCP\IUserSession;
 class UserConfigService {
 	public const DEFAULT_CONFIGS = [
 		'croppedLayout' => 'false',
-		'photosLocation' => '/Camera-media',
-		'photosSourceFolders' => '["/Camera-media"]',
+		'photosLocation' => null, // Placeholder until getConfigForUser is called
+		'photosSourceFolders' => '["/"]',
 		/** If you add any new configs, make sure to validate the contents in {@see \OCA\Photos\Controller\ApiController::setUserConfig} */
 	];
 
@@ -45,6 +45,21 @@ class UserConfigService {
 		$default = self::DEFAULT_CONFIGS[$key];
 		$value = $this->config->getUserValue($userId, Application::APP_ID, $key, $default);
 
+		if ($key === 'photosLocation') {
+			if ($value === null) {
+				$value = $this->getDefaultUserPhotosLocation($userId);
+				$this->config->setUserValue($userId, Application::APP_ID, 'photosLocation', $value);
+			}
+		}
+
 		return $value;
+	}
+
+	private function getDefaultUserPhotosLocation($userId): string {
+		$lang = $this->config->getUserValue($userId, 'core', 'lang', 'de_DE');
+
+		return $lang == 'en_GB'
+			? '/Camera-Media'
+			: '/Kamera-Medien';
 	}
 }

@@ -15,6 +15,7 @@
 				key="navigation"
 				slot="header"
 				slot-scope="{ selectedFileIds, resetSelection }"
+				:class="{'photos-navigation--uploading': uploader.queue?.length > 0}"
 				:loading="loadingCollectionFiles"
 				:params="{ albumName }"
 				:path="'/' + albumName"
@@ -59,6 +60,13 @@
 				</template>
 
 				<template v-if="album !== undefined" slot="right">
+					<UploadPicker :accept="allowedMimes"
+						:context="uploadContext"
+						:destination="albumAsFolder"
+						:root="uploadContext.root"
+						:multiple="true"
+						@uploaded="onUpload" />
+
 					<NcButton @click="showAddPhotosModal = true"
 						variant="primary">
 						<template #icon>
@@ -165,6 +173,7 @@
 		<NcModal
 			v-if="showManageCollaboratorView && album !== undefined"
 			:name="t('photos', 'Manage collaborators')"
+			:lightBackdrop="true"
 			@close="showManageCollaboratorView = false">
 			<AlbumShare
 				:album-name="album.basename"
@@ -197,8 +206,13 @@
 
 <script lang='ts'>
 import type { Album } from '../store/albums.js'
+import { albumFilesExtraProps, albumsExtraProps } from '../store/albums.ts'
 
+import { Folder, davParsePermissions } from '@nextcloud/files'
+import { getCurrentUser } from '@nextcloud/auth'
 import { translate, translatePlural } from '@nextcloud/l10n'
+import { UploadPicker, getUploader } from '@nextcloud/upload'
+
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActions from '@nextcloud/vue/components/NcActions'
@@ -208,6 +222,7 @@ import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import NcModal from '@nextcloud/vue/components/NcModal'
+
 import Close from 'vue-material-design-icons/Close.vue'
 // import Download from 'vue-material-design-icons/TrayArrowDown.vue'
 // import DownloadMultiple from 'vue-material-design-icons/DownloadMultiple.vue'
@@ -219,6 +234,7 @@ import ShareVariantOutline from 'vue-material-design-icons/ShareVariantOutline.v
 import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
+
 // import ActionDownload from '../components/Actions/ActionDownload.vue'
 import ActionFavorite from '../components/Actions/ActionFavorite.vue'
 import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
@@ -227,10 +243,13 @@ import AlbumShare from '../components/Albums/AlbumShare.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
+
 import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.js'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
+import allowedMimes from '../services/AllowedMimes.js'
 import logger from '../services/logger.js'
-import { albumFilesExtraProps, albumsExtraProps } from '../store/albums.ts'
+
+import debounce from 'debounce'
 
 export default {
 	name: 'AlbumContent',
@@ -262,6 +281,7 @@ export default {
 		ViewGridOutline,
 		ViewDashboardOutline,
 		ActionFavoriteButton,
+		UploadPicker,
 	},
 
 	mixins: [
@@ -288,8 +308,9 @@ export default {
 			showAddPhotosModal: false,
 			showManageCollaboratorView: false,
 			showEditAlbumForm: false,
-
 			loadingAddCollaborators: false,
+			allowedMimes,
+			uploader: getUploader(),
 		}
 	},
 
@@ -319,6 +340,31 @@ export default {
 
 		croppedLayout() {
 			return this.$store.state.userConfig.croppedLayout
+		},
+
+		/**
+		 * The upload picker context
+		 * We're uploading to the album folder, and the backend handles
+		 * the writing to the default location as well as the album update.
+		 * The context is also used for the NewFileMenu.
+		 *
+		 * @return {Album&{route: string, root: string}}
+		 */
+		uploadContext() {
+			return {
+				...this.album,
+				route: this.$route.name,
+				root: `dav/photos/${getCurrentUser()?.uid}/albums`,
+			}
+		},
+
+		albumAsFolder() {
+			return new Folder({
+				...this.album,
+				owner: getCurrentUser()?.uid ?? '',
+				source: this.album?.source ?? '',
+				permissions: davParsePermissions(this.album.permissions),
+			})
 		},
 	},
 
@@ -392,6 +438,15 @@ export default {
 		toggleCroppedLayout(value) {
 			this.$store.dispatch('updateUserConfig', { key: 'croppedLayout', value })
 		},
+
+		/**
+		 * A new File has been uploaded, let's add it
+		 *
+		 * @param {Upload[]} uploads
+		 */
+		onUpload: debounce(function() {
+			this.fetchAlbumContent()
+		}, 300),
 
 		t: translate,
 		n: translatePlural,

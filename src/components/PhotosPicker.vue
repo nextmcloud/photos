@@ -15,18 +15,6 @@
 		<template #actions>
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
-					<div class="upload-wrapper">
-						<UploadPicker
-							:accept="allowedMimes"
-							:context="uploadContext"
-							:destination="photosLocationFolder"
-							multiple
-							no-label
-							@uploaded="refreshFiles" />
-						<NcButton variant="secondary" @click="triggerUploadPicker">
-							{{ t('photos', 'Upload') }}
-						</NcButton>
-					</div>
 					<NcButton
 						v-if="allowempty"
 						variant="secondary"
@@ -43,7 +31,7 @@
 							<ImagePlusOutline v-if="!loading" />
 							<NcLoadingIcon v-if="loading" />
 						</template>
-						{{ t('photos', 'Add to {destination}', { destination }, undefined, { escape: false, sanitize: false }) }}
+						{{ t('photos', 'Add') }}
 					</NcButton>
 				</div>
 			</div>

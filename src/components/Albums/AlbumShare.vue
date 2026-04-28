@@ -11,10 +11,7 @@
 				<div class="actions__sharing-entry">
 					<span class="sharing-entry__title">{{ title }}</span>
 					<div class="sharing-link">
-						<EyeIcon :size="16" />
 						{{ canViewText }}
-						<CalendarMonthIcon :size="16" />
-						<ChevronRightIcon :size="18" />
 					</div>
 				</div>
 
