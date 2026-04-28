@@ -65,6 +65,7 @@
 						:destination="albumAsFolder"
 						:root="uploadContext.root"
 						:multiple="true"
+						:no-menu="true"
 						@uploaded="onUpload" />
 
 					<NcButton @click="showAddPhotosModal = true"
