@@ -173,7 +173,6 @@
 
 		<NcModal
 			v-if="showManageCollaboratorView && album !== undefined"
-			:name="t('photos', 'Manage collaborators')"
 			:lightBackdrop="true"
 			@close="showManageCollaboratorView = false">
 			<AlbumShare
