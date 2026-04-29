@@ -65,6 +65,7 @@
 						:destination="albumAsFolder"
 						:root="uploadContext.root"
 						:multiple="true"
+						:no-menu="true"
 						@uploaded="onUpload" />
 
 					<NcButton @click="showAddPhotosModal = true"
@@ -72,7 +73,7 @@
 						<template #icon>
 							<Plus :size="20" />
 						</template>
-						{{ t('photos', 'Add photos to this album') }}
+						{{ t('photos', 'Add') }}
 					</NcButton>
 				</template>
 
@@ -157,7 +158,7 @@
 					:aria-label="t('photos', 'Add photos to this album')"
 					@click="showAddPhotosModal = true">
 					<Plus slot="icon" />
-					{{ t('photos', "Add photos to this album") }}
+					{{ t('photos', "Add") }}
 				</NcButton>
 			</NcEmptyContent>
 		</CollectionContent>
