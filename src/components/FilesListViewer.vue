@@ -286,11 +286,16 @@ export default {
 
 		mapFileToItem(fileId: string): TiledItem {
 			const file = this.files[fileId] as File
+			const isVideo = file.mime?.startsWith('video/')
+			const metadata = isVideo
+				? (this.croppedLayout ? { width: 100, height: 200 } : { width: 200, height: 400 })
+				: file.attributes['metadata-photos-size']
+
 			return {
 				id: file.fileid?.toString() as string,
-				width: file.attributes['metadata-photos-size'].width,
-				height: file.attributes['metadata-photos-size'].height,
-				ratio: this.croppedLayout ? 1 : file.attributes['metadata-photos-size'].width / file.attributes['metadata-photos-size'].height,
+				width: metadata.width,
+				height: metadata.height,
+				ratio: this.croppedLayout ? 1 : metadata.width / metadata.height,
 			}
 		},
 
