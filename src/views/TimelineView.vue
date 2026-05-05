@@ -135,7 +135,7 @@
 						{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
 					</span>
 				</span>
-				<NcActions :force-name="true" :inline="6">
+				<NcActions :force-name="true" :inline="inlineActions">
 
 					<NcActionButton
 						:close-after-click="true"
@@ -388,10 +388,23 @@ export default {
 			allowEmpty: true,
 			appContent: document.getElementById('app-content-vue'),
 			showFilters: false,
+			windowWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
 		}
 	},
 
 	computed: {
+		inlineActions() {
+			if (this.windowWidth < 512) {
+				return 0
+			}
+			if (this.windowWidth < 768) {
+				return 1
+			}
+			if (this.windowWidth < 1024) {
+				return 2
+			}
+			return 3
+		},
 		files() {
 			return this.$store.state.files.files
 		},
@@ -458,10 +471,12 @@ export default {
 
 	mounted() {
 		subscribe(configChangedEvent, this.handleUserConfigChange)
+		window.addEventListener('resize', this.handleResize)
 	},
 
 	destroyed() {
 		unsubscribe(configChangedEvent, this.handleUserConfigChange)
+		window.removeEventListener('resize', this.handleResize)
 	},
 
 	methods: {
@@ -536,6 +551,10 @@ export default {
 		handleFormCreationDone({ album }: { album: Album }) {
 			this.showAlbumCreationForm = false
 			this.$router.push(`/albums/${album.basename}`)
+		},
+
+		handleResize() {
+			this.windowWidth = window.innerWidth
 		},
 
 		downloadSelectedFiles() {
