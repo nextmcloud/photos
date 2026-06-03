@@ -33,7 +33,7 @@
 							{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
 						</span>
 					</span>
-					<NcActions :force-name="true" :force-menu="false" :inline="6">
+					<NcActions :force-name="true" :force-menu="false" :inline="inlineActions">
 
 						<NcActionButton
 							:aria-label="t('photos', 'Unselect all')"
@@ -172,6 +172,7 @@
 			@files-picked="handleFilesPicked" />
 
 		<NcModal
+			id="album-share"
 			v-if="showManageCollaboratorView && album !== undefined"
 			:lightBackdrop="true"
 			@close="showManageCollaboratorView = false">
@@ -311,6 +312,7 @@ export default {
 			loadingAddCollaborators: false,
 			allowedMimes,
 			uploader: getUploader(),
+			windowWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
 		}
 	},
 
@@ -336,6 +338,19 @@ export default {
 				.map((fileId) => this.$store.state.files.files[fileId])
 				.filter((file) => file.attributes['photos-album-file-origin'] !== 'filters')
 				.map((file) => file.fileid.toString())
+		},
+
+		inlineActions() {
+			if (this.windowWidth < 512) {
+				return 0
+			}
+			if (this.windowWidth < 768) {
+				return 1
+			}
+			if (this.windowWidth < 1024) {
+				return 2
+			}
+			return 3
 		},
 
 		croppedLayout() {
@@ -371,6 +386,11 @@ export default {
 	async mounted() {
 		this.fetchAlbum()
 		this.fetchAlbumContent()
+		window.addEventListener('resize', this.handleResize)
+	},
+
+	destroyed() {
+		window.removeEventListener('resize', this.handleResize)
 	},
 
 	methods: {
@@ -379,6 +399,10 @@ export default {
 				this.albumFileName,
 				albumsExtraProps,
 			)
+		},
+		
+		handleResize() {
+			this.windowWidth = window.innerWidth
 		},
 
 		async fetchAlbumContent() {
