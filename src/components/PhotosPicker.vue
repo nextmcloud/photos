@@ -4,6 +4,7 @@
 -->
 <template>
 	<NcDialog
+		id="photos-picker"
 		content-classes="photos-picker"
 		:name="name"
 		:open="open"
