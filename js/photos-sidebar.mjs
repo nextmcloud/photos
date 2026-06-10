@@ -1,3 +1,58 @@
-const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=[window.OC.filePath('photos', '', 'js/PhotosTab-CjppOqbr.chunk.mjs'),window.OC.filePath('photos', '', 'js/index-H-n78F4h.chunk.mjs'),window.OC.filePath('photos', '', 'js/vue.runtime.esm-DCKfRL7V.chunk.mjs'),window.OC.filePath('photos', '', 'js/icons-BRqI-hCR.chunk.mjs'),window.OC.filePath('photos', '', 'css/PhotosTab-DGphhlff.chunk.css')])))=>i.map(i=>d[i]);
-import{_ as s}from"./preload-helper-DxYC2qmj.chunk.mjs";import{t as d,V as n,c as u,e as o}from"./vue.runtime.esm-DCKfRL7V.chunk.mjs";const m='<svg xmlns="http://www.w3.org/2000/svg" id="mdi-information-outline" viewBox="0 0 24 24"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" /></svg>';n.prototype.t=d,n.prototype.n=u,o("nc:metadata-photos-exif"),o("nc:metadata-photos-ifd0"),o("nc:metadata-photos-gps"),o("nc:metadata-photos-place");let a=null,t=null;const c=new OCA.Files.Sidebar.Tab({id:"photos",name:d("photos","Details"),iconSvg:m,async mount(e,i,r){if(a===null){const{default:l}=await s(async()=>{const{default:p}=await import("./PhotosTab-CjppOqbr.chunk.mjs");return{default:p}},__vite__mapDeps([0,1,2,3,4]),import.meta.url);a=a??n.extend(l)}t&&t.$destroy(),t=new a({parent:r}),t.update(i),t.$mount(e)},update(e){t.update(e)},destroy(){t.$destroy(),t=null}});window.addEventListener("DOMContentLoaded",async function(){if(window.OCA.Files&&window.OCA.Files.Sidebar){window.OCA.Files.Sidebar.registerTab(c);const{default:e}=await s(async()=>{const{default:i}=await import("./PhotosTab-CjppOqbr.chunk.mjs");return{default:i}},__vite__mapDeps([0,1,2,3,4]),import.meta.url);a=a??n.extend(e)}});
+const __vite__mapDeps=(i,m=__vite__mapDeps,d=(m.f||(m.f=[window.OC.filePath('photos', '', 'js/PhotosTab-BnDoRk-N.chunk.mjs'),window.OC.filePath('photos', '', 'js/index-CEGJzzBP.chunk.mjs'),window.OC.filePath('photos', '', 'js/vue.runtime.esm-D0MRZEe4.chunk.mjs'),window.OC.filePath('photos', '', 'js/icons-DpGfY1yM.chunk.mjs'),window.OC.filePath('photos', '', 'css/PhotosTab-D8FpRNKm.chunk.css')])))=>i.map(i=>d[i]);
+const appName = "photos";
+const appVersion = "5.0.2";
+import { _ as __vitePreload } from "./preload-helper-BH8-nKqv.chunk.mjs";
+import { t as translate, V as Vue, c as translatePlural, e as registerDavProperty } from "./vue.runtime.esm-D0MRZEe4.chunk.mjs";
+const InformationOutline = '<svg xmlns="http://www.w3.org/2000/svg" id="mdi-information-outline" viewBox="0 0 24 24"><path d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" /></svg>';
+Vue.prototype.t = translate;
+Vue.prototype.n = translatePlural;
+registerDavProperty("nc:metadata-photos-exif");
+registerDavProperty("nc:metadata-photos-ifd0");
+registerDavProperty("nc:metadata-photos-gps");
+registerDavProperty("nc:metadata-photos-place");
+let PhotosTabView = null;
+let PhotosTabInstance = null;
+const photosTab = new OCA.Files.Sidebar.Tab({
+  id: "photos",
+  name: translate("photos", "Details"),
+  iconSvg: InformationOutline,
+  async mount(el, fileInfo, context) {
+    if (PhotosTabView === null) {
+      const { default: PhotosTab } = await __vitePreload(async () => {
+        const { default: PhotosTab2 } = await import("./PhotosTab-BnDoRk-N.chunk.mjs");
+        return { default: PhotosTab2 };
+      }, true ? __vite__mapDeps([0,1,2,3,4]) : void 0, import.meta.url);
+      PhotosTabView = PhotosTabView ?? Vue.extend(PhotosTab);
+    }
+    if (PhotosTabInstance) {
+      PhotosTabInstance.$destroy();
+    }
+    PhotosTabInstance = new PhotosTabView({
+      // Better integration with vue parent component
+      parent: context
+    });
+    PhotosTabInstance.update(fileInfo);
+    PhotosTabInstance.$mount(el);
+  },
+  update(fileInfo) {
+    PhotosTabInstance.update(fileInfo);
+  },
+  destroy() {
+    PhotosTabInstance.$destroy();
+    PhotosTabInstance = null;
+  }
+});
+window.addEventListener("DOMContentLoaded", async function() {
+  if (window.OCA.Files && window.OCA.Files.Sidebar) {
+    window.OCA.Files.Sidebar.registerTab(photosTab);
+    const { default: PhotosTab } = await __vitePreload(async () => {
+      const { default: PhotosTab2 } = await import(
+        /* webpackPreload: true */
+        "./PhotosTab-BnDoRk-N.chunk.mjs"
+      );
+      return { default: PhotosTab2 };
+    }, true ? __vite__mapDeps([0,1,2,3,4]) : void 0, import.meta.url);
+    PhotosTabView = PhotosTabView ?? Vue.extend(PhotosTab);
+  }
+});
 //# sourceMappingURL=photos-sidebar.mjs.map

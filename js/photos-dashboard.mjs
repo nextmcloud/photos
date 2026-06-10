@@ -1,2 +1,79 @@
-import{t as a,g as e,V as s,c as r,o as n}from"./vue.runtime.esm-DCKfRL7V.chunk.mjs";import{r as i,e as p,a as m,l as d,p as c}from"./index-CUpYykB9.chunk.mjs";import{N as h}from"./NcEmptyContent-C14HhGUQ.chunk.mjs";import{m as l,n as y}from"./icons-BRqI-hCR.chunk.mjs";import{F as u}from"./FileComponent-9oW6MjxP.chunk.mjs";import{g as f}from"./PhotoSearch-BmMVXfNE.chunk.mjs";import"./index-H-n78F4h.chunk.mjs";import"./NcCheckboxRadioSwitch-CX3HXCEk-BZtFu2HT.chunk.mjs";import"./NcDialog-8ipQ69_t-BntQO4mh.chunk.mjs";const g={name:"DashboardOnThisDay",components:{FileComponent:u,NcButton:p,NcLoadingIcon:i,NcEmptyContent:h,ImageOutlineIcon:l},data(){return{loading:!0,items:[]}},computed:{moreUrl(){return e("/apps/photos/thisday")}},async created(){try{this.items=await f({firstResult:0,nbResults:1,mimesType:m,onThisDay:!0})}catch(t){d.error("Failed to load on this day pictures",{error:t})}finally{this.loading=!1}},methods:{t:a}};var w=function(){var t=this,o=t._self._c;return o("div",{staticClass:"on-this-day-dashboard"},[t.loading?o("NcLoadingIcon",{attrs:{size:48}}):t.items.length===0?o("NcEmptyContent",{attrs:{name:t.t("photos","No picture for this day"),description:t.t("photos","Picture taken on this day will show up here.")},scopedSlots:t._u([{key:"icon",fn:function(){return[o("ImageOutlineIcon")]},proxy:!0}])}):[o("FileComponent",{staticClass:"on-this-day-dashboard__file",attrs:{file:t.items[0],"allow-selection":!1}}),o("NcButton",{attrs:{href:t.moreUrl}},[t._v(" "+t._s(t.t("photos","More photos from this day"))+" ")])]],2)},C=[],N=y(g,w,C,!1,null,"4ab77429");const _=N.exports;s.prototype.t=a,s.prototype.n=r,window.addEventListener("DOMContentLoaded",()=>{window.OCA.Dashboard.register("photos-onthisday",t=>{n.PhotosOnThisDay=new s({el:t,store:c,render:o=>o(_)})})});
+const appName = "photos";
+const appVersion = "5.0.2";
+import { t as translate, g as generateUrl, V as Vue, c as translatePlural, o as global } from "./vue.runtime.esm-D0MRZEe4.chunk.mjs";
+import { r as NcLoadingIcon, e as NcButton, a as allMimes, l as logger, p as photosStore } from "./index-CZNqUxm0.chunk.mjs";
+import { N as NcEmptyContent } from "./NcEmptyContent-BBz98Y_d.chunk.mjs";
+import { m as ImageOutlineIcon, n as normalizeComponent } from "./icons-DpGfY1yM.chunk.mjs";
+import { F as FileComponent } from "./FileComponent-B5RazorU.chunk.mjs";
+import { g as getPhotos } from "./PhotoSearch-Bwow9NGf.chunk.mjs";
+import "./index-CEGJzzBP.chunk.mjs";
+import "./NcCheckboxRadioSwitch-CX3HXCEk-DHCH3k5i.chunk.mjs";
+import "./NcDialog-8ipQ69_t-Bi5MKXbp.chunk.mjs";
+const _sfc_main = {
+  name: "DashboardOnThisDay",
+  components: {
+    FileComponent,
+    NcButton,
+    NcLoadingIcon,
+    NcEmptyContent,
+    ImageOutlineIcon
+  },
+  data() {
+    return {
+      loading: true,
+      items: []
+    };
+  },
+  computed: {
+    moreUrl() {
+      return generateUrl("/apps/photos/thisday");
+    }
+  },
+  async created() {
+    try {
+      this.items = await getPhotos({
+        firstResult: 0,
+        nbResults: 1,
+        mimesType: allMimes,
+        onThisDay: true
+      });
+    } catch (error) {
+      logger.error("Failed to load on this day pictures", { error });
+    } finally {
+      this.loading = false;
+    }
+  },
+  methods: {
+    t: translate
+  }
+};
+var _sfc_render = function render() {
+  var _vm = this, _c = _vm._self._c;
+  return _c("div", { staticClass: "on-this-day-dashboard" }, [_vm.loading ? _c("NcLoadingIcon", { attrs: { "size": 48 } }) : _vm.items.length === 0 ? _c("NcEmptyContent", { attrs: { "name": _vm.t("photos", "No picture for this day"), "description": _vm.t("photos", "Picture taken on this day will show up here.") }, scopedSlots: _vm._u([{ key: "icon", fn: function() {
+    return [_c("ImageOutlineIcon")];
+  }, proxy: true }]) }) : [_c("FileComponent", { staticClass: "on-this-day-dashboard__file", attrs: { "file": _vm.items[0], "allow-selection": false } }), _c("NcButton", { attrs: { "href": _vm.moreUrl } }, [_vm._v(" " + _vm._s(_vm.t("photos", "More photos from this day")) + " ")])]], 2);
+};
+var _sfc_staticRenderFns = [];
+_sfc_render._withStripped = true;
+var __component__ = /* @__PURE__ */ normalizeComponent(
+  _sfc_main,
+  _sfc_render,
+  _sfc_staticRenderFns,
+  false,
+  null,
+  "f34a5053"
+);
+__component__.options.__file = "/var/www/html/customapps/photos/src/components/Dashboard/DashboardOnThisDay.vue";
+const DashboardOnThisDay = __component__.exports;
+Vue.prototype.t = translate;
+Vue.prototype.n = translatePlural;
+window.addEventListener("DOMContentLoaded", () => {
+  window.OCA.Dashboard.register("photos-onthisday", (el) => {
+    global.PhotosOnThisDay = new Vue({
+      el,
+      store: photosStore,
+      render: (h) => h(DashboardOnThisDay)
+    });
+  });
+});
 //# sourceMappingURL=photos-dashboard.mjs.map
