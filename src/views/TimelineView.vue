@@ -227,7 +227,6 @@
 			v-if="showAlbumCreationForm"
 			key="albumCreationForm"
 			label-id="new-album-form"
-			
 			:lightBackdrop="true"
 			@close="handleAlbumCreateCancel">
 			<h2 class="album-creation__heading">
