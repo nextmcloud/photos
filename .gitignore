@@ -27,7 +27,10 @@ cypress/downloads
 js/*hot-update.*
 tests/.phpunit.result.cache
 
-/css/
-/dist/
-/js/
-/l10n/
+css/
+dist/
+js/
+l10n/
+
+.package-lock.json
+.package.json
