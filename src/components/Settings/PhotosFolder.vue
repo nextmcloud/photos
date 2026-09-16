@@ -8,9 +8,9 @@
 		<component :is="rootFolderIcon" v-if="path === '/'" />
 		<FolderOutline v-else />
 		<span class="folder__info">
-			<div class="folder__path">{{ folderName }}</div>
-			<div v-if="subname !== ''">
-				{{ subname }}
+			<div class="folder__path">
+				<span v-if="subname !== ''">{{ subname }}/</span>
+				<span>{{ folderName }}</span>
 			</div>
 		</span>
 		<NcButton

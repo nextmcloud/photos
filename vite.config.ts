@@ -18,6 +18,7 @@ export default createAppConfig({
 	public: join(__dirname, 'src', 'public.js'),
 	sidebar: join(__dirname, 'src', 'sidebar.js'),
 	dashboard: join(__dirname, 'src', 'dashboard.js'),
+	settings: join(__dirname, 'src', 'settings.js'),
 }, {
 	thirdPartyLicense: false,
 	extractLicenseInformation: {
@@ -29,6 +30,9 @@ export default createAppConfig({
 		additionalDirectories: ['css'],
 	},
 	config: {
+		optimizeDeps: {
+			exclude: ['vue-demi'],
+		},
 		build: {
 			rollupOptions: {
 				output: {
