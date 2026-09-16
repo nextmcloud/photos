@@ -5,28 +5,26 @@
 
 <template>
 	<div class="photos-locations">
-		<div class="photos-locations__title">
-			{{ t('photos', 'Media folders') }}
-		</div>
 		<div class="photos-locations__description">
 			{{ t('photos', 'Choose the folders from where photos and videos are shown.') }}
 		</div>
 
 		<ul class="photos-locations__list">
 			<li
-				v-for="(source, index) in photosSourceFolders"
-				:key="index">
+				v-for="source in photosSourceFolders"
+				:key="source">
 				<PhotosFolder
 					:path="source"
 					canDelete
-					:rootFolderLabel="t('photos', 'All folders')"
+					:rootFolderLabel="t('photos', 'Entire MagentaCLOUD')"
 					:rootFolderIcon="FolderMultipleOutline"
-					@removeFolder="removeSourceFolder(index)" />
+					@removeFolder="removeSourceFolder(source)" />
 			</li>
 		</ul>
 
 		<NcButton
 			:aria-label="t('photos', 'Add a Photos source for the timelines')"
+			variant="tertiary"
 			:wide="true"
 			@click="debounceAddSourceFolder">
 			<template #icon>
@@ -37,7 +35,7 @@
 	</div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { getFilePickerBuilder } from '@nextcloud/dialogs'
 import { t } from '@nextcloud/l10n'
 import debounce from 'debounce'
@@ -48,6 +46,26 @@ import Plus from 'vue-material-design-icons/Plus.vue'
 import PhotosFolder from './PhotosFolder.vue'
 import { logger } from '../../services/logger.ts'
 import { useUserConfigStore } from '../../store/userConfig.ts'
+
+function normalizePath(path: string): string {
+	return path.replace(/\/+$/, '')
+}
+
+function isPathInsideSource(path: string, source: string): boolean {
+	const normalizedPath = normalizePath(path)
+	const normalizedSource = normalizePath(source)
+
+	return normalizedPath === normalizedSource
+		|| normalizedPath.startsWith(normalizedSource + '/')
+}
+
+function isPathInsideSources(path: string, sources: string[]): boolean {
+	if (!path || sources.length === 0) {
+		return false
+	}
+
+	return sources.some((source) => isPathInsideSource(path, source))
+}
 
 export default defineComponent({
 	name: 'PhotosSourceLocationsSettings',
@@ -62,6 +80,8 @@ export default defineComponent({
 		return { userConfigStore: useUserConfigStore() }
 	},
 
+	emits: ['folders-update'],
+
 	data() {
 		return {
 			FolderMultipleOutline,
@@ -69,14 +89,25 @@ export default defineComponent({
 	},
 
 	computed: {
+		photosLocation(): string {
+			return this.$store.state.userConfig?.photosLocation ?? ''
+		},
+
 		photosSourceFolders(): string[] {
 			return this.userConfigStore.photosSourceFolders
+		},
+
+		isPhotosLocationInPhotosSourceFolders(): boolean {
+			return isPathInsideSources(
+				this.photosLocation,
+				this.photosSourceFolders,
+			)
 		},
 	},
 
 	methods: {
-		debounceAddSourceFolder: debounce(function(...args) {
-			this.addSourceFolder(...args)
+		debounceAddSourceFolder: debounce(function() {
+			this.addSourceFolder()
 		}, 200, { immediate: false }),
 
 		async openFilePicker(title: string): Promise<string> {
@@ -86,6 +117,7 @@ export default defineComponent({
 				.allowDirectories()
 				.addButton({
 					label: t('photos', 'Pick folder'),
+					variant: 'primary',
 					callback: (nodes) => logger.debug('Picked', { nodes }),
 				})
 				.build()
@@ -93,18 +125,51 @@ export default defineComponent({
 			return picker.pick()
 		},
 
-		async addSourceFolder() {
-			const pickedFolder = await this.openFilePicker(t('photos', 'Select a source folder for your media'))
-			if (this.photosSourceFolders.includes(pickedFolder)) {
+		async addSourceFolder(): Promise<void> {
+			const pickedFolder = await this.openFilePicker(
+				t('photos', 'Select a source folder for your media'),
+			)
+
+			if (!pickedFolder) {
 				return
 			}
-			this.userConfigStore.updateUserConfig('photosSourceFolders', [...this.photosSourceFolders, pickedFolder])
+
+			const normalizedPickedFolder = normalizePath(pickedFolder)
+
+			const folderAlreadyExists = this.photosSourceFolders.some((source) => {
+				return normalizePath(source) === normalizedPickedFolder
+			})
+
+			if (folderAlreadyExists) {
+				return
+			}
+
+			const folders = [
+				...this.photosSourceFolders,
+				pickedFolder,
+			]
+
+			await this.userConfigStore.updateUserConfig('photosSourceFolders', [...this.photosSourceFolders, pickedFolder])
+
+			this.$emit(
+				'folders-update',
+				isPathInsideSources(this.photosLocation, folders),
+			)
 		},
 
-		removeSourceFolder(index) {
-			const folders = [...this.photosSourceFolders]
-			folders.splice(index, 1)
-			this.userConfigStore.updateUserConfig('photosSourceFolders', folders)
+		async removeSourceFolder(sourceToRemove: string): Promise<void> {
+			const normalizedSourceToRemove = normalizePath(sourceToRemove)
+
+			const folders = this.photosSourceFolders.filter((source) => {
+				return normalizePath(source) !== normalizedSourceToRemove
+			})
+
+			await this.userConfigStore.updateUserConfig('photosSourceFolders', folders)
+
+			this.$emit(
+				'folders-update',
+				isPathInsideSources(this.photosLocation, folders),
+			)
 		},
 
 		t,
@@ -126,7 +191,7 @@ export default defineComponent({
 
 	&__list {
 		padding-inline-start: 12px;
-		margin: 16px 0;
+		margin: 16px 0 0;
 
 		li {
 			list-style: none;
