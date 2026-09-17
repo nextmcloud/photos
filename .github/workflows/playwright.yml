@@ -23,7 +23,7 @@ jobs:
 
     - name: Get version matrix
       id: php-versions
-      uses: icewind1991/nextcloud-version-matrix@8a7bac6300b2f0f3100088b297995a229558ddba # v1.3.2
+      uses: icewind1991/nextcloud-version-matrix@cd0211ffcef1065e2020cd579e4843b8746e7a58 # v1.3.3
 
     - name: Set up PHP
       uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2.37.2
@@ -123,13 +123,7 @@ jobs:
     - name: Show logs
       if: failure()
       run: |
-        # @nextcloud/e2e-test-server names the container after the app directory,
-        # so it is discovered rather than hardcoded.
-        container=$(docker ps -a --format '{{.Names}}' | grep -i nextcloud | head -n1)
-        echo "=== Logs of container ${container} ==="
-        docker logs "$container" || true
-        echo '=== Nextcloud server logs ==='
-        docker exec "$container" cat data/nextcloud.log || true
+        cat nextcloud.log || true
 
     - name: Upload blob report to GitHub Actions Artifacts
       if: ${{ !cancelled() }}

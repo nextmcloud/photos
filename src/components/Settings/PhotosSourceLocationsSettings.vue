@@ -46,7 +46,8 @@ import NcButton from '@nextcloud/vue/components/NcButton'
 import FolderMultipleOutline from 'vue-material-design-icons/FolderMultipleOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import PhotosFolder from './PhotosFolder.vue'
-import logger from '../../services/logger.js'
+import { logger } from '../../services/logger.ts'
+import { useUserConfigStore } from '../../store/userConfig.ts'
 
 export default defineComponent({
 	name: 'PhotosSourceLocationsSettings',
@@ -57,6 +58,10 @@ export default defineComponent({
 		Plus,
 	},
 
+	setup() {
+		return { userConfigStore: useUserConfigStore() }
+	},
+
 	data() {
 		return {
 			FolderMultipleOutline,
@@ -65,7 +70,7 @@ export default defineComponent({
 
 	computed: {
 		photosSourceFolders(): string[] {
-			return this.$store.state.userConfig.photosSourceFolders
+			return this.userConfigStore.photosSourceFolders
 		},
 	},
 
@@ -93,13 +98,13 @@ export default defineComponent({
 			if (this.photosSourceFolders.includes(pickedFolder)) {
 				return
 			}
-			this.$store.dispatch('updateUserConfig', { key: 'photosSourceFolders', value: [...this.photosSourceFolders, pickedFolder] })
+			this.userConfigStore.updateUserConfig('photosSourceFolders', [...this.photosSourceFolders, pickedFolder])
 		},
 
 		removeSourceFolder(index) {
 			const folders = [...this.photosSourceFolders]
 			folders.splice(index, 1)
-			this.$store.dispatch('updateUserConfig', { key: 'photosSourceFolders', value: folders })
+			this.userConfigStore.updateUserConfig('photosSourceFolders', folders)
 		},
 
 		t,

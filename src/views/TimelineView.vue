@@ -214,7 +214,6 @@ import type { PhotoTarget } from '../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { t } from '@nextcloud/l10n'
-import moment from '@nextcloud/moment'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { storeToRefs } from 'pinia'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
@@ -246,8 +245,11 @@ import FilesByMonthMixin from '../mixins/FilesByMonthMixin.ts'
 import FilesSelectionMixin from '../mixins/FilesSelectionMixin.ts'
 import { allMimes } from '../services/AllowedMimes.ts'
 import { downloadFiles } from '../services/downloadFiles.ts'
-import useFilterStore from '../store/filters.ts'
+import { useCollectionsStore } from '../store/collections.ts'
+import { useFilesStore } from '../store/files.ts'
+import { useFilterStore } from '../store/filters.ts'
 import { configChangedEvent } from '../store/userConfig.ts'
+import { formatMonth, formatYear } from '../utils/dateUtils.ts'
 import { toViewerFileInfo } from '../utils/fileUtils.ts'
 
 export default {
@@ -279,13 +281,8 @@ export default {
 	},
 
 	filters: {
-		dateMonth(date: string): string {
-			return moment(date, 'YYYYMM').format('MMMM')
-		},
-
-		dateYear(date: string): string {
-			return moment(date, 'YYYYMM').format('YYYY')
-		},
+		dateMonth: formatMonth,
+		dateYear: formatYear,
 	},
 
 	mixins: [
@@ -333,6 +330,8 @@ export default {
 		const { gridDensity, tileBaseHeight, setGridDensity } = useGridDensity()
 
 		return {
+			collectionsStore: useCollectionsStore(),
+			filesStore: useFilesStore(),
 			isMobile,
 			selectedFilters,
 			filtersQuery,
@@ -357,7 +356,7 @@ export default {
 
 	computed: {
 		files() {
-			return this.$store.state.files.files
+			return this.filesStore.files
 		},
 
 		// Photos of the timeline that are loaded, in the order they are shown.
@@ -466,10 +465,7 @@ export default {
 
 		async addSelectionToAlbum(album: Album) {
 			this.showAlbumPicker = false
-			await this.$store.dispatch('addFilesToCollection', {
-				collectionFileName: album.root + album.path,
-				fileIdsToAdd: this.selectedFileIds,
-			})
+			await this.collectionsStore.addFilesToCollection(album.root + album.path, this.selectedFileIds)
 		},
 
 		// The photo is already gone from the store, it only has to leave the
@@ -484,7 +480,7 @@ export default {
 			const fileIds = this.selectedFileIds
 			this.onUncheckFiles(fileIds)
 			this.fetchedFileIds = this.fetchedFileIds.filter((fileid) => !fileIds.includes(fileid))
-			await this.$store.dispatch('deleteFiles', fileIds)
+			await this.filesStore.deleteFiles(fileIds)
 		},
 
 		handleUserConfigChange({ key }) {

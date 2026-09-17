@@ -7,10 +7,9 @@ import type { File } from '@nextcloud/files'
 import type { ResponseDataDetailed, SearchOptions, SearchResult } from 'webdav'
 
 import { defaultRootPath, resultToNode } from '@nextcloud/files/dav'
-import moment from '@nextcloud/moment'
 import { join } from '@nextcloud/paths'
 import he from 'he'
-import store from '../store/index.js'
+import { useUserConfigStore } from '../store/userConfig.ts'
 import { allMimes } from './AllowedMimes.js'
 import { davClient } from './DavClient.ts'
 import { getDefaultDavProps } from './DavRequest.ts'
@@ -30,7 +29,7 @@ export type PhotoSearchOptions = SearchOptions & {
  *
  * @param _options
  */
-export default async function(_options: Partial<PhotoSearchOptions> = {}): Promise<File[]> {
+export async function getPhotos(_options: Partial<PhotoSearchOptions> = {}): Promise<File[]> {
 	// default function options
 	const options: PhotoSearchOptions = {
 		firstResult: 0,
@@ -66,8 +65,10 @@ export default async function(_options: Partial<PhotoSearchOptions> = {}): Promi
 	const onThisDay = options.onThisDay
 		? `<d:or>${Array(20).fill(1)
 			.map((_, years) => {
-				const start = moment(Date.now()).startOf('day').subtract(3, 'd').subtract(years + 1, 'y')
-				const end = moment(Date.now()).endOf('day').add(3, 'd').subtract(years + 1, 'y')
+				const today = new Date()
+				// The same day of the year, give or take three days, `years + 1` years ago.
+				const start = new Date(today.getFullYear() - (years + 1), today.getMonth(), today.getDate() - 3)
+				const end = new Date(today.getFullYear() - (years + 1), today.getMonth(), today.getDate() + 3, 23, 59, 59, 999)
 				return `<d:and>
 				<d:gt>
 					<d:prop>
@@ -85,7 +86,7 @@ export default async function(_options: Partial<PhotoSearchOptions> = {}): Promi
 			}).join('\n')}</d:or>`
 		: ''
 
-	const sourceFolders = store.state.userConfig.photosSourceFolders
+	const sourceFolders = useUserConfigStore().photosSourceFolders
 		.map((folder) => `
 			<d:scope>
 				<d:href>${join(defaultRootPath, he.encode(folder))}</d:href>

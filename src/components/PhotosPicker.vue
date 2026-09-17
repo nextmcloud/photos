@@ -108,7 +108,6 @@ import type { PropType } from 'vue'
 
 import { getCurrentUser } from '@nextcloud/auth'
 import { t } from '@nextcloud/l10n'
-import moment from '@nextcloud/moment'
 import { UploadPicker } from '@nextcloud/upload'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import {
@@ -125,7 +124,10 @@ import FilesListViewer from './FilesListViewer.vue'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import FilesByMonthMixin from '../mixins/FilesByMonthMixin.js'
 import FilesSelectionMixin from '../mixins/FilesSelectionMixin.js'
-import allowedMimes from '../services/AllowedMimes.js'
+import { allMimes as allowedMimes } from '../services/AllowedMimes.ts'
+import { useFilesStore } from '../store/files.ts'
+import { useUserConfigStore } from '../store/userConfig.ts'
+import { formatMonthAndYear } from '../utils/dateUtils.ts'
 
 export default defineComponent({
 	name: 'PhotosPicker',
@@ -188,6 +190,8 @@ export default defineComponent({
 
 	setup() {
 		return {
+			filesStore: useFilesStore(),
+			userConfigStore: useUserConfigStore(),
 			isMobile: useIsMobile(),
 		}
 	},
@@ -206,11 +210,11 @@ export default defineComponent({
 
 	computed: {
 		files() {
-			return this.$store.state.files.files
+			return this.filesStore.files
 		},
 
 		photosLocationFolder() {
-			return this.$store.state.userConfig.photosLocationFolder
+			return this.userConfigStore.photosLocationFolder
 		},
 	},
 
@@ -250,10 +254,9 @@ export default defineComponent({
 		 * @param date - In the following format: YYYYMM
 		 */
 		dateMonthAndYear(date: string) {
-			if (this.isMobile) {
-				return moment(date, 'YYYYMM').format('MMM YYYY')
-			}
-			return moment(date, 'YYYYMM').format('MMMM YYYY')
+			return this.isMobile
+				? formatMonthAndYear(date, true)
+				: formatMonthAndYear(date)
 		},
 
 		t,
