@@ -75,6 +75,8 @@ import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline
 import FileComponent from '../FileComponent.vue'
 import FilesListViewer from '../FilesListViewer.vue'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
+import { useCollectionsStore } from '../../store/collections.ts'
+import { useFilesStore } from '../../store/files.ts'
 import { toViewerFileInfo } from '../../utils/fileUtils.js'
 
 export default defineComponent({
@@ -135,6 +137,8 @@ export default defineComponent({
 	setup() {
 		return {
 			isMobile: useIsMobile(),
+			collectionsStore: useCollectionsStore(),
+			filesStore: useFilesStore(),
 		}
 	},
 
@@ -146,7 +150,7 @@ export default defineComponent({
 
 	computed: {
 		files() {
-			return this.$store.getters.files
+			return this.filesStore.files
 		},
 
 		sortedCollectionFileIds() {
@@ -187,10 +191,7 @@ export default defineComponent({
 		},
 
 		removeFromCollection(fileId: number) {
-			this.$store.commit('removeFilesFromCollection', {
-				collectionFileName: this.collection.root + this.collection.path,
-				fileIdsToRemove: [fileId?.toString()],
-			})
+			this.collectionsStore.removeFileIdsFromCollection(this.collection.root + this.collection.path, [fileId?.toString()])
 		},
 
 		t: translate,
