@@ -33,14 +33,27 @@
 			:file-ids="sortedCollectionFileIds"
 			:base-height="isMobile ? 120 : 200"
 			:loading="loading">
-			<FileComponent
-				slot-scope="{ file }"
-				:file="files[file.id]"
-				:allow-selection="allowSelection"
-				:selected="selection[file.id] === true"
-				@click="openViewer"
-				@select-toggled="onFileSelectToggle"
-				@deleted="onPhotoDeleted" />
+			<template slot-scope="{ file, isHeader }">
+				<h2
+					v-if="isHeader"
+					:id="`file-picker-section-header-${file.id}`"
+					class="section-header">
+					<b>{{ file.id | dateMonth }}</b>
+					{{ file.id | dateYear }}
+				</h2>
+				<FileComponent
+					v-else
+					slot-scope="{ file }"
+					:file="files[file.id]"
+					:allow-selection="allowSelection"
+					:selected="selection[file.id] === true"
+					:is-collection="true"
+					@click="openViewer"
+					@favorite="toggleFavorite"
+					@remove="handleFileDeleted"
+					@select-toggled="onFileSelectToggle"
+					@deleted="onPhotoDeleted" />
+			</template>
 		</FilesListViewer>
 	</div>
 </template>
@@ -53,6 +66,7 @@ import type { PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { translate } from '@nextcloud/l10n'
+import moment from '@nextcloud/moment'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { defineComponent } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
@@ -72,6 +86,21 @@ export default defineComponent({
 		NcEmptyContent,
 		FilesListViewer,
 		FileComponent,
+	},
+
+	filters: {
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateMonth(date) {
+			return moment(date, 'YYYYMM').format('MMMM')
+		},
+		/**
+		 * @param {string} date - In the following format: YYYYMM
+		 */
+		dateYear(date) {
+			return moment(date, 'YYYYMM').format('YYYY')
+		},
 	},
 
 	mixins: [FilesSelectionMixin],
@@ -121,7 +150,7 @@ export default defineComponent({
 		},
 
 		sortedCollectionFileIds() {
-			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1].attributes.timestamp < this.files[fileId2].attributes.timestamp ? -1 : 1)
+			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1]?.attributes.timestamp < this.files[fileId2]?.attributes.timestamp ? -1 : 1)
 		},
 	},
 
@@ -143,6 +172,11 @@ export default defineComponent({
 
 		handleFileDeleted({ fileid }: File) {
 			this.removeFromCollection(fileid as number)
+		},
+
+		async toggleFavorite(fileId) {
+			const newState = this.$store.state.files.files[fileId].attributes.favorite ? 0 : 1
+			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
 		},
 
 		// The photo is already gone from the store, it only has to leave the

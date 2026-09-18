@@ -37,7 +37,7 @@
 			@mouseleave="cancelPreview">
 
 			<!-- image and loading placeholder -->
-			<div class="file__images">
+			<div :class="file.attributes.favorite ? 'file__images file__favorite' : 'file__images'">
 				<div v-if="isVideo" class="file__duration">
 					<span class="file__duration__label">{{ videoDuration }}</span>
 					<PlayCircleOutlineIcon class="file__duration__icon" :size="16" />
@@ -131,6 +131,38 @@
 		<Transition name="favorite-pop">
 			<FavoriteIcon v-if="file.attributes.favorite === 1" class="favorite-state" />
 		</Transition>
+
+		<div v-if="isCollection" class="hover-overlay">
+			<span
+				class="icon-action"
+				:title="file.attributes.favorite ? t('photos', 'Remove from favorites') : t('photos', 'Add to favorites')"
+				@click.stop.prevent="emitFavorite">
+				<Star class="icon-overlay-action" :size="24" />
+			</span>
+			<div class="actions-right">
+				<span class="icon-action" :title="t('photos', 'View Info')" @click.stop.prevent="showModal">
+					<IconInfo class="icon-overlay-action" :size="24" />
+				</span>
+				<span class="icon-action" :title="t('photos', 'Remove element {imageName} from Album', { imageName: file.basename })" @click.stop.prevent="openConfirmationDialog">
+					<Delete class="icon-overlay-action" :size="24" />
+				</span>
+			</div>
+		</div>
+
+		<FileInfoExifModal
+			:show="modal"
+			:file="file"
+			:src-large="srcLarge"
+			:is-image="isImage"
+			@close="closeModal" />
+
+		<NcDialog
+			:open.sync="showDialog"
+			:name="t('photos', 'Confirmation')"
+			:message="t('photos', 'You are about to delete {imageName}. Are you sure?', { imageName: file.basename })"
+			:buttons="buttons"
+			close-on-click-outside
+			out-transition />
 	</div>
 </template>
 
@@ -144,8 +176,13 @@ import { generateUrl } from '@nextcloud/router'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import NcBlurHash from '@nextcloud/vue/components/NcBlurHash'
 import NcCheckboxRadioSwitch from '@nextcloud/vue/components/NcCheckboxRadioSwitch'
+import NcDialog from '@nextcloud/vue/components/NcDialog'
+import Delete from 'vue-material-design-icons/Delete.vue'
+import IconInfo from 'vue-material-design-icons/Information.vue'
 import PlayCircleOutlineIcon from 'vue-material-design-icons/PlayCircleOutline.vue'
+import Star from 'vue-material-design-icons/Star.vue'
 import FavoriteIcon from './FavoriteIcon.vue'
+import FileInfoExifModal from './FileInfoExifModal.vue'
 import PhotoActionsMenu from './PhotoActionsMenu.vue'
 import logger from '../services/logger.ts'
 import { isCachedPreview } from '../services/PreviewService.js'
@@ -160,6 +197,11 @@ export default {
 		NcCheckboxRadioSwitch,
 		PhotoActionsMenu,
 		PlayCircleOutlineIcon,
+		Star,
+		Delete,
+		IconInfo,
+		FileInfoExifModal,
+		NcDialog,
 	},
 
 	inheritAttrs: false,
@@ -205,6 +247,11 @@ export default {
 			// eslint-disable-next-line vue/no-boolean-default
 			default: true,
 		},
+
+		isCollection: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	emits: ['click', 'select-toggled', 'deleted'],
@@ -225,6 +272,19 @@ export default {
 			// A video that could not be played once is not tried again, or a broken
 			// file would fire a load on every pass of the pointer.
 			videoPreviewFailed: false,
+			modal: false,
+			showDialog: false,
+			buttons: [
+				{
+					label: t('photos', 'Cancel'),
+					callback: this.hideDialog,
+				},
+				{
+					label: 'OK',
+					type: 'primary',
+					callback: this.handleRemoveConfirm,
+				},
+			],
 		}
 	},
 
@@ -444,6 +504,29 @@ export default {
 			}
 		},
 
+		emitFavorite() {
+			this.$emit('favorite', this.file.fileid)
+		},
+		emitRemove() {
+			this.$emit('remove', { fileid: this.file.fileid })
+		},
+		showModal() {
+			this.modal = true
+		},
+		closeModal() {
+			this.modal = false
+		},
+		handleRemoveConfirm() {
+			this.emitRemove()
+			this.showDialog = false
+		},
+		openConfirmationDialog() {
+			this.showDialog = true
+		},
+		hideDialog() {
+			this.showDialog = false
+		},
+
 		t,
 	},
 
@@ -465,7 +548,7 @@ $magnify-transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 	--stack-peek: 0px;
 	// How the preview meets its tile: filling it, or fit whole inside it.
 	--preview-fit: cover;
-	contain: strict;
+	// contain: strict;
 	background: var(--color-primary-element-light);
 	position: relative;
 	height: 100%;
@@ -660,6 +743,30 @@ $magnify-transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 					animation: none;
 				}
 			}
+
+			.star-icon {
+				position: absolute;
+				z-index: 1000;
+				inset-inline-start: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+				svg {
+					color: #fff;
+				}
+			}
+
+			.delete-icon {
+				position: absolute;
+				z-index: 1000;
+				inset-inline-end: 0;
+				bottom: 0;
+				width: 2.5rem;
+				height: 2.5rem;
+				svg {
+					color: #fff;
+				}
+			}
 		}
 
 		&__duration {
@@ -682,6 +789,17 @@ $magnify-transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 		}
 	}
 
+	.hover-overlay {
+		bottom: 0;
+		cursor: unset;
+		display: none;
+		position: absolute;
+		height: 2.5rem;
+		width: 100%;
+		z-index: 900;
+		background-color: rgba(0,0,0,0.5);
+	}
+
 	// Reveal checkbox and actions menu on hover.
 	&:hover,
 	&.selected,
@@ -693,6 +811,10 @@ $magnify-transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 
 		.favorite-state {
 			display: none;
+		}
+
+		.hover-overlay {
+			display: flex;
 		}
 	}
 
