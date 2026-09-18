@@ -17,13 +17,14 @@
 					:root-title="t('photos', 'Albums')"
 					@refresh="fetchAlbums">
 					<NcButton
-						:aria-label="isMobile ? t('photos', 'New album') : undefined"
+						:aria-label="isMobile ? t('photos', 'Create new album') : undefined"
+						variant="primary"
 						@click="showAlbumCreationForm = true">
 						<template #icon>
 							<Plus :size="20" />
 						</template>
 						<template v-if="!isMobile" #default>
-							{{ t('photos', 'New album') }}
+							{{ t('photos', 'Create new album') }}
 						</template>
 					</NcButton>
 				</HeaderNavigation>
@@ -61,13 +62,24 @@
 
 		<NcModal
 			v-if="showAlbumCreationForm"
+			key="albumCreationForm"
 			label-id="new-album-form"
-			@close="showAlbumCreationForm = false">
+			:lightBackdrop="true"
+			@close="handleAlbumCreateCancel">
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
-			<AlbumForm @done="handleAlbumCreated" />
+			<AlbumForm @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
+
+		<PhotosPicker
+			:open.sync="showPhotosPicker"
+			:blacklist-ids="blacklistIds"
+			:destination="destination"
+			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
+			:allowempty="allowEmpty"
+			@closed="handlePickerClose"
+			@files-picked="handleFilesPicked" />
 	</div>
 </template>
 
@@ -85,9 +97,11 @@ import AlbumForm from '../components/Albums/AlbumForm.vue'
 import CollectionCover from '../components/Collection/CollectionCover.vue'
 import CollectionsList from '../components/Collection/CollectionsList.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
+import PhotosPicker from '../components/PhotosPicker.vue'
 import FetchCollectionsMixin from '../mixins/FetchCollectionsMixin.js'
 import { albumsExtraProps, albumsPrefix } from '../store/albums.js'
 import { useAlbumsStore } from '../store/albums.ts'
+import { useCollectionsStore } from '../store/collections.ts'
 
 export default defineComponent({
 	name: 'AlbumsView',
@@ -101,6 +115,7 @@ export default defineComponent({
 		CollectionCover,
 		HeaderNavigation,
 		AlbumForm,
+		PhotosPicker,
 	},
 
 	filters: {
@@ -120,12 +135,19 @@ export default defineComponent({
 		return {
 			isMobile,
 			albumsStore: useAlbumsStore(),
+			collectionsStore: useCollectionsStore(),
 		}
 	},
 
 	data() {
 		return {
 			showAlbumCreationForm: false,
+			showPhotosPicker: false,
+			createdAlbum: null,
+			blacklistIds: [],
+			destination: '',
+			collection: '',
+			allowEmpty: true,
 		}
 	},
 
@@ -139,7 +161,7 @@ export default defineComponent({
 		this.fetchAlbums()
 	},
 
-	methods: {
+	methods: {		
 		fetchAlbums() {
 			this.fetchCollections(
 				albumsPrefix,
@@ -149,7 +171,45 @@ export default defineComponent({
 
 		handleAlbumCreated({ album }) {
 			this.showAlbumCreationForm = false
-			this.$router.push(`/albums/${album.basename}`)
+			this.destination = album.basename
+			this.collection = album.root + album.path
+			this.showPhotosPicker = true
+		},
+
+		handleAlbumCreateCancel() {
+			this.showAlbumCreationForm = false
+			this.createdAlbum = null
+		},
+
+		handlePickerClose() {
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleFilesPicked(fileIds: string[]) {
+			await this.collectionsStore.addFilesToCollection(
+				this.collection,
+				fileIds,
+			)
+
+			this.showPhotosPicker = false
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleDeleteAlbum() {
+			await this.collectionsStore.deleteCollection(this.collection)
+
+			this.$router.push('/albums')
+		},
+
+		/**
+		 * @param {object} album
+		 * @return {boolean}
+		 */
+		isShared(album) {
+			if (album.attributes.collaborators.length === 0) {
+				return false
+			}
+			return true
 		},
 
 		t: translate,

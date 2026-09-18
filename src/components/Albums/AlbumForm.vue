@@ -4,6 +4,12 @@
 -->
 <template>
 	<form v-if="!showCollaboratorView" class="album-form" @submit.prevent="submit()">
+		<div class="form-cover">
+			<img
+				class="form-cover__image"
+				:src="albumCreateImage"
+				:alt="t('photos', 'Create album')">
+		</div>
 		<div class="form-inputs">
 			<NcTextField
 				ref="nameInput"
@@ -26,9 +32,11 @@
 		</div>
 
 		<PhotosFiltersInput
+			v-if="false"
 			:selected-filters="albumFilters"
 			@select-filter="selectFilter" />
 		<PhotosFiltersDisplay
+			v-if="false"
 			:selected-filters="albumFilters"
 			@deselect-filter="deselectFilter" />
 
@@ -39,6 +47,11 @@
 					variant="tertiary"
 					@click="back">
 					{{ t('photos', 'Back') }}
+				</NcButton>
+				<NcButton
+					variant="secondary"
+					@click="cancel()">
+					{{ t('photos', 'Cancel') }}
 				</NcButton>
 			</span>
 			<span class="right-buttons">
@@ -65,7 +78,7 @@
 			</span>
 		</div>
 	</form>
-	<CollaboratorsSelectionForm
+	<AlbumShare
 		v-else
 		:album-name="albumName"
 		:allow-public-link="false">
@@ -90,7 +103,7 @@
 				</NcButton>
 			</span>
 		</template>
-	</CollaboratorsSelectionForm>
+	</AlbumShare>
 </template>
 
 <script lang='ts'>
@@ -111,7 +124,7 @@ import MapMarkerOutline from 'vue-material-design-icons/MapMarkerOutline.vue'
 import SendOutline from 'vue-material-design-icons/SendOutline.vue'
 import PhotosFiltersDisplay from '../PhotosFilters/PhotosFiltersDisplay.vue'
 import PhotosFiltersInput from '../PhotosFilters/PhotosFiltersInput.vue'
-import CollaboratorsSelectionForm from './CollaboratorsSelectionForm.vue'
+import AlbumShare from './AlbumShare.vue'
 import { photosFilters as filters } from '../../services/PhotosFilters/index.ts'
 import { albumsPrefix } from '../../store/albums.ts'
 import { useAlbumsStore } from '../../store/albums.ts'
@@ -128,7 +141,7 @@ export default {
 		NcButton,
 		NcLoadingIcon,
 		NcTextField,
-		CollaboratorsSelectionForm,
+		AlbumShare,
 		PhotosFiltersInput,
 		PhotosFiltersDisplay,
 	},
@@ -210,6 +223,10 @@ export default {
 
 		canSubmit() {
 			return this.albumName !== '' && this.albumNameValidationError === undefined && !this.loading
+		},
+
+		albumCreateImage() {
+			return '/customapps/photos/img/album.svg'
 		},
 	},
 
@@ -344,6 +361,10 @@ export default {
 
 		back() {
 			this.$emit('back')
+		},
+
+		cancel() {
+			this.$emit('closing')
 		},
 
 		t,

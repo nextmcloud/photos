@@ -75,9 +75,10 @@
 				</NcButton>
 
 				<NcButton
-					v-if="selectedFileIds.length === 0"
+					v-if="true"
 					ref="newAlbumButton"
 					:aria-label="createAlbumButtonLabel"
+					variant="primary"
 					data-cy-header-action="create-album"
 					@click="showAlbumCreationForm = true">
 					<template v-if="!isMobile" #default>
@@ -154,8 +155,9 @@
 			:sections="monthsList"
 			:loading="loadingFiles"
 			:base-height="tileBaseHeight"
-			:empty-message="t('photos', 'No photos or videos in here')"
+			:empty-message="createAlbumButtonLabel"
 			:scroll-to-section="scrubberTarget"
+			@add-collection="showAlbumCreationForm = $event"
 			@need-content="getContent">
 			<template slot-scope="{ file, isHeader }">
 				<h2
@@ -194,7 +196,7 @@
 			<h2 class="timeline__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
-			<AlbumForm :filters-value="selectedFilters" @done="handleFormCreationDone" />
+			<AlbumForm :filters-value="selectedFilters" @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
 
 		<NcModal
@@ -204,6 +206,15 @@
 			@close="showAlbumPicker = false">
 			<AlbumPicker @album-picked="addSelectionToAlbum" />
 		</NcModal>
+
+		<PhotosPicker
+			:open.sync="showPhotosPicker"
+			:blacklist-ids="blacklistIds"
+			:destination="destination"
+			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
+			:allowempty="allowEmpty"
+			@closed="handlePickerClose"
+			@files-picked="handleFilesPicked" />
 	</div>
 </template>
 
@@ -238,6 +249,7 @@ import DateScrubber from '../components/DateScrubber.vue'
 import FileComponent from '../components/FileComponent.vue'
 import FilesListViewer from '../components/FilesListViewer.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
+import PhotosPicker from '../components/PhotosPicker.vue'
 import PhotosSourceLocationsSettings from '../components/Settings/PhotosSourceLocationsSettings.vue'
 import { useGridDensity } from '../composables/useGridDensity.ts'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.ts'
@@ -278,6 +290,7 @@ export default {
 		PhotosSourceLocationsSettings,
 		AlertCircleOutline,
 		ViewGridOutline,
+		PhotosPicker,
 	},
 
 	filters: {
@@ -346,6 +359,12 @@ export default {
 			loadingCount: 0,
 			showAlbumCreationForm: false,
 			showAlbumPicker: false,
+			showPhotosPicker: false,
+			createdAlbum: null,
+			blacklistIds: [],
+			destination: '',
+			collection: '',
+			allowEmpty: true,
 			appContent: document.getElementById('app-content-vue'),
 			showFilters: false,
 			// Month section the user picked in the DateScrubber, forwarded to
@@ -461,6 +480,32 @@ export default {
 
 		openUploader() {
 			// TODO: finish when implementing upload
+		},
+
+		handleAlbumCreated({ album }) {
+			this.showAlbumCreationForm = false
+			this.destination = album.basename
+			this.collection = album.attributes.filename
+			this.showPhotosPicker = true
+		},
+
+		handlePickerClose() {
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		async handleFilesPicked(fileIds: string[]) {
+			await this.collectionsStore.addFilesToCollection(
+				this.collection,
+				fileIds,
+			)
+
+			this.showPhotosPicker = false
+			this.$router.push(`/albums/${this.destination}`)
+		},
+
+		handleAlbumCreateCancel() {
+			this.showAlbumCreationForm = false
+			this.createdAlbum = null
 		},
 
 		async addSelectionToAlbum(album: Album) {

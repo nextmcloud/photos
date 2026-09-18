@@ -93,6 +93,15 @@
 								<Download slot="icon" />
 							</ActionDownload>-->
 
+							<NcActionButton
+								v-if="sharingEnabled"
+								:close-after-click="true"
+								:aria-label="t('photos', 'Share album')"
+								@click="showManageCollaboratorView = true">
+								{{ t('photos', 'Share album') }}
+								<ShareVariantOutline slot="icon" />
+							</NcActionButton>
+
 							<ActionFavorite :selected-file-ids="selectedFileIds" />
 
 							<NcActionButton
@@ -136,10 +145,11 @@
 			@files-picked="handleFilesPicked" />
 
 		<NcModal
+			id="album-share"
 			v-if="showManageCollaboratorView && album !== undefined"
-			:name="t('photos', 'Manage collaborators')"
+			:lightBackdrop="true"
 			@close="showManageCollaboratorView = false">
-			<CollaboratorsSelectionForm
+			<AlbumShare
 				:album-name="album.basename"
 				:collaborators="album.attributes.collaborators">
 				<template slot-scope="{ collaborators }">
@@ -154,7 +164,7 @@
 						{{ t('photos', 'Save') }}
 					</NcButton>
 				</template>
-			</CollaboratorsSelectionForm>
+			</AlbumShare>
 		</NcModal>
 
 		<NcDialog
@@ -163,7 +173,7 @@
 			close-on-click-outside
 			size="normal"
 			@closing="showEditAlbumForm = false">
-			<AlbumForm :album="album" @done="(event) => handleAlbumUpdate(event)" />
+			<AlbumForm :album="album" @done="redirectToNewName" @closing="showEditAlbumForm = false" />
 		</NcDialog>
 	</div>
 </template>
@@ -195,7 +205,7 @@ import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import ActionFavorite from '../components/Actions/ActionFavorite.vue'
 import AlbumHero from '../components/AlbumHero.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
-import CollaboratorsSelectionForm from '../components/Albums/CollaboratorsSelectionForm.vue'
+import AlbumShare from '../components/Albums/AlbumShare.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
@@ -216,7 +226,7 @@ export default {
 		AlbumForm,
 		AlbumHero,
 		Close,
-		CollaboratorsSelectionForm,
+		AlbumShare,
 		CollectionContent,
 		DeleteOutline,
 		// Download,
@@ -355,6 +365,10 @@ export default {
 			if (changes.includes('filters')) {
 				this.fetchAlbumContent()
 			}
+		},
+
+		redirectToNewName(payload) {
+			return this.handleAlbumUpdate(payload)
 		},
 
 		async handleFilesPicked(fileIds: string[]) {
