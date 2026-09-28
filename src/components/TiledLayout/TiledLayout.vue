@@ -8,7 +8,7 @@
 		class="tiled-container">
 		<!-- Slot to allow changing the rows before passing them to TiledRows -->
 		<!-- Useful for partially rendering rows like with VirtualScrolling -->
-		<slot :tiled-sections="tiledSections">
+		<slot :tiledSections="tiledSections">
 			<!-- Default rendering -->
 			<TiledRows :rows="tiledSections" />
 		</slot>
@@ -20,7 +20,7 @@ import type { PropType } from 'vue'
 import type { Section, TiledSection } from '../../services/TiledLayout.js'
 
 import TiledRows from './TiledRows.vue'
-import logger from '../../services/logger.js'
+import { logger } from '../../services/logger.ts'
 import {
 	splitItemsInRows,
 } from '../../services/TiledLayout.js'

@@ -11,15 +11,15 @@
 		<form class="manage-collaborators__form" @submit.prevent>
 			<NcSelectUsers
 				v-model="selectedUsers"
-				input-id="sharing-search-input"
-				:input-label="t('photos', 'Add people or groups who can edit your album')"
+				inputId="sharing-search-input"
+				:inputLabel="t('photos', 'Add people or groups who can edit your album')"
 				:loading="loadingCollaborators"
 				label="label"
 				:filterable="false"
 				:placeholder="t('photos', 'Search people or groups')"
-				:clear-search-on-blur="() => false"
+				:clearSearchOnBlur="() => false"
 				:multiple="true"
-				:append-to-body="false"
+				:appendToBody="false"
 				:options="searchResults"
 				@search="searchCollaborators"
 				@option:selected="({ key }) => selectEntity(key)">
@@ -50,7 +50,9 @@
 						variant="tertiary"
 						:aria-label="t('photos', 'Delete the public link')"
 						@click="deletePublicLink">
-						<Close slot="icon" />
+						<template #icon>
+							<Close />
+						</template>
 					</NcButton>
 				</template>
 				<NcButton
@@ -59,7 +61,9 @@
 					:aria-label="t('photos', 'Create public link share')"
 					class="manage-collaborators__public-link-button"
 					@click="createPublicLinkForAlbum">
-					<Earth slot="icon" />
+					<template #icon>
+						<Earth />
+					</template>
 					{{ t('photos', 'Share via public link') }}
 				</NcButton>
 			</div>
@@ -92,8 +96,10 @@ import Close from 'vue-material-design-icons/Close.vue'
 import ContentCopy from 'vue-material-design-icons/ContentCopy.vue'
 import Earth from 'vue-material-design-icons/Earth.vue'
 import FetchCollectionContentMixin from '../../mixins/FetchCollectionContentMixin.js'
-import logger from '../../services/logger.js'
+import { logger } from '../../services/logger.ts'
 import { albumsExtraProps } from '../../store/albums.ts'
+import { useAlbumsStore } from '../../store/albums.ts'
+import { useCollectionsStore } from '../../store/collections.ts'
 
 interface IUserData {
 	key: string
@@ -148,6 +154,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+	},
+
+	setup() {
+		return { albumsStore: useAlbumsStore(), collectionsStore: useCollectionsStore() }
 	},
 
 	data() {
@@ -221,7 +231,7 @@ export default {
 		},
 
 		albumFileName(): string {
-			return this.$store.getters.getAlbumName(this.albumName)
+			return this.albumsStore.getAlbumName(this.albumName)
 		},
 	},
 
@@ -348,12 +358,7 @@ export default {
 
 		async updateAlbumCollaborators() {
 			try {
-				await this.$store.dispatch('updateCollection', {
-					collectionFileName: this.albumFileName,
-					properties: {
-						collaborators: this.selectedCollaborators,
-					},
-				})
+				await this.collectionsStore.updateCollection(this.albumFileName, { collaborators: this.selectedCollaborators })
 			} catch (error) {
 				logger.error('[PublicAlbumContent] Error updating album', { error })
 				showError(this.t('photos', 'Failed to update album.'))

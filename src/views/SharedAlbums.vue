@@ -8,36 +8,44 @@
 		:loading="loadingCollections"
 		:error="errorFetchingCollections"
 		class="albums-list">
-		<HeaderNavigation
-			key="navigation"
-			slot="header"
-			:loading="loadingCollections"
-			:title="t('photos', 'Collaborative albums')"
-			:root-title="t('photos', 'Collaborative albums')"
-			@refresh="fetchSharedAlbums" />
+		<template #header>
+			<HeaderNavigation
+				key="navigation"
+				:loading="loadingCollections"
+				:title="t('photos', 'Collaborative albums')"
+				:rootTitle="t('photos', 'Collaborative albums')"
+				@refresh="fetchSharedAlbums" />
+		</template>
 
-		<CollectionCover
-			:key="collection.basename"
-			slot-scope="{ collection }"
-			parent-route="/sharedalbums"
-			:collection-name="collection.basename"
-			:alt-img="t('photos', 'Cover photo for shared album {albumName}', { albumName: collection.basename })"
-			:data-test="collection.basename"
-			:cover-url="collection.attributes['last-photo'] | coverUrl">
-			<span class="album__name">
-				{{ collection | albumOriginalName }}
-			</span>
+		<template #default="{ collection }">
+			<CollectionCover
+				:key="collection.basename"
+				parentRoute="/sharedalbums"
+				:collectionName="collection.basename"
+				:altImg="t('photos', 'Cover photo for shared album {albumName}', { albumName: collection.basename })"
+				:data-test="collection.basename"
+				:coverUrl="coverUrl(collection.attributes['last-photo'])">
+				<span class="album__name">
+					{{ albumOriginalName(collection) }}
+				</span>
 
-			<div slot="subtitle" class="album__details">
-				{{ collection.attributes.date }} ⸱ {{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
-				<br>
-				{{ t('photos', 'Shared by') }}&nbsp;<NcUserBubble :display-name="collection.attributes.collaborators[0].label" :user="collection.attributes.collaborators[0].id" />
-			</div>
-		</CollectionCover>
+				<template #subtitle>
+					<div class="album__details">
+						{{ collection.attributes.date }} ⸱ {{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
+						<br>
+						{{ t('photos', 'Shared by') }}&nbsp;<NcUserBubble :displayName="collection.attributes.collaborators[0].label" :user="collection.attributes.collaborators[0].id" />
+					</div>
+				</template>
+			</CollectionCover>
+		</template>
 
-		<NcEmptyContent slot="empty-collections-list" :name="t('photos', 'There is no album yet!')">
-			<ImageMultipleOutline slot="icon" />
-		</NcEmptyContent>
+		<template #empty-collections-list>
+			<NcEmptyContent :name="t('photos', 'There is no album yet!')">
+				<template #icon>
+					<ImageMultipleOutline />
+				</template>
+			</NcEmptyContent>
+		</template>
 	</CollectionsList>
 </template>
 
@@ -55,6 +63,7 @@ import CollectionsList from '../components/Collection/CollectionsList.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import FetchCollectionsMixin from '../mixins/FetchCollectionsMixin.js'
 import { albumsExtraProps } from '../store/albums.ts'
+import { useSharedAlbumsStore } from '../store/sharedAlbums.ts'
 
 export default {
 	name: 'SharedAlbums',
@@ -67,7 +76,23 @@ export default {
 		NcUserBubble,
 	},
 
-	filters: {
+	mixins: [FetchCollectionsMixin],
+
+	setup() {
+		return { sharedAlbumsStore: useSharedAlbumsStore() }
+	},
+
+	computed: {
+		sharedAlbums(): Record<string, Album> {
+			return this.sharedAlbumsStore.sharedAlbums
+		},
+	},
+
+	async beforeMount() {
+		this.fetchSharedAlbums()
+	},
+
+	methods: {
 		coverUrl(lastPhoto: number): string {
 			if (lastPhoto === -1) {
 				return ''
@@ -79,21 +104,7 @@ export default {
 		albumOriginalName(album: Album): string {
 			return album.basename.replace(new RegExp(`\\(${album.attributes.collaborators[0].id}\\)$`), '')
 		},
-	},
 
-	mixins: [FetchCollectionsMixin],
-
-	computed: {
-		sharedAlbums(): Record<string, Album> {
-			return this.$store.getters.sharedAlbums
-		},
-	},
-
-	async beforeMount() {
-		this.fetchSharedAlbums()
-	},
-
-	methods: {
 		fetchSharedAlbums() {
 			this.fetchCollections(
 				`/photos/${getCurrentUser()?.uid}/sharedalbums`,

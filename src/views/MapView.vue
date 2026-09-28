@@ -10,7 +10,7 @@
 			:loading="loading"
 			path="/"
 			:title="rootTitle"
-			:root-title="rootTitle"
+			:rootTitle="rootTitle"
 			@refresh="loadPhotos">
 			<NcButton
 				v-if="isMapsInstalled"
@@ -48,7 +48,7 @@
 			<LMarker
 				v-for="photo in geotaggedPhotos"
 				:key="photo.fileid"
-				:lat-lng="getCoordinates(photo)"
+				:latLng="getCoordinates(photo)"
 				:options="{ title: photo.basename }"
 				@click="openPhoto(photo)" />
 		</LMap>
@@ -73,7 +73,7 @@ import MapIcon from 'vue-material-design-icons/Map.vue'
 import EmptyIllustration from '../components/EmptyIllustration.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import { useLoadedPhotos } from '../composables/useLoadedPhotos.ts'
-import isMapsInstalled from '../services/IsMapsInstalled.ts'
+import { isMapsInstalled } from '../services/IsMapsInstalled.ts'
 import { toViewerFileInfo } from '../utils/fileUtils.ts'
 
 import 'leaflet/dist/leaflet.css'

@@ -44,7 +44,8 @@ import NcButton from '@nextcloud/vue/components/NcButton'
 import FolderMultipleOutline from 'vue-material-design-icons/FolderMultipleOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import PhotosFolder from './PhotosFolder.vue'
-import logger from '../../services/logger.js'
+import { logger } from '../../services/logger.ts'
+import { useUserConfigStore } from '../../store/userConfig.ts'
 
 function normalizePath(path: string): string {
 	return path.replace(/\/+$/, '')
@@ -76,6 +77,10 @@ export default defineComponent({
 	},
 
 	emits: ['folders-update'],
+
+	setup() {
+		return { userConfigStore: useUserConfigStore() }
+	},
 
 	data() {
 		return {

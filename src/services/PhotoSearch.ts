@@ -9,7 +9,7 @@ import type { ResponseDataDetailed, SearchOptions, SearchResult } from 'webdav'
 import { defaultRootPath, resultToNode } from '@nextcloud/files/dav'
 import { join } from '@nextcloud/paths'
 import he from 'he'
-import store from '../store/index.js'
+import { useUserConfigStore } from '../store/userConfig.ts'
 import { allMimes } from './AllowedMimes.js'
 import { davClient } from './DavClient.ts'
 import { getDefaultDavProps } from './DavRequest.ts'
@@ -29,7 +29,7 @@ export type PhotoSearchOptions = SearchOptions & {
  *
  * @param _options
  */
-export default async function(_options: Partial<PhotoSearchOptions> = {}): Promise<File[]> {
+export async function getPhotos(_options: Partial<PhotoSearchOptions> = {}): Promise<File[]> {
 	// default function options
 	const options: PhotoSearchOptions = {
 		firstResult: 0,
@@ -86,7 +86,7 @@ export default async function(_options: Partial<PhotoSearchOptions> = {}): Promi
 			}).join('\n')}</d:or>`
 		: ''
 
-	const sourceFolders = store.state.userConfig.photosSourceFolders
+	const sourceFolders = useUserConfigStore().photosSourceFolders
 		.map((folder) => `
 			<d:scope>
 				<d:href>${join(defaultRootPath, he.encode(folder))}</d:href>

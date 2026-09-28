@@ -7,7 +7,7 @@
 		<FaceCover
 			v-for="face in filteredFaces"
 			:key="face.basename"
-			:base-name="face.basename"
+			:baseName="face.basename"
 			small
 			@click="handleSelect(face.basename)" />
 	</div>
@@ -17,6 +17,8 @@
 import FaceCover from './FaceCover.vue'
 import FaceCoverMixin from '../../mixins/FaceCoverMixin.js'
 import FetchFacesMixin from '../../mixins/FetchFacesMixin.js'
+import { useFacesStore } from '../../store/faces.ts'
+import { useFilesStore } from '../../store/files.ts'
 
 export default {
 	name: 'FaceMergeForm',
@@ -33,6 +35,12 @@ export default {
 		},
 	},
 
+	emits: ['select'],
+
+	setup() {
+		return { facesStore: useFacesStore(), filesStore: useFilesStore() }
+	},
+
 	data() {
 		return {
 			loading: false,
@@ -41,15 +49,15 @@ export default {
 
 	computed: {
 		files() {
-			return this.$store.state.files.files
+			return this.filesStore.files
 		},
 
 		faces() {
-			return this.$store.state.faces.faces
+			return this.facesStore.faces
 		},
 
 		facesFiles() {
-			return this.$store.getters.facesFiles
+			return this.facesStore.facesFiles
 		},
 
 		filteredFaces() {

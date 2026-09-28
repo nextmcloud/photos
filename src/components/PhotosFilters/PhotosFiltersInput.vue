@@ -17,7 +17,7 @@
 			<template #option="option">
 				<NcListItemIcon
 					:name="option.label"
-					:is-no-user="true"
+					:isNoUser="true"
 					:url="option.imgSrc" />
 			</template>
 		</NcSelect>
@@ -31,7 +31,7 @@ import { t } from '@nextcloud/l10n'
 import { computed, ref } from 'vue'
 import NcListItemIcon from '@nextcloud/vue/components/NcListItemIcon'
 import NcSelect from '@nextcloud/vue/components/NcSelect'
-import filters from '../../services/PhotosFilters/index.ts'
+import { photosFilters as filters } from '../../services/PhotosFilters/index.ts'
 
 const props = defineProps<{
 	selectedFilters: Record<string, unknown[]>

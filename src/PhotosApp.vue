@@ -4,25 +4,25 @@
 -->
 
 <template>
-	<NcContent app-name="photos">
+	<NcContent appName="photos">
 		<NcAppNavigation :aria-label="t('photos', 'Photos')">
 			<template v-if="isTimelineView" #search>
 				<NcTextField
 					v-model="searchTerm"
 					class="app-navigation__search"
 					:label="t('photos', 'Search by file name')"
-					:show-trailing-button="searchTerm.length > 0"
-					:trailing-button-label="t('photos', 'Clear search')"
+					:showTrailingButton="searchTerm.length > 0"
+					:trailingButtonLabel="t('photos', 'Clear search')"
 					@trailing-button-click="searchTerm = ''">
 					<template #icon>
 						<Magnify :size="20" />
 					</template>
 				</NcTextField>
 				<PhotosFiltersInput
-					:selected-filters="selectedFilters"
+					:selectedFilters="selectedFilters"
 					@select-filter="selectFilter" />
 				<PhotosFiltersDisplay
-					:selected-filters="selectedFilters"
+					:selectedFilters="selectedFilters"
 					@deselect-filter="deselectFilter" />
 			</template>
 
@@ -43,7 +43,7 @@
 					:name="t('photos', 'Photos')"
 					data-id-app-nav-item="photos">
 					<template #icon="{ active }">
-						<Camera v-if="active" :size="20" />
+						<CameraIcon v-if="active" :size="20" />
 						<CameraOutline v-else :size="20" />
 					</template>
 				</NcAppNavigationItem>
@@ -211,7 +211,7 @@ import AccountGroup from 'vue-material-design-icons/AccountGroup.vue'
 import AccountGroupOutline from 'vue-material-design-icons/AccountGroupOutline.vue'
 import CalendarToday from 'vue-material-design-icons/CalendarToday.vue'
 import CalendarTodayOutline from 'vue-material-design-icons/CalendarTodayOutline.vue'
-import Camera from 'vue-material-design-icons/Camera.vue'
+import CameraIcon from 'vue-material-design-icons/Camera.vue'
 import CameraOutline from 'vue-material-design-icons/CameraOutline.vue'
 import CogOutline from 'vue-material-design-icons/CogOutline.vue'
 import Folder from 'vue-material-design-icons/Folder.vue'
@@ -240,12 +240,13 @@ import SettingsDialog from './components/Settings/SettingsDialog.vue'
 import svgplaceholder from './assets/file-placeholder.svg'
 import imgplaceholder from './assets/image.svg'
 import videoplaceholder from './assets/video.svg'
-import areTagsInstalled from './services/AreTagsInstalled.ts'
-import isAppStoreEnabled from './services/IsAppStoreEnabled.ts'
-import isRecognizeInstalled from './services/IsRecognizeInstalled.ts'
-import logger from './services/logger.ts'
+import { areTagsInstalled } from './services/AreTagsInstalled.ts'
+import { isAppStoreEnabled } from './services/IsAppStoreEnabled.ts'
+import { isRecognizeInstalled } from './services/IsRecognizeInstalled.ts'
+import { logger } from './services/logger.ts'
 import { nameFilterId } from './services/PhotosFilters/nameFilter.ts'
-import useFilterStore from './store/filters.ts'
+import { useFilesStore } from './store/files.ts'
+import { useFilterStore } from './store/filters.ts'
 
 export default {
 	name: 'PhotosApp',
@@ -255,7 +256,7 @@ export default {
 		CogOutline,
 		CalendarToday,
 		CalendarTodayOutline,
-		Camera,
+		CameraIcon,
 		CameraOutline,
 		AccountGroup,
 		AccountGroupOutline,
@@ -315,6 +316,7 @@ export default {
 		return {
 			selectedFilters,
 			searchTerm,
+			filesStore: useFilesStore(),
 		}
 	},
 
@@ -335,14 +337,14 @@ export default {
 
 	computed: {
 		isTimelineView() {
-			return ['all_media', 'photos', 'videos'].includes(this.$store.state.route.name || '')
+			return ['all_media', 'photos', 'videos'].includes(this.$route.name || '')
 		},
 	},
 
 	async beforeMount() {
 		// Register excluded paths
 		const files = loadState('photos', 'nomedia-paths', [])
-		this.$store.dispatch('setNomediaPaths', files)
+		this.filesStore.setNomediaPaths(files)
 		logger.debug('Known .nomedia and .noimage  paths', { files })
 
 		if ('serviceWorker' in navigator) {

@@ -8,10 +8,14 @@
 		v-if="(collection === undefined && !loading) || error === 404"
 		class="empty-content-with-illustration"
 		:name="t('photos', 'This collection does not exist')">
-		<ImageMultipleOutline slot="icon" />
+		<template #icon>
+			<ImageMultipleOutline />
+		</template>
 	</NcEmptyContent>
 	<NcEmptyContent v-else-if="error" :name="t('photos', 'An error occurred')">
-		<AlertCircleOutline slot="icon" />
+		<template #icon>
+			<AlertCircleOutline />
+		</template>
 	</NcEmptyContent>
 
 	<div v-else class="collection">
@@ -19,8 +23,8 @@
 		<slot
 			class="collection__header"
 			name="header"
-			:selected-file-ids="selectedFileIds"
-			:reset-selection="resetSelection" />
+			:selectedFileIds="selectedFileIds"
+			:resetSelection="resetSelection" />
 
 		<!-- No content -->
 		<slot v-if="sortedCollectionFileIds.length === 0 && !loading" name="empty-content" />
@@ -28,19 +32,20 @@
 		<!-- Media list -->
 		<FilesListViewer
 			v-if="collection !== undefined && sortedCollectionFileIds.length > 0"
-			:container-element="appContent"
+			:containerElement="appContent"
 			class="collection__media"
-			:file-ids="sortedCollectionFileIds"
-			:base-height="isMobile ? 120 : 200"
+			:fileIds="sortedCollectionFileIds"
+			:baseHeight="isMobile ? 120 : 200"
 			:loading="loading">
-			<FileComponent
-				slot-scope="{ file }"
-				:file="files[file.id]"
-				:allow-selection="allowSelection"
-				:selected="selection[file.id] === true"
-				@click="openViewer"
-				@select-toggled="onFileSelectToggle"
-				@deleted="onPhotoDeleted" />
+			<template #default="{ file }">
+				<FileComponent
+					:file="files[file.id]"
+					:allowSelection="allowSelection"
+					:selected="selection[file.id] === true"
+					@click="openViewer"
+					@select-toggled="onFileSelectToggle"
+					@deleted="onPhotoDeleted" />
+			</template>
 		</FilesListViewer>
 	</div>
 </template>
@@ -61,6 +66,8 @@ import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline
 import FileComponent from '../FileComponent.vue'
 import FilesListViewer from '../FilesListViewer.vue'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
+import { useCollectionsStore } from '../../store/collections.ts'
+import { useFilesStore } from '../../store/files.ts'
 import { toViewerFileInfo } from '../../utils/fileUtils.js'
 
 export default defineComponent({
@@ -106,6 +113,8 @@ export default defineComponent({
 	setup() {
 		return {
 			isMobile: useIsMobile(),
+			collectionsStore: useCollectionsStore(),
+			filesStore: useFilesStore(),
 		}
 	},
 
@@ -117,7 +126,7 @@ export default defineComponent({
 
 	computed: {
 		files() {
-			return this.$store.getters.files
+			return this.filesStore.files
 		},
 
 		sortedCollectionFileIds() {
@@ -153,10 +162,7 @@ export default defineComponent({
 		},
 
 		removeFromCollection(fileId: number) {
-			this.$store.commit('removeFilesFromCollection', {
-				collectionFileName: this.collection.root + this.collection.path,
-				fileIdsToRemove: [fileId?.toString()],
-			})
+			this.collectionsStore.removeFileIdsFromCollection(this.collection.root + this.collection.path, [fileId?.toString()])
 		},
 
 		t: translate,

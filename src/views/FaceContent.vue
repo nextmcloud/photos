@@ -43,7 +43,7 @@
 			<div v-if="face !== undefined" class="face__header__actions">
 				<NcActions>
 					<NcActionButton
-						:close-after-click="true"
+						:closeAfterClick="true"
 						:aria-label="t('photos', 'Rename person')"
 						@click="showRenameModal = true">
 						<template #icon>
@@ -52,10 +52,10 @@
 						{{ t('photos', 'Rename person') }}
 					</NcActionButton>
 				</NcActions>
-				<NcActions :force-menu="true">
+				<NcActions :forceMenu="true">
 					<NcActionButton
 						v-if="Object.keys(faces).length > 1"
-						:close-after-click="true"
+						:closeAfterClick="true"
 						:aria-label="t('photos', 'Merge with different person')"
 						@click="showMergeModal = true">
 						<template #icon>
@@ -65,30 +65,36 @@
 					</NcActionButton>
 					<template v-if="selectedFileIds.length">
 						<NcActionButton
-							:close-after-click="true"
+							:closeAfterClick="true"
 							:aria-label="t('photos', 'Download selected files')"
 							@click="downloadSelection">
-							<Download slot="icon" />
+							<template #icon>
+								<Download />
+							</template>
 							{{ t('photos', 'Download selected photos') }}
 						</NcActionButton>
 						<NcActionButton
 							v-if="shouldFavoriteSelection"
-							:close-after-click="true"
+							:closeAfterClick="true"
 							:aria-label="t('photos', 'Mark selection as favorite')"
 							@click="favoriteSelection">
-							<StarOutline slot="icon" />
+							<template #icon>
+								<StarOutline />
+							</template>
 							{{ t('photos', 'Favorite') }}
 						</NcActionButton>
 						<NcActionButton
 							v-else
-							:close-after-click="true"
+							:closeAfterClick="true"
 							:aria-label="t('photos', 'Remove selection from favorites')"
 							@click="unFavoriteSelection">
-							<Star slot="icon" />
+							<template #icon>
+								<Star />
+							</template>
 							{{ t('photos', 'Remove from favorites') }}
 						</NcActionButton>
 						<NcActionButton
-							:close-after-click="true"
+							:closeAfterClick="true"
 							@click="showMoveModal = true">
 							<template #icon>
 								<AccountSwitchOutline />
@@ -96,7 +102,7 @@
 							{{ n('photos', 'Move photo to a different person', 'Move photos to a different person', selectedFileIds.length) }}
 						</NcActionButton>
 						<NcActionButton
-							:close-after-click="true"
+							:closeAfterClick="true"
 							@click="handleRemoveFilesFromFace(selectedFileIds)">
 							<template #icon>
 								<Close />
@@ -105,7 +111,7 @@
 						</NcActionButton>
 					</template>
 					<NcActionButton
-						:close-after-click="true"
+						:closeAfterClick="true"
 						@click="handleDeleteFace">
 						<template #icon>
 							<Close />
@@ -119,23 +125,24 @@
 		<FilesListViewer
 			v-if="face !== undefined"
 			class="face__photos"
-			:container-element="appContent"
-			:file-ids="faceFileIds"
+			:containerElement="appContent"
+			:fileIds="faceFileIds"
 			:loading="loadingFiles || loadingFaces">
-			<FileComponent
-				slot-scope="{ file }"
-				:file="files[file.id]"
-				:allow-selection="true"
-				:selected="selection[file.id] === true"
-				@click="openViewer"
-				@select-toggled="onFileSelectToggle"
-				@deleted="onPhotoDeleted" />
+			<template #default="{ file }">
+				<FileComponent
+					:file="files[file.id]"
+					:allowSelection="true"
+					:selected="selection[file.id] === true"
+					@click="openViewer"
+					@select-toggled="onFileSelectToggle"
+					@deleted="onPhotoDeleted" />
+			</template>
 		</FilesListViewer>
 
 		<NcDialog
 			v-if="showRenameModal"
 			:name="t('photos', 'Rename person')"
-			close-on-click-outside
+			closeOnClickOutside
 			size="small"
 			@closing="showRenameModal = false">
 			<div class="rename-form">
@@ -167,19 +174,19 @@
 		<NcDialog
 			v-if="showMergeModal"
 			:name="t('photos', 'Merge person')"
-			close-on-click-outside
+			closeOnClickOutside
 			size="normal"
 			@closing="showMergeModal = false">
-			<FaceMergeForm :first-face="faceName" @select="handleMerge($event)" />
+			<FaceMergeForm :firstFace="faceName" @select="handleMerge($event)" />
 		</NcDialog>
 
 		<NcDialog
 			v-if="showMoveModal"
 			:name="t('photos', 'Move to different person')"
-			close-on-click-outside
+			closeOnClickOutside
 			size="normal"
 			@closing="showMoveModal = false">
-			<FaceMergeForm :first-face="faceName" @select="handleMove($event, selectedFileIds)" />
+			<FaceMergeForm :firstFace="faceName" @select="handleMove($event, selectedFileIds)" />
 		</NcDialog>
 	</div>
 </template>
@@ -189,7 +196,7 @@ import type { Collection } from '../services/collectionFetcher.js'
 import type { PhotoTarget } from '../utils/fileUtils.ts'
 
 import { translatePlural as n, translate as t } from '@nextcloud/l10n'
-import Vue from 'vue'
+import { nextTick } from 'vue'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActions from '@nextcloud/vue/components/NcActions'
 import NcButton from '@nextcloud/vue/components/NcButton'
@@ -213,7 +220,10 @@ import FilesListViewer from '../components/FilesListViewer.vue'
 import FetchFacesMixin from '../mixins/FetchFacesMixin.js'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import FilesSelectionMixin from '../mixins/FilesSelectionMixin.js'
-import logger from '../services/logger.js'
+import { downloadFiles } from '../services/downloadFiles.ts'
+import { logger } from '../services/logger.ts'
+import { useFacesStore } from '../store/faces.ts'
+import { useFilesStore } from '../store/files.ts'
 import { toViewerFileInfo } from '../utils/fileUtils.js'
 
 export default {
@@ -243,7 +253,7 @@ export default {
 
 	directives: {
 		focus(el) {
-			Vue.nextTick(() => el.focus())
+			nextTick(() => el.focus())
 		},
 	},
 
@@ -260,6 +270,10 @@ export default {
 		},
 	},
 
+	setup() {
+		return { facesStore: useFacesStore(), filesStore: useFilesStore() }
+	},
+
 	data() {
 		return {
 			showMoveModal: false,
@@ -272,11 +286,11 @@ export default {
 
 	computed: {
 		files() {
-			return this.$store.state.files.files
+			return this.filesStore.files
 		},
 
 		facesFiles() {
-			return this.$store.state.faces.facesFiles
+			return this.facesStore.facesFiles
 		},
 
 		face(): Collection {
@@ -289,7 +303,7 @@ export default {
 
 		shouldFavoriteSelection(): boolean {
 			// Favorite all selection if at least one file is not on the favorites.
-			return this.selectedFileIds.some((fileId) => this.$store.state.files.files[fileId].attributes.favorite === 0)
+			return this.selectedFileIds.some((fileId) => this.filesStore.files[fileId].attributes.favorite === 0)
 		},
 	},
 
@@ -310,10 +324,7 @@ export default {
 		// face it was recognized on.
 		onPhotoDeleted(photo: PhotoTarget) {
 			this.onUncheckFiles([photo.fileid.toString()])
-			this.$store.commit('removeFilesFromFace', {
-				faceName: this.faceName,
-				fileIdsToRemove: [photo.fileid.toString()],
-			})
+			this.facesStore.removeFileIdsFromFace(this.faceName, [photo.fileid.toString()])
 		},
 
 		openViewer(fileId: string) {
@@ -326,7 +337,7 @@ export default {
 		async handleRemoveFilesFromFace(fileIds: string[]) {
 			try {
 				this.loadingCount++
-				await this.$store.dispatch('removeFilesFromFace', { faceName: this.faceName, fileIdsToRemove: fileIds })
+				await this.facesStore.removeFilesFromFace(this.faceName, fileIds)
 				this.resetSelection()
 			} catch (error) {
 				logger.error(error)
@@ -338,7 +349,7 @@ export default {
 		async handleDeleteFace() {
 			try {
 				this.loadingCount++
-				await this.$store.dispatch('deleteFace', { faceName: this.faceName })
+				await this.facesStore.deleteFace(this.faceName)
 				this.$router.push('/faces')
 			} catch (error) {
 				logger.error(error)
@@ -352,7 +363,7 @@ export default {
 				this.loadingCount++
 				this.showRenameModal = false
 				const oldName = this.faceName
-				await this.$store.dispatch('renameFace', { oldName, faceName })
+				await this.facesStore.renameFace(oldName, faceName)
 				this.$router.push({ name: 'facecontent', params: { faceName } })
 			} catch (error) {
 				logger.error(error)
@@ -364,8 +375,8 @@ export default {
 		async handleMerge(faceName: string) {
 			try {
 				this.loadingCount++
-				await this.$store.dispatch('moveFilesToFace', { oldFace: this.faceName, faceName, fileIdsToMove: this.facesFiles[this.faceName] })
-				await this.$store.dispatch('deleteFace', { faceName: this.faceName })
+				await this.facesStore.moveFilesToFace(faceName, this.facesFiles[this.faceName], this.faceName)
+				await this.facesStore.deleteFace(this.faceName)
 				this.showMergeModal = false
 				this.$router.push({ name: 'facecontent', params: { faceName } })
 			} catch (error) {
@@ -378,7 +389,7 @@ export default {
 		async handleMove(faceName: string, fileIds: string[]) {
 			try {
 				this.loadingCount++
-				await this.$store.dispatch('moveFilesToFace', { oldFace: this.faceName, faceName, fileIdsToMove: fileIds })
+				await this.facesStore.moveFilesToFace(faceName, fileIds, this.faceName)
 				this.showMoveModal = false
 			} catch (error) {
 				logger.error(error)
@@ -390,7 +401,7 @@ export default {
 		async favoriteSelection() {
 			try {
 				this.loadingCount++
-				await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: this.selectedFileIds, favoriteState: true })
+				await this.filesStore.toggleFavoriteForFiles(this.selectedFileIds, 1)
 			} catch (error) {
 				logger.error(error)
 			} finally {
@@ -401,7 +412,7 @@ export default {
 		async unFavoriteSelection() {
 			try {
 				this.loadingCount++
-				await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: this.selectedFileIds, favoriteState: false })
+				await this.filesStore.toggleFavoriteForFiles(this.selectedFileIds, 0)
 			} catch (error) {
 				logger.error(error)
 			} finally {
@@ -412,7 +423,7 @@ export default {
 		async downloadSelection() {
 			try {
 				this.loadingCount++
-				await this.$store.dispatch('downloadFiles', this.selectedFileIds)
+				await downloadFiles(this.selectedFileIds.map((fileId) => this.files[fileId]))
 			} catch (error) {
 				logger.error(error)
 			} finally {

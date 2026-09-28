@@ -11,7 +11,8 @@
 
 		<NcFormBox>
 			<NcFormBoxButton
-				:inverted-accent="true"
+				:description="photosLocationName"
+				:invertedAccent="true"
 				@click="debounceSelectPhotosFolder">
 				<template #icon>
 					<FolderOpenOutline :size="20" />
@@ -30,7 +31,9 @@ import { defineComponent } from 'vue'
 import NcFormBox from '@nextcloud/vue/components/NcFormBox'
 import NcFormBoxButton from '@nextcloud/vue/components/NcFormBoxButton'
 import FolderOpenOutline from 'vue-material-design-icons/FolderOpenOutline.vue'
-import logger from '../../services/logger.js'
+import HomeOutline from 'vue-material-design-icons/HomeOutline.vue'
+import { logger } from '../../services/logger.ts'
+import { useUserConfigStore } from '../../store/userConfig.ts'
 
 function normalizePath(path: string): string {
 	return path.replace(/\/+$/, '')
@@ -62,6 +65,16 @@ export default defineComponent({
 	},
 
 	emits: ['folders-update'],
+
+	setup() {
+		return { userConfigStore: useUserConfigStore() }
+	},
+
+	data() {
+		return {
+			HomeOutline,
+		}
+	},
 
 	computed: {
 		photosLocation(): string {

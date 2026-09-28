@@ -4,10 +4,10 @@
 -->
 <template>
 	<NcDialog
-		content-classes="photos-picker"
+		contentClasses="photos-picker"
 		:name="name"
 		:open="open"
-		out-transition
+		outTransition
 		size="large"
 		@update:open="(open) => $emit('update:open', open)">
 		<!-- Navigation containing the months available -->
@@ -19,7 +19,7 @@
 				:aria-label-listbox="t('photos', 'Dates')"
 				class="photos-picker__navigation__month-select"
 				:clearable="false"
-				:input-label="t('photos', 'Jump to specific date in list')"
+				:inputLabel="t('photos', 'Jump to specific date in list')"
 				:options="monthsList">
 				<template #selected-option="{ label }">
 					{{ dateMonthAndYear(label) }}
@@ -72,16 +72,16 @@
 		<FilesListViewer
 			class="photos-picker__file-list"
 			:class="{ 'photos-picker__file-list--placeholder': monthsList.length === 0 }"
-			:file-ids-by-section="fileIdsByMonth"
-			:empty-message="t('photos', 'There are no photos or videos yet!')"
+			:fileIdsBySection="fileIdsByMonth"
+			:emptyMessage="t('photos', 'There are no photos or videos yet!')"
 			:sections="monthsList"
 			:loading="loadingFiles"
-			:base-height="100"
-			:section-header-height="50"
-			:scroll-to-section="targetMonth"
+			:baseHeight="100"
+			:sectionHeaderHeight="50"
+			:scrollToSection="targetMonth"
 			@need-content="getFiles"
 			@focusout.native="onFocusOut">
-			<template slot-scope="{ file, height, isHeader }">
+			<template #default="{ file, height, isHeader }">
 				<h3
 					v-if="isHeader"
 					:id="`photos-picker-section-header-${file.id}`"
@@ -93,9 +93,9 @@
 				<FileComponent
 					v-else
 					:file="files[file.id]"
-					:allow-selection="true"
+					:allowSelection="true"
 					:selected="selection[file.id] === true"
-					:show-actions-menu="false"
+					:showActionsMenu="false"
 					@select-toggled="onFileSelectToggle" />
 			</template>
 		</FilesListViewer>
@@ -124,7 +124,9 @@ import FilesListViewer from './FilesListViewer.vue'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import FilesByMonthMixin from '../mixins/FilesByMonthMixin.js'
 import FilesSelectionMixin from '../mixins/FilesSelectionMixin.js'
-import allowedMimes from '../services/AllowedMimes.js'
+import { allMimes as allowedMimes } from '../services/AllowedMimes.ts'
+import { useFilesStore } from '../store/files.ts'
+import { useUserConfigStore } from '../store/userConfig.ts'
 import { formatMonthAndYear } from '../utils/dateUtils.ts'
 
 export default defineComponent({
@@ -188,6 +190,8 @@ export default defineComponent({
 
 	setup() {
 		return {
+			filesStore: useFilesStore(),
+			userConfigStore: useUserConfigStore(),
 			isMobile: useIsMobile(),
 		}
 	},
@@ -206,11 +210,11 @@ export default defineComponent({
 
 	computed: {
 		files() {
-			return this.$store.state.files.files
+			return this.filesStore.files
 		},
 
 		photosLocationFolder() {
-			return this.$store.state.userConfig.photosLocationFolder
+			return this.userConfigStore.photosLocationFolder
 		},
 	},
 
