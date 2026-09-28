@@ -214,16 +214,19 @@ export default {
 .manage-collaborators {
 	padding: 20px;
 }
+
 .actions {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
+
 .actions__public-link {
 	display: flex;
 	align-items: center;
 	gap: 8px;
 }
+
 .actions__slot {
 	margin-inline-start: auto;
 }
