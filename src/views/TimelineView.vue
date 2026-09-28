@@ -9,13 +9,17 @@
 		<NcEmptyContent
 			v-if="errorFetchingFiles === 404"
 			:name="t('photos', 'One of the source folders does not exist')">
-			<FolderAlertOutline slot="icon" />
-			<PhotosSourceLocationsSettings
-				slot="action"
-				class="timeline__update_source_directory" />
+			<template #icon>
+				<FolderAlertOutline />
+			</template>
+			<template #action>
+				<PhotosSourceLocationsSettings class="timeline__update_source_directory" />
+			</template>
 		</NcEmptyContent>
 		<NcEmptyContent v-else :name="t('photos', 'An error occurred')">
-			<AlertCircleOutline slot="icon" />
+			<template #icon>
+				<AlertCircleOutline />
+			</template>
 		</NcEmptyContent>
 	</div>
 
@@ -26,7 +30,7 @@
 			:loading="loadingCount > 0"
 			path="/"
 			:title="rootTitle"
-			:root-title="rootTitle"
+			:rootTitle="rootTitle"
 			@refresh="resetFetchFilesState">
 
 			<div v-if="photosCount > 0 && filesCount > photosCount" slot="subtitle" class="album__details album__details_all">
@@ -46,7 +50,7 @@
 				<NcActions
 					v-if="selectedFileIds.length === 0"
 					:aria-label="t('photos', 'Change tile density')"
-					:menu-name="t('photos', 'Density')"
+					:menuName="t('photos', 'Density')"
 					data-cy-header-action="density">
 					<template #icon>
 						<ViewGridOutline :size="20" />
@@ -54,21 +58,21 @@
 					<NcActionRadio
 						name="photos-density"
 						value="small"
-						:model-value="gridDensity"
+						:modelValue="gridDensity"
 						@update:model-value="setGridDensity">
 						{{ t('photos', 'Small tiles') }}
 					</NcActionRadio>
 					<NcActionRadio
 						name="photos-density"
 						value="medium"
-						:model-value="gridDensity"
+						:modelValue="gridDensity"
 						@update:model-value="setGridDensity">
 						{{ t('photos', 'Default') }}
 					</NcActionRadio>
 					<NcActionRadio
 						name="photos-density"
 						value="large"
-						:model-value="gridDensity"
+						:modelValue="gridDensity"
 						@update:model-value="setGridDensity">
 						{{ t('photos', 'Large tiles') }}
 					</NcActionRadio>
@@ -104,7 +108,7 @@
 
 				<template v-else>
 					<NcButton
-						:close-after-click="true"
+						:closeAfterClick="true"
 						variant="primary"
 						:aria-label="t('photos', 'Add to album')"
 						data-cy-header-action="add-to-album"
@@ -133,7 +137,7 @@
 					<NcActions :aria-label="t('photos', 'Open actions menu')">
 						<NcActionButton
 							data-cy-header-action="download-selection"
-							:close-after-click="true"
+							:closeAfterClick="true"
 							:aria-label="t('photos', 'Download selected files')"
 							@click="downloadSelectedFiles">
 							{{ t('photos', 'Download selected files') }}
@@ -143,10 +147,29 @@
 							</template>
 						</NcActionButton>
 
-						<ActionFavorite :selected-file-ids="selectedFileIds" />
+						<NcActionButton
+							v-if="shouldFavoriteSelection"
+							:closeAfterClick="true"
+							:aria-label="t('photos', 'Mark selection as favorite')"
+							@click="favoriteSelection">
+							{{ t('photos', 'Add selection to favorites') }}
+							<template #icon>
+								<StarOutline />
+							</template>
+						</NcActionButton>
+						<NcActionButton
+							v-else
+							:closeAfterClick="true"
+							:aria-label="t('photos', 'Remove selection from favorites')"
+							@click="unFavoriteSelection">
+							{{ t('photos', 'Remove selection from favorites') }}
+							<template #icon>
+								<Star />
+							</template>
+						</NcActionButton>
 
 						<NcActionButton
-							:close-after-click="true"
+							:closeAfterClick="true"
 							:aria-label="t('photos', 'Delete selection')"
 							data-cy-header-action="delete-selection"
 							@click="deleteSelection">
@@ -217,17 +240,17 @@
 
 		<FilesListViewer
 			ref="filesListViewer"
-			:container-element="appContent"
+			:containerElement="appContent"
 			class="timeline__file-list"
-			:file-ids-by-section="fileIdsByMonth"
+			:fileIdsBySection="fileIdsByMonth"
 			:sections="monthsList"
 			:loading="loadingFiles"
-			:base-height="tileBaseHeight"
-			:empty-message="createAlbumButtonLabel"
-			:scroll-to-section="scrubberTarget"
+			:baseHeight="tileBaseHeight"
+			:emptyMessage="createAlbumButtonLabel"
+			:scrollToSection="scrubberTarget"
 			@add-collection="showAlbumCreationForm = $event"
 			@need-content="getContent">
-			<template slot-scope="{ file, isHeader }">
+			<template #default="{ file, isHeader }">
 				<h2
 					v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
@@ -237,8 +260,8 @@
 				<FileComponent
 					v-else
 					:file="files[file.id]"
-					:allow-selection="true"
-					:burst-count="burstCount(file.id)"
+					:allowSelection="true"
+					:burstCount="burstCount(file.id)"
 					:selected="selection[file.id] === true"
 					:is-collection="true"
 					@click="openViewer"
@@ -253,14 +276,14 @@
 			month - there is nothing to scrub then. -->
 		<DateScrubber
 			:months="monthsList"
-			:month-counts="monthCounts"
-			:current-month="scrubberTarget || monthsList[0]"
+			:monthCounts="monthCounts"
+			:currentMonth="scrubberTarget || monthsList[0]"
 			@jump="onScrubberJump" />
 
 		<NcModal
 			v-if="showAlbumCreationForm"
 			key="albumCreationForm"
-			label-id="new-album-form"
+			labelId="new-album-form"
 			:lightBackdrop="true"
 			@close="handleAlbumCreateCancel">
 			<h2 class="album-creation__heading">
@@ -272,7 +295,7 @@
 		<NcModal
 			v-if="showAlbumPicker"
 			key="albumPicker"
-			label-id="album-picker"
+			labelId="album-picker"
 			@close="showAlbumPicker = false">
 			<AlbumPicker @album-picked="addSelectionToAlbum" />
 		</NcModal>
@@ -310,6 +333,8 @@ import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline
 import Play from 'vue-material-design-icons/Play.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
+import Star from 'vue-material-design-icons/Star.vue'
+import StarOutline from 'vue-material-design-icons/StarOutline.vue'
 import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import DownloadOutline from 'vue-material-design-icons/TrayArrowDown.vue'
 import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
@@ -340,6 +365,8 @@ import { toViewerFileInfo } from '../utils/fileUtils.ts'
 export default {
 	name: 'TimelineView',
 	components: {
+		StarOutline,
+		Star,
 		DeleteOutline,
 		PlusBoxMultipleOutline,
 		DownloadOutline,
@@ -358,7 +385,6 @@ export default {
 		DateScrubber,
 		FilesListViewer,
 		FileComponent,
-		ActionFavorite,
 		HeaderNavigation,
 		PhotosSourceLocationsSettings,
 		AlertCircleOutline,
@@ -367,11 +393,6 @@ export default {
 		ViewDashboardOutline,
 		ImageMultipleOutline,
 		PhotosPicker,
-	},
-
-	filters: {
-		dateMonth: formatMonth,
-		dateYear: formatYear,
 	},
 
 	mixins: [
@@ -462,6 +483,11 @@ export default {
 				return 2
 			}
 			return 3
+		},
+
+		shouldFavoriteSelection(): boolean {
+			// Favorite all selection if at least one file is not in the favorites.
+			return this.selectedFileIds.some((fileId) => this.filesStore.files[fileId].attributes.favorite === 0)
 		},
 
 		files() {
@@ -557,6 +583,17 @@ export default {
 	},
 
 	methods: {
+		async favoriteSelection(): Promise<void> {
+			await this.filesStore.toggleFavoriteForFiles(this.selectedFileIds, 1)
+		},
+
+		async unFavoriteSelection(): Promise<void> {
+			await this.filesStore.toggleFavoriteForFiles(this.selectedFileIds, 0)
+		},
+
+		dateMonth: formatMonth,
+		dateYear: formatYear,
+
 		getContent() {
 			this.fetchFiles({
 				mimesType: this.mimesType,

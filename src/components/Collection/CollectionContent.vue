@@ -8,10 +8,14 @@
 		v-if="(collection === undefined && !loading) || error === 404"
 		class="empty-content-with-illustration"
 		:name="t('photos', 'This collection does not exist')">
-		<ImageMultipleOutline slot="icon" />
+		<template #icon>
+			<ImageMultipleOutline />
+		</template>
 	</NcEmptyContent>
 	<NcEmptyContent v-else-if="error" :name="t('photos', 'An error occurred')">
-		<AlertCircleOutline slot="icon" />
+		<template #icon>
+			<AlertCircleOutline />
+		</template>
 	</NcEmptyContent>
 
 	<div v-else class="collection">
@@ -19,8 +23,8 @@
 		<slot
 			class="collection__header"
 			name="header"
-			:selected-file-ids="selectedFileIds"
-			:reset-selection="resetSelection" />
+			:selectedFileIds="selectedFileIds"
+			:resetSelection="resetSelection" />
 
 		<!-- No content -->
 		<slot v-if="sortedCollectionFileIds.length === 0 && !loading" name="empty-content" />
@@ -28,10 +32,10 @@
 		<!-- Media list -->
 		<FilesListViewer
 			v-if="collection !== undefined && sortedCollectionFileIds.length > 0"
-			:container-element="appContent"
+			:containerElement="appContent"
 			class="collection__media"
-			:file-ids="sortedCollectionFileIds"
-			:base-height="isMobile ? 120 : 200"
+			:fileIds="sortedCollectionFileIds"
+			:baseHeight="isMobile ? 120 : 200"
 			:loading="loading">
 			<template slot-scope="{ file, isHeader }">
 				<h2
