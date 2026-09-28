@@ -26,11 +26,11 @@ on:
         type: choice
         description: Branch to build a package from
         options: 
-          - main
+          - master
           - stable32
           - stable33
           - stable34
-        default: main
+        default: master
 
 jobs:
   check-custom:
