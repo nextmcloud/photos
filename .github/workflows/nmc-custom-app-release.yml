@@ -27,6 +27,7 @@ on:
         description: Branch to build a package from
         options: 
           - master
+          - stable30
           - stable32
           - stable33
           - stable34
@@ -43,23 +44,13 @@ jobs:
     uses: nextmcloud/.github/.github/workflows/nmc-custom-assembly.yml@master
     needs: check-custom
     with:
-      trunk: 'main'
+      trunk: 'master'
       stable: ${{ inputs.branch }}
       result: ${{ format('customisation-{0}-{1}', inputs.branch, inputs.increment ) }}
     secrets: inherit
-
-  composerdep:
-    strategy:
-      fail-fast: false
-    uses: ./.github/workflows/nmc-custom-oidc-composer.yml
-    needs: assemble-custom
-    with:
-      assembly: ${{ format('customisation-{0}-{1}', inputs.branch, inputs.increment) }}
-    secrets: inherit
-    
   build-custom:
     uses: nextmcloud/.github/.github/workflows/nmc-custom-app-build.yml@master
-    needs: [ check-custom, composerdep ]
+    needs: [ check-custom, assemble-custom ]
     with:
       appname: ${{ needs.check-custom.outputs.appname }}
       assembly: ${{ format('customisation-{0}-{1}', inputs.branch , inputs.increment ) }}
