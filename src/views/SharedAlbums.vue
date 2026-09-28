@@ -8,32 +8,37 @@
 		:loading="loadingCollections"
 		:error="errorFetchingCollections"
 		class="albums-list">
-		<HeaderNavigation
-			key="navigation"
-			slot="header"
-			:loading="loadingCollections"
-			:title="t('photos', 'Collaborative albums')"
-			:root-title="t('photos', 'Collaborative albums')"
-			@refresh="fetchSharedAlbums" />
 
-		<CollectionCover
-			:key="collection.basename"
-			slot-scope="{ collection }"
-			parent-route="/sharedalbums"
-			:collection-name="collection.basename"
-			:alt-img="t('photos', 'Cover photo for shared album {albumName}', { albumName: collection.basename })"
-			:data-test="collection.basename"
-			:cover-url="collection.attributes['last-photo'] | coverUrl">
-			<span class="album__name">
-				{{ collection | albumOriginalName }}
-			</span>
+		<template #header>
+			<HeaderNavigation
+				key="navigation"
+				:loading="loadingCollections"
+				:title="t('photos', 'Collaborative albums')"
+				:rootTitle="t('photos', 'Collaborative albums')"
+				@refresh="fetchSharedAlbums" />
+		</template>
 
-			<div slot="subtitle" class="album__details">
-				{{ collection.attributes.date }} ⸱ {{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
-				<br>
-				{{ t('photos', 'Shared by') }}&nbsp;<NcUserBubble :display-name="collection.attributes.collaborators[0].label" :user="collection.attributes.collaborators[0].id" />
-			</div>
-		</CollectionCover>
+		<template #default="{ collection }">
+			<CollectionCover
+				:key="collection.basename"
+				parentRoute="/sharedalbums"
+				:collectionName="collection.basename"
+				:altImg="t('photos', 'Cover photo for shared album {albumName}', { albumName: collection.basename })"
+				:data-test="collection.basename"
+				:coverUrl="coverUrl(collection.attributes['last-photo'])">
+				<span class="album__name">
+					{{ albumOriginalName(collection) }}
+				</span>
+
+				<template #subtitle>
+					<div class="album__details">
+						{{ collection.attributes.date }} ⸱ {{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
+						<br>
+						{{ t('photos', 'Shared by') }}&nbsp;<NcUserBubble :displayName="collection.attributes.collaborators[0].label" :user="collection.attributes.collaborators[0].id" />
+					</div>
+				</template>
+			</CollectionCover>
+		</template>
 
 		<template #empty-collections-list>
 			<div class="albums__empty-content">
@@ -80,20 +85,6 @@ export default {
 		NcUserBubble,
 	},
 
-	filters: {
-		coverUrl(lastPhoto: number): string {
-			if (lastPhoto === -1) {
-				return ''
-			}
-
-			return generateUrl(`/apps/photos/api/v1/preview/${lastPhoto}?x=${512}&y=${512}`)
-		},
-
-		albumOriginalName(album: Album): string {
-			return album.basename.replace(new RegExp(`\\(${album.attributes.collaborators[0].id}\\)$`), '')
-		},
-	},
-
 	mixins: [FetchCollectionsMixin],
 
 	setup() {
@@ -111,6 +102,18 @@ export default {
 	},
 
 	methods: {
+		coverUrl(lastPhoto: number): string {
+			if (lastPhoto === -1) {
+				return ''
+			}
+
+			return generateUrl(`/apps/photos/api/v1/preview/${lastPhoto}?x=${512}&y=${512}`)
+		},
+
+		albumOriginalName(album: Album): string {
+			return album.basename.replace(new RegExp(`\\(${album.attributes.collaborators[0].id}\\)$`), '')
+		},
+
 		fetchSharedAlbums() {
 			this.fetchCollections(
 				`/photos/${getCurrentUser()?.uid}/sharedalbums`,
