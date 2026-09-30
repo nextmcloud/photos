@@ -179,7 +179,7 @@ export default defineComponent({
 		},
 
 		handleFileDeleted({ fileid }: File) {
-			this.removeFromCollection(fileid as number)
+			this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.root + this.collection.path, fileIdsToRemove: [fileid?.toString()] })
 		},
 
 		async toggleFavorite(fileId) {
