@@ -200,7 +200,12 @@ export const useCollectionsStore = defineStore('collections', () => {
 	 * @param newBaseName - Name to give it
 	 */
 	async function renameCollection(collectionFileName: string, newBaseName: string): Promise<Collection> {
-		const collection = collections.value[collectionFileName]
+		const collection = context.state.collections[collectionFileName]
+		if (!collection) {
+			logger.error(t('photos', 'Collection {collectionFileName} not found for rename', { collectionFileName }))
+			showError(t('photos', 'Collection {collectionFileName} not found for rename', { collectionFileName }))
+			return undefined
+		}
 		const newCollection = collection.clone()
 		newCollection.rename(newBaseName)
 
