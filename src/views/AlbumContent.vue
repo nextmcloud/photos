@@ -57,7 +57,7 @@
 						<NcButton
 							v-if="sharingEnabled"
 							variant="tertiary"
-							:aria-label="t('photos', 'Manage collaborators for this album')"
+							:aria-label="t('photos', 'Share album')"
 							@click="showManageCollaboratorView = true">
 							<template #icon>
 								<ShareVariantOutline />
@@ -170,10 +170,11 @@
 			@files-picked="handleFilesPicked" />
 
 		<NcModal
+			id="album-share"
 			v-if="showManageCollaboratorView && album !== undefined"
-			:name="t('photos', 'Manage collaborators')"
+			:lightBackdrop="true"
 			@close="showManageCollaboratorView = false">
-			<CollaboratorsSelectionForm
+			<AlbumShare
 				:albumName="album.basename"
 				:collaborators="album.attributes.collaborators">
 				<template #default="{ collaborators }">
@@ -188,7 +189,7 @@
 						{{ t('photos', 'Save') }}
 					</NcButton>
 				</template>
-			</CollaboratorsSelectionForm>
+			</AlbumShare>
 		</NcModal>
 
 		<NcDialog
@@ -197,7 +198,7 @@
 			closeOnClickOutside
 			size="normal"
 			@closing="showEditAlbumForm = false">
-			<AlbumForm :album="album" @done="(event) => handleAlbumUpdate(event)" />
+			<AlbumForm :album="album" @done="redirectToNewName" @closing="showEditAlbumForm = false" />
 		</NcDialog>
 	</div>
 </template>
@@ -230,7 +231,7 @@ import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 // import ActionDownload from '../components/Actions/ActionDownload.vue'
 import AlbumHero from '../components/AlbumHero.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
-import CollaboratorsSelectionForm from '../components/Albums/CollaboratorsSelectionForm.vue'
+import AlbumShare from '../components/Albums/AlbumShare.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
@@ -252,7 +253,7 @@ export default {
 		AlbumForm,
 		AlbumHero,
 		Close,
-		CollaboratorsSelectionForm,
+		AlbumShare,
 		CollectionContent,
 		DeleteOutline,
 		// Download,
@@ -404,6 +405,10 @@ export default {
 			if (changes.includes('filters')) {
 				this.fetchAlbumContent()
 			}
+		},
+
+		redirectToNewName(payload) {
+			return this.handleAlbumUpdate(payload)
 		},
 
 		async handleFilesPicked(fileIds: string[]) {
