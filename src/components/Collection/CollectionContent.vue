@@ -37,7 +37,7 @@
 			:fileIds="sortedCollectionFileIds"
 			:baseHeight="isMobile ? 120 : 200"
 			:loading="loading">
-			<template slot-scope="{ file, isHeader }">
+			<template #default="{ file, isHeader }">
 				<h2
 					v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
@@ -47,11 +47,10 @@
 				</h2>
 				<FileComponent
 					v-else
-					slot-scope="{ file }"
 					:file="files[file.id]"
-					:allow-selection="allowSelection"
+					:allowSelection="allowSelection"
 					:selected="selection[file.id] === true"
-					:is-collection="true"
+					:isCollection="true"
 					@click="openViewer"
 					@favorite="toggleFavorite"
 					@remove="handleFileDeleted"
@@ -101,6 +100,7 @@ export default defineComponent({
 		dateMonth(date) {
 			return moment(date, 'YYYYMM').format('MMMM')
 		},
+
 		/**
 		 * @param {string} date - In the following format: YYYYMM
 		 */
@@ -179,12 +179,7 @@ export default defineComponent({
 		},
 
 		handleFileDeleted({ fileid }: File) {
-			this.$store.dispatch('removeFilesFromCollection', { collectionFileName: this.collection.root + this.collection.path, fileIdsToRemove: [fileid?.toString()] })
-		},
-
-		async toggleFavorite(fileId) {
-			const newState = this.$store.state.files.files[fileId].attributes.favorite ? 0 : 1
-			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
+			this.removeFromCollection(fileid as number)
 		},
 
 		// The photo is already gone from the store, it only has to leave the
@@ -196,6 +191,11 @@ export default defineComponent({
 
 		removeFromCollection(fileId: number) {
 			this.collectionsStore.removeFileIdsFromCollection(this.collection.root + this.collection.path, [fileId?.toString()])
+		},
+
+		async toggleFavorite(fileId) {
+			const newState = this.filesStore.files[fileId].attributes.favorite ? 0 : 1
+			await this.filesStore.toggleFavoriteForFiles([fileId], newState)
 		},
 
 		t: translate,

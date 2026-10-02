@@ -123,7 +123,7 @@
 			@update:checked="onToggle" />
 
 		<PhotoActionsMenu
-			v-if="showActionsMenu"
+			v-if="showActionsMenu && !isCollection"
 			class="photo-actions-menu"
 			:photo="photoTarget"
 			@deleted="$emit('deleted', $event)" />
@@ -254,7 +254,7 @@ export default {
 		},
 	},
 
-	emits: ['click', 'select-toggled', 'deleted'],
+	emits: ['click', 'select-toggled', 'deleted', 'favorite', 'remove'],
 
 	data() {
 		return {
