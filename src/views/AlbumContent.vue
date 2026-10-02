@@ -257,6 +257,7 @@ import { logger } from '../services/logger.ts'
 import { albumFilesExtraProps, albumsExtraProps, useAlbumsStore } from '../store/albums.ts'
 import { useCollectionsStore } from '../store/collections.ts'
 import { useFilesStore } from '../store/files.ts'
+import { useUserConfigStore } from '../store/userConfig.ts'
 import { pickAlbumCover } from '../utils/albumCover.ts'
 
 export default {
@@ -307,6 +308,7 @@ export default {
 			albumsStore: useAlbumsStore(),
 			collectionsStore: useCollectionsStore(),
 			filesStore: useFilesStore(),
+			userConfigStore: useUserConfigStore(),
 			isMobile,
 		}
 	},
@@ -404,7 +406,7 @@ export default {
 		},
 
 		croppedLayout(): boolean {
-			return this.$store.state.userConfig.croppedLayout
+			return this.userConfigStore.croppedLayout
 		},
 
 		uploadContext() {
@@ -477,8 +479,12 @@ export default {
 		async handleFilesPicked(fileIds: string[]) {
 			this.showAddPhotosModal = false
 
+			if (this.album === undefined) {
+				return
+			}
+
 			await this.collectionsStore.addFilesToCollection(
-				this.album?.root + this.album?.path,
+				this.album.root + this.album.path,
 				fileIds,
 			)
 
@@ -487,17 +493,25 @@ export default {
 		},
 
 		async handleRemoveFilesFromAlbum(fileIds: string[]) {
+			if (this.album === undefined) {
+				return
+			}
+
 			this.$refs.collectionContent?.onUncheckFiles(fileIds)
 
 			await this.collectionsStore.removeFilesFromCollection(
-				this.album?.root + this.album?.path,
+				this.album.root + this.album.path,
 				fileIds,
 			)
 		},
 
 		async handleDeleteAlbum() {
+			if (this.album === undefined) {
+				return
+			}
+
 			const isDeleted = await this.collectionsStore.deleteCollection(
-				this.album?.root + this.album?.path,
+				this.album.root + this.album.path,
 			)
 
 			if (isDeleted) {
@@ -506,12 +520,16 @@ export default {
 		},
 
 		async handleSetCollaborators(collaborators) {
+			if (this.album === undefined) {
+				return
+			}
+
 			try {
 				this.loadingAddCollaborators = true
 				this.showManageCollaboratorView = false
 
 				await this.collectionsStore.updateCollection(
-					this.album?.root + this.album?.path,
+					this.album.root + this.album.path,
 					{ collaborators },
 				)
 			} catch (error) {
@@ -522,8 +540,12 @@ export default {
 		},
 
 		async handleFiltersChange(filters) {
+			if (this.album === undefined) {
+				return
+			}
+
 			await this.collectionsStore.updateCollection(
-				this.album?.root + this.album?.path,
+				this.album.root + this.album.path,
 				{ filters },
 			)
 
@@ -531,10 +553,7 @@ export default {
 		},
 
 		toggleCroppedLayout(value: boolean) {
-			this.$store.dispatch('updateUserConfig', {
-				key: 'croppedLayout',
-				value,
-			})
+			this.userConfigStore.updateUserConfig('croppedLayout', value)
 		},
 
 		onUpload: debounce(function() {

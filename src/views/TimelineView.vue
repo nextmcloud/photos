@@ -33,17 +33,19 @@
 			:rootTitle="rootTitle"
 			@refresh="resetFetchFilesState">
 
-			<div v-if="photosCount > 0 && filesCount > photosCount" slot="subtitle" class="album__details album__details_all">
-				{{ n('photos', '%n item', '%n photos', photosCount) }} {{ t('photos', 'and') }} {{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
-			</div>
+			<template #subtitle>
+				<div v-if="photosCount > 0 && filesCount > photosCount" class="album__details album__details_all">
+					{{ n('photos', '%n item', '%n photos', photosCount) }} {{ t('photos', 'and') }} {{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
+				</div>
 
-			<div v-else-if="photosCount > 0 && filesCount == photosCount" slot="subtitle" class="album__details album__details_photos">
-				{{ n('photos', '%n item', '%n photos', photosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
-			</div>
+				<div v-else-if="photosCount > 0 && filesCount === photosCount" class="album__details album__details_photos">
+					{{ n('photos', '%n item', '%n photos', photosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
+				</div>
 
-			<div v-else-if="videosCount > 0 && filesCount == videosCount" slot="subtitle" class="album__details album__details__videos">
-				{{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
-			</div>
+				<div v-else-if="videosCount > 0 && filesCount === videosCount" class="album__details album__details__videos">
+					{{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
+				</div>
+			</template>
 
 			<div class="timeline__header__left">
 				<!-- TODO: UploadPicker -->
@@ -92,12 +94,10 @@
 				</NcButton>
 
 				<NcButton
-					v-if="true"
 					ref="newAlbumButton"
 					:aria-label="createAlbumButtonLabel"
 					variant="primary"
 					data-cy-header-action="create-album"
-					variant="primary"
 					@click="showAlbumCreationForm = true">
 					<template v-if="!isMobile" #default>
 						{{ createAlbumButtonLabel }}
@@ -106,84 +106,9 @@
 						<PlusBoxMultipleOutline />
 					</template>
 				</NcButton>
-
-				<template v-else>
-					<NcButton
-						:closeAfterClick="true"
-						variant="primary"
-						:aria-label="t('photos', 'Add to album')"
-						data-cy-header-action="add-to-album"
-						@click="showAlbumPicker = true">
-						<template #icon>
-							<Plus />
-						</template>
-						<template v-if="!isMobile" #default>
-							{{ t('photos', 'Add to album') }}
-						</template>
-					</NcButton>
-
-					<NcButton
-						v-if="selectedFileIds.length > 0"
-						:aria-label="t('photos', 'Unselect all')"
-						data-cy-header-action="unselect-all"
-						@click="resetSelection">
-						<template #icon>
-							<Close />
-						</template>
-						<template v-if="!isMobile" #default>
-							{{ t('photos', 'Unselect all') }}
-						</template>
-					</NcButton>
-
-					<NcActions :aria-label="t('photos', 'Open actions menu')">
-						<NcActionButton
-							data-cy-header-action="download-selection"
-							:closeAfterClick="true"
-							:aria-label="t('photos', 'Download selected files')"
-							@click="downloadSelectedFiles">
-							{{ t('photos', 'Download selected files') }}
-
-							<template #icon>
-								<DownloadOutline />
-							</template>
-						</NcActionButton>
-
-						<NcActionButton
-							v-if="shouldFavoriteSelection"
-							:closeAfterClick="true"
-							:aria-label="t('photos', 'Mark selection as favorite')"
-							@click="favoriteSelection">
-							{{ t('photos', 'Add selection to favorites') }}
-							<template #icon>
-								<StarOutline />
-							</template>
-						</NcActionButton>
-						<NcActionButton
-							v-else
-							:closeAfterClick="true"
-							:aria-label="t('photos', 'Remove selection from favorites')"
-							@click="unFavoriteSelection">
-							{{ t('photos', 'Remove selection from favorites') }}
-							<template #icon>
-								<Star />
-							</template>
-						</NcActionButton>
-
-						<NcActionButton
-							:closeAfterClick="true"
-							:aria-label="t('photos', 'Delete selection')"
-							data-cy-header-action="delete-selection"
-							@click="deleteSelection">
-							{{ t('photos', 'Delete selection') }}
-							<template #icon>
-								<DeleteOutline />
-							</template>
-						</NcActionButton>
-					</NcActions>
-				</template>
 			</div>
 
-			<template v-if="selectedFileIds.length > 0" slot="bulk">
+			<template v-if="selectedFileIds.length > 0" #bulk>
 				<!-- Filters -->
 				<span class="photos-navigation__bulk-operations__selected">
 					<span class="icon-minus" />
@@ -256,7 +181,7 @@
 					v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
 					class="section-header">
-					{{ file.id | dateMonth }} {{ file.id | dateYear }}
+					{{ dateMonth(file.id) }} {{ dateYear(file.id) }}
 				</h2>
 				<FileComponent
 					v-else
@@ -309,15 +234,6 @@
 			:allowempty="allowEmpty"
 			@closed="handlePickerClose"
 			@files-picked="handleFilesPicked" />
-
-		<PhotosPicker
-			:open.sync="showPhotosPicker"
-			:blacklist-ids="blacklistIds"
-			:destination="destination"
-			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
-			:allowempty="allowEmpty"
-			@closed="handlePickerClose"
-			@files-picked="handleFilesPicked" />
 	</div>
 </template>
 
@@ -341,13 +257,9 @@ import Close from 'vue-material-design-icons/Close.vue'
 import FolderAlertOutline from 'vue-material-design-icons/FolderAlertOutline.vue'
 import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
 import Play from 'vue-material-design-icons/Play.vue'
-import Plus from 'vue-material-design-icons/Plus.vue'
 import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
-import Star from 'vue-material-design-icons/Star.vue'
-import StarOutline from 'vue-material-design-icons/StarOutline.vue'
 import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import DownloadOutline from 'vue-material-design-icons/TrayArrowDown.vue'
-import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
@@ -374,14 +286,11 @@ import { toViewerFileInfo } from '../utils/fileUtils.ts'
 export default {
 	name: 'TimelineView',
 	components: {
-		StarOutline,
-		Star,
 		DeleteOutline,
 		PlusBoxMultipleOutline,
 		DownloadOutline,
 		Close,
 		Play,
-		Plus,
 		FolderAlertOutline,
 		NcEmptyContent,
 		NcModal,
@@ -399,7 +308,6 @@ export default {
 		AlertCircleOutline,
 		ViewGridOutline,
 		ActionFavoriteButton,
-		ViewDashboardOutline,
 		ImageMultipleOutline,
 		PhotosPicker,
 	},
@@ -466,8 +374,7 @@ export default {
 			showAlbumCreationForm: false,
 			showAlbumPicker: false,
 			showPhotosPicker: false,
-			createdAlbum: null,
-			blacklistIds: [],
+			blacklistIds: [] as string[],
 			destination: '',
 			collection: '',
 			allowEmpty: true,
@@ -496,7 +403,7 @@ export default {
 
 		shouldFavoriteSelection(): boolean {
 			// Favorite all selection if at least one file is not in the favorites.
-			return this.selectedFileIds.some((fileId) => this.filesStore.files[fileId].attributes.favorite === 0)
+			return this.selectedFileIds.some((fileId) => this.filesStore.files[fileId]?.attributes.favorite === 0)
 		},
 
 		files() {
@@ -531,10 +438,6 @@ export default {
 			}
 		},
 
-		croppedLayout() {
-			return this.$store.state.userConfig.croppedLayout
-		},
-
 		filesCount(): number {
 			return Object.values(this.fileIdsByMonth)
 				.reduce((sum, ids) => sum + ids.length, 0)
@@ -555,22 +458,21 @@ export default {
 		},
 
 		dateCreated(): string {
-			const fileIds = Object.values(this.fileIdsByMonth).flat()
-			if (fileIds.length === 0) {
+			const months = Object.keys(this.fileIdsByMonth).sort()
+			if (months.length === 0) {
 				return ''
 			}
-			const mtimes = fileIds
-				.map((fileId) => this.files[fileId]?.mtime)
-				.filter((mtime) => mtime !== undefined && mtime > 0)
-			if (mtimes.length === 0) {
-				return ''
+
+			const firstMonth = months[0]
+			const lastMonth = months[months.length - 1]
+			const firstFormatted = `${this.dateMonth(firstMonth)} ${this.dateYear(firstMonth)}`
+			const lastFormatted = `${this.dateMonth(lastMonth)} ${this.dateYear(lastMonth)}`
+
+			if (firstFormatted === lastFormatted) {
+				return firstFormatted
 			}
-			const minTime = Math.min(...mtimes)
-			const maxTime = Math.max(...mtimes)
-			const minFormatted = moment(minTime).format('MMMM YYYY')
-			const maxFormatted = moment(maxTime).format('MMMM YYYY')
-			const to = this.t('photos', 'to')
-			return minFormatted === maxFormatted ? minFormatted : `${minFormatted} ${to} ${maxFormatted}`
+
+			return `${firstFormatted} ${this.t('photos', 'to')} ${lastFormatted}`
 		},
 	},
 
@@ -662,14 +564,10 @@ export default {
 			// TODO: finish when implementing upload
 		},
 
-		toggleCroppedLayout(value) {
-			this.$store.dispatch('updateUserConfig', { key: 'croppedLayout', value })
-		},
-
-		handleAlbumCreated({ album }) {
+		handleAlbumCreated({ album }: { album: Album }) {
 			this.showAlbumCreationForm = false
 			this.destination = album.basename
-			this.collection = album.attributes.filename
+			this.collection = album.root + album.path
 			this.showPhotosPicker = true
 		},
 
@@ -677,18 +575,18 @@ export default {
 			this.$router.push(`/albums/${this.destination}`)
 		},
 
-		async handleFilesPicked(fileIds) {
-			// Add picked files
-			await this.$store.dispatch('addFilesToCollection', { collectionFileName: this.collection, fileIdsToAdd: fileIds })
-			// Close the PhotosPicker
+		async handleFilesPicked(fileIds: string[]) {
+			await this.collectionsStore.addFilesToCollection(
+				this.collection,
+				fileIds,
+			)
+
 			this.showPhotosPicker = false
-			// Re-fetch album to have the proper collection
 			this.$router.push(`/albums/${this.destination}`)
 		},
 
 		handleAlbumCreateCancel() {
 			this.showAlbumCreationForm = false
-			this.createdAlbum = null
 		},
 
 		async addSelectionToAlbum(album: Album) {
@@ -707,7 +605,7 @@ export default {
 			// Need to store the file ids so it is not changed before the deleteFiles call.
 			const fileIds = this.selectedFileIds
 			this.onUncheckFiles(fileIds)
-			this.fetchedFileIds = this.fetchedFileIds.filter((fileid) => !fileIds.includes(fileid))
+			this.fetchedFileIds = this.fetchedFileIds.filter((fileId) => !fileIds.includes(fileId.toString()))
 			await this.filesStore.deleteFiles(fileIds)
 		},
 
@@ -732,13 +630,27 @@ export default {
 			downloadFiles(fileIds.map((fileId) => this.files[fileId]))
 		},
 
-		async handleFileDeleted({ fileid }: File) {
-			await this.$store.dispatch('deleteFiles', fileid ? [fileid.toString()] : [])
+		async handleFileDeleted({ fileid }: { fileid?: number }) {
+			if (fileid === undefined) {
+				return
+			}
+
+			const fileId = fileid.toString()
+			this.onUncheckFiles([fileId])
+			this.fetchedFileIds = this.fetchedFileIds.filter((id) => id.toString() !== fileId)
+			await this.filesStore.deleteFiles([fileId])
 		},
 
-		async toggleFavorite(fileId) {
-			const newState = this.$store.state.files.files[fileId].attributes.favorite ? 0 : 1
-			await this.$store.dispatch('toggleFavoriteForFiles', { fileIds: [fileId], favoriteState: newState })
+		async toggleFavorite(fileId: number) {
+			const id = fileId.toString()
+			const file = this.filesStore.files[id]
+
+			if (file === undefined) {
+				return
+			}
+
+			const newState = file.attributes.favorite ? 0 : 1
+			await this.filesStore.toggleFavoriteForFiles([id], newState)
 		},
 
 		t,

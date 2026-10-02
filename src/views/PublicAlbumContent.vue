@@ -23,15 +23,19 @@
 					:title="albumOriginalName"
 					@refresh="fetchAlbumContent">
 					<template #subtitle>
-						<div v-if="album.attributes.location !== ''" class="album__location">
+						<div
+							v-if="album !== null && album.attributes.location !== ''"
+							class="album__location">
 							<MapMarkerOutline />{{ album.attributes.location }}
 						</div>
-						<div v-if="album !== null && album.attributes.nbItems !== 0" class="album__details">
+						<div
+							v-if="album !== null && album.attributes.nbItems !== 0"
+							class="album__details">
 							{{ n('photos', '%n item', '%n photos and videos', album.attributes.nbItems) }} ⸱ {{ t('photos', 'Created') }} {{ album.attributes.date }}
 						</div>
 					</template>
 
-					<template v-if="album !== undefined" #right>
+					<template v-if="album !== null" #right>
 						<NcActions :forceMenu="true" :aria-label="t('photos', 'Open actions menu')">
 							<!-- TODO: enable download on public albums -->
 							<!-- <ActionDownload v-if="albumFileIds.length > 0"
@@ -122,6 +126,7 @@ import { albumFilesExtraProps } from '../store/albums.ts'
 import { useCollectionsStore } from '../store/collections.ts'
 import { publicAlbumsExtraProps, publicAlbumsPrefix } from '../store/publicAlbums.ts'
 import { usePublicAlbumsStore } from '../store/publicAlbums.ts'
+import { useUserConfigStore } from '../store/userConfig.ts'
 
 export default {
 	name: 'PublicAlbumContent',
@@ -156,7 +161,12 @@ export default {
 	},
 
 	setup() {
-		return { collectionsStore: useCollectionsStore(), publicAlbumsStore: usePublicAlbumsStore(), isMobile: useIsMobile() }
+		return {
+			collectionsStore: useCollectionsStore(),
+			publicAlbumsStore: usePublicAlbumsStore(),
+			userConfigStore: useUserConfigStore(),
+			isMobile: useIsMobile(),
+		}
 	},
 
 	data() {
@@ -188,8 +198,8 @@ export default {
 			return this.publicAlbumsStore.getPublicAlbumName(this.albumName)
 		},
 
-		croppedLayout() {
-			return this.$store.state.userConfig.croppedLayout
+		croppedLayout(): boolean {
+			return this.userConfigStore.croppedLayout
 		},
 	},
 
@@ -232,18 +242,35 @@ export default {
 
 		async handleFilesPicked(fileIds: string[]) {
 			this.showAddPhotosModal = false
-			await this.collectionsStore.addFilesToCollection(this.album.root + this.albumName, fileIds)
+
+			if (this.album === null) {
+				return
+			}
+
+			await this.collectionsStore.addFilesToCollection(
+				this.album.root + this.albumName,
+				fileIds,
+			)
+
 			// Re-fetch album content to have the proper filenames.
 			await this.fetchAlbumContent()
 		},
 
 		async handleRemoveFilesFromAlbum(fileIds: string[]) {
-			this.$refs.collectionContent.onUncheckFiles(fileIds)
-			await this.collectionsStore.removeFilesFromCollection(this.album.root + this.albumName, fileIds)
+			if (this.album === null) {
+				return
+			}
+
+			this.$refs.collectionContent?.onUncheckFiles(fileIds)
+
+			await this.collectionsStore.removeFilesFromCollection(
+				this.album.root + this.albumName,
+				fileIds,
+			)
 		},
 
-		toggleCroppedLayout(value) {
-			this.$store.dispatch('updateUserConfig', { key: 'croppedLayout', value })
+		toggleCroppedLayout(value: boolean) {
+			this.userConfigStore.updateUserConfig('croppedLayout', value)
 		},
 
 		t: translate,
