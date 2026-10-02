@@ -42,8 +42,8 @@
 					v-if="isHeader"
 					:id="`file-picker-section-header-${file.id}`"
 					class="section-header">
-					<b>{{ file.id | dateMonth }}</b>
-					{{ file.id | dateYear }}
+					<b>{{ dateMonth(file.id) }}</b>
+					{{ dateYear(file.id) }}
 				</h2>
 				<FileComponent
 					v-else
@@ -65,11 +65,11 @@
 import type { File } from '@nextcloud/files'
 import type { PropType } from 'vue'
 import type { Collection } from '../../services/collectionFetcher.js'
+import { formatMonth, formatYear } from '../../utils/dateUtils.ts'
 import type { PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { translate } from '@nextcloud/l10n'
-import moment from '@nextcloud/moment'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { defineComponent } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
@@ -91,22 +91,6 @@ export default defineComponent({
 		NcEmptyContent,
 		FilesListViewer,
 		FileComponent,
-	},
-
-	filters: {
-		/**
-		 * @param {string} date - In the following format: YYYYMM
-		 */
-		dateMonth(date) {
-			return moment(date, 'YYYYMM').format('MMMM')
-		},
-
-		/**
-		 * @param {string} date - In the following format: YYYYMM
-		 */
-		dateYear(date) {
-			return moment(date, 'YYYYMM').format('YYYY')
-		},
 	},
 
 	mixins: [FilesSelectionMixin],
@@ -171,6 +155,9 @@ export default defineComponent({
 	},
 
 	methods: {
+		dateMonth: formatMonth,
+		dateYear: formatYear,
+
 		openViewer(fileId: string) {
 			window.OCA.Viewer.open({
 				fileInfo: toViewerFileInfo(this.files[fileId]),
