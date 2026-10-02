@@ -4,14 +4,33 @@
 -->
 <template>
 	<div class="files-list-viewer">
-		<NcEmptyContent
+		<div
 			v-if="emptyMessage !== '' && photosCount === 0 && !loading"
-			key="emptycontent"
-			:name="emptyMessage">
-			<template #icon>
-				<PackageVariant />
-			</template>
-		</NcEmptyContent>
+			:key="routeName"
+			class="timeline__empty-content">
+			<div class="empty-collection-content" :data-title="routeName">
+				<div class="empty-content__wrapper">
+					<div class="empty-content__image" />
+				</div>
+				<div class="empty-content__name">
+					{{ emptyName }}
+				</div>
+				<div class="empty-content__action">
+					{{ emptyAction }}
+				</div>
+				<NcButton
+					ref="newAlbumButton"
+					:aria-label="emptyMessage"
+					data-cy-header-action="create-album"
+					variant="primary"
+					@click="$emit('add-collection', true)">
+					{{ emptyMessage }}
+					<template #icon>
+						<PlusBoxMultipleOutline />
+					</template>
+				</NcButton>
+			</div>
+		</div>
 
 		<TiledLayout :baseHeight="baseHeight" :sections="itemsBySections">
 			<template #default="{ tiledSections }">
@@ -21,7 +40,7 @@
 					:sections="tiledSections"
 					:scrollToKey="scrollToSection"
 					:headerHeight="sectionHeaderHeight"
-					@needContent="needContent">
+					@need-content="needContent">
 					<template #default="{ visibleSections }">
 						<div v-for="section of visibleSections" :key="section.id">
 							<template v-if="section.id !== ''">
@@ -76,9 +95,10 @@ import type { TiledItem } from '../services/TiledLayout.ts'
 import type { PhotoFile } from '../store/files.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
-import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
+import { t } from '@nextcloud/l10n'
+import NcButton from '@nextcloud/vue/components/NcButton'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
-import PackageVariant from 'vue-material-design-icons/PackageVariant.vue'
+import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
 import TiledLayout from '../components/TiledLayout/TiledLayout.vue'
 import VirtualScrolling from '../components/VirtualScrolling.vue'
 import { fetchFile } from '../services/fileFetcher.ts'
@@ -89,8 +109,8 @@ export default {
 	name: 'FilesListViewer',
 
 	components: {
-		PackageVariant,
-		NcEmptyContent,
+		PlusBoxMultipleOutline,
+		NcButton,
 		NcLoadingIcon,
 		TiledLayout,
 		VirtualScrolling,
@@ -158,7 +178,7 @@ export default {
 		},
 	},
 
-	emits: ['needContent'],
+	emits: ['need-content', 'add-collection'],
 
 	setup() {
 		return { filesStore: useFilesStore(), userConfigStore: useUserConfigStore() }
@@ -233,6 +253,30 @@ export default {
 		croppedLayout(): boolean {
 			return this.userConfigStore.croppedLayout
 		},
+
+		routeName() {
+			return this.$route.name?.toString() ?? ''
+		},
+
+		emptyName() {
+			if (this.routeName === 'photos') {
+				return this.t('photos', 'No photos available yet.')
+			}
+			if (this.routeName === 'videos') {
+				return this.t('photos', 'No videos available yet.')
+			}
+			return this.t('photos', 'No media available yet.')
+		},
+
+		emptyAction() {
+			if (this.routeName === 'photos') {
+				return this.t('photos', 'Create an album and add your photos there.')
+			}
+			if (this.routeName === 'videos') {
+				return this.t('photos', 'Create an album and add your videos there.')
+			}
+			return this.t('photos', 'Create an album and add your media there.')
+		},
 	},
 
 	mounted() {
@@ -240,7 +284,7 @@ export default {
 		subscribe('files:node:deleted', this.handleFileDeleted)
 	},
 
-	unmounted() {
+	destroyed() {
 		unsubscribe('files:node:updated', this.handleFileUpdated)
 		unsubscribe('files:node:deleted', this.handleFileDeleted)
 	},
@@ -248,16 +292,21 @@ export default {
 	methods: {
 		// Ask the parent for more content.
 		needContent(): void {
-			this.$emit('needContent')
+			this.$emit('need-content')
 		},
 
 		mapFileToItem(fileId: string): TiledItem {
 			const file = this.files[fileId] as File
+			const isVideo = file.mime?.startsWith('video/')
+			const metadata = isVideo
+				? (this.croppedLayout ? { width: 100, height: 200 } : { width: 200, height: 400 })
+				: file.attributes['metadata-photos-size']
+
 			return {
 				id: file.fileid?.toString() as string,
-				width: file.attributes['metadata-photos-size'].width,
-				height: file.attributes['metadata-photos-size'].height,
-				ratio: this.croppedLayout ? 1 : file.attributes['metadata-photos-size'].width / file.attributes['metadata-photos-size'].height,
+				width: metadata.width,
+				height: metadata.height,
+				ratio: this.croppedLayout ? 1 : metadata.width / metadata.height,
 			}
 		},
 
@@ -273,6 +322,8 @@ export default {
 		handleFileDeleted({ fileid }: File) {
 			this.filesStore.deleteFile(fileid as number)
 		},
+
+		t,
 	},
 }
 </script>
