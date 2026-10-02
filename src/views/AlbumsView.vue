@@ -40,23 +40,41 @@
 					<template #default>
 						<span class="album__name">
 							{{ collection.basename }}
+							<ExportVariant v-if="isShared(collection)" :size="20" />
 						</span>
 					</template>
 
 					<template #subtitle>
 						<div class="album__details">
-							{{ collection.attributes.date }} ⸱ {{ n('photos', '%n item', '%n photos and videos', collection.attributes.nbItems) }}
+							{{ n('photos', '%n element', '%n elements', collection.attributes.nbItems) }} ⸱ {{ t('photos', 'Created') }} {{ collection.attributes.date }}
 						</div>
 					</template>
 				</CollectionCover>
 			</template>
 
 			<template #empty-collections-list>
-				<NcEmptyContent :name="t('photos', 'There is no album yet!')">
-					<template #icon>
-						<ImageMultipleOutline />
-					</template>
-				</NcEmptyContent>
+				<div class="albums__empty-content">
+					<div class="empty-collection-content">
+						<div class="empty-content__wrapper">
+							<div class="empty-content__image empty-collection-content__image" />
+						</div>
+						<div class="empty-content__name">
+							{{ t('photos', 'Create Albums for your Photos and Videos') }}
+						</div>
+						<div class="empty-content__action">
+							{{ t('photos', 'You can organize all your photos in as many albums as you like. You have not created an album yet.') }}
+						</div>
+						<NcButton
+							:aria-label="isMobile ? t('photos', 'New album') : undefined"
+							variant="primary"
+							@click="showAlbumCreationForm = true">
+							<template #icon>
+								<Plus :size="20" />
+							</template>
+							{{ t('photos', 'New album') }}
+						</NcButton>
+					</div>
+				</div>
 			</template>
 		</CollectionsList>
 
@@ -89,9 +107,8 @@ import { generateUrl } from '@nextcloud/router'
 import { useIsSmallMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { defineComponent } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
-import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcModal from '@nextcloud/vue/components/NcModal'
-import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
+import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import CollectionCover from '../components/Collection/CollectionCover.vue'
@@ -107,14 +124,13 @@ export default defineComponent({
 	name: 'AlbumsView',
 	components: {
 		Plus,
-		ImageMultipleOutline,
 		NcModal,
 		NcButton,
-		NcEmptyContent,
 		CollectionsList,
 		CollectionCover,
 		HeaderNavigation,
 		AlbumForm,
+		ExportVariant,
 		PhotosPicker,
 	},
 
@@ -143,7 +159,19 @@ export default defineComponent({
 
 	computed: {
 		albums() {
-			return this.albumsStore.albums
+			const albums = this.albumsStore.albums
+
+			if (!albums || typeof albums !== 'object') {
+				return []
+			}
+
+			const list = Array.isArray(albums)
+				? [...albums]
+				: Object.values(albums)
+
+			return list.sort((a, b) =>
+				a.basename.localeCompare(b.basename, 'de', { sensitivity: 'base' })
+			)
 		},
 	},
 
@@ -222,18 +250,32 @@ export default defineComponent({
 	flex-direction: column;
 
 	.album__name {
-		font-weight: normal;
+		font-weight: bold;
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
-		font-size: 20px;
+		font-size: 1.25rem;
 		color: var(--color-main-text);
+
+		.material-design-icon {
+			display: inline-flex;
+			vertical-align: text-top;
+		}
+	}
+
+	.album__details {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
 	}
 }
 
 .album-creation__heading {
-	padding: calc(var(--default-grid-baseline) * 4);
-	margin-bottom: 0px;
-	padding-bottom: 0px;
+	font-size: 1.5rem;
+	height: unset;
+	line-height: unset;
+	margin-block: 1.5rem 1rem;
+	min-height: unset;
+	text-align: center;
 }
 </style>
