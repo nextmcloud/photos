@@ -27,7 +27,6 @@ import { defineComponent } from 'vue'
 import NcFormBox from '@nextcloud/vue/components/NcFormBox'
 import NcFormBoxButton from '@nextcloud/vue/components/NcFormBoxButton'
 import FolderOpenOutline from 'vue-material-design-icons/FolderOpenOutline.vue'
-import HomeOutline from 'vue-material-design-icons/HomeOutline.vue'
 import { logger } from '../../services/logger.ts'
 import { useUserConfigStore } from '../../store/userConfig.ts'
 
@@ -40,19 +39,19 @@ export default defineComponent({
 		FolderOpenOutline,
 	},
 
+	emits: ['folders-update'],
+
 	setup() {
 		return { userConfigStore: useUserConfigStore() }
-	},
-
-	data() {
-		return {
-			HomeOutline,
-		}
 	},
 
 	computed: {
 		photosLocation(): string {
 			return this.userConfigStore.photosLocation
+		},
+
+		photosSourceFolders(): string[] {
+			return this.userConfigStore.photosSourceFolders
 		},
 
 		photosLocationName(): string {
@@ -63,6 +62,17 @@ export default defineComponent({
 					return this.photosLocation
 			}
 		},
+
+		isPhotosLocationInPhotosSourceFolders(): boolean {
+			const normalizedPath = this.photosLocation.replace(/\/+$/, '')
+
+			return this.photosSourceFolders.some((source) => {
+				const normalizedSource = source.replace(/\/+$/, '')
+
+				return normalizedPath === normalizedSource
+					|| normalizedPath.startsWith(normalizedSource + '/')
+			})
+		},
 	},
 
 	methods: {
@@ -72,7 +82,7 @@ export default defineComponent({
 
 		async selectPhotosFolder(): Promise<void> {
 			const pickedFolder = await this.openFilePicker(t('photos', 'Select the default upload location for your media'))
-			this.updatePhotosFolder(pickedFolder)
+			await this.updatePhotosFolder(pickedFolder)
 		},
 
 		async openFilePicker(title: string): Promise<string> {
@@ -83,6 +93,7 @@ export default defineComponent({
 				.startAt(this.photosLocation)
 				.addButton({
 					label: t('photos', 'Pick folder'),
+					variant: 'primary',
 					callback: (nodes) => logger.debug('Picked', { nodes }),
 				})
 				.build()
@@ -90,8 +101,13 @@ export default defineComponent({
 			return picker.pick()
 		},
 
-		updatePhotosFolder(path: string): void {
-			this.userConfigStore.updateUserConfig('photosLocation', path)
+		async updatePhotosFolder(path: string): Promise<void> {
+			await this.userConfigStore.updateUserConfig('photosLocation', path)
+
+			this.$emit(
+				'folders-update',
+				this.isPhotosLocationInPhotosSourceFolders,
+			)
 		},
 
 		t,
