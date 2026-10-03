@@ -79,10 +79,10 @@
 						v-if="album !== undefined"
 						#right>
 						<NcUploadPicker
-							v-if="albumAsFolder !== undefined"
+							v-if="album !== undefined"
 							:accept="allowedMimes"
 							:content="uploadDestinationContent"
-							:destination="albumAsFolder"
+							:destination="album"
 							:multiple="true"
 							@upload:finished="onUpload" />
 
@@ -222,9 +222,6 @@ import type { IUpload } from '@nextcloud/files/upload'
 import type { Album } from '../store/albums.ts'
 import type { PhotoFile } from '../store/files.ts'
 
-import { getCurrentUser } from '@nextcloud/auth'
-import { Folder } from '@nextcloud/files'
-import { davParsePermissions } from '@nextcloud/files/dav'
 import { getUploader } from '@nextcloud/files/upload'
 import { translate, translatePlural } from '@nextcloud/l10n'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
@@ -409,19 +406,6 @@ export default {
 
 		croppedLayout(): boolean {
 			return this.userConfigStore.croppedLayout
-		},
-
-		albumAsFolder(): Folder | undefined {
-			if (this.album === undefined) {
-				return undefined
-			}
-
-			return new Folder({
-				...this.album,
-				owner: getCurrentUser()?.uid ?? '',
-				source: this.album.source ?? '',
-				permissions: davParsePermissions(this.album.permissions),
-			})
 		},
 	},
 
