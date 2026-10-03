@@ -27,7 +27,7 @@
 			:resetSelection="resetSelection" />
 
 		<!-- No content -->
-		<slot v-if="sortedCollectionFileIds.length === 0 && !loading" name="emptyContent" />
+		<slot v-if="sortedCollectionFileIds.length === 0 && !loading" name="empty-content" />
 
 		<!-- Media list -->
 		<FilesListViewer
@@ -37,13 +37,24 @@
 			:fileIds="sortedCollectionFileIds"
 			:baseHeight="isMobile ? 120 : 200"
 			:loading="loading">
-			<template #default="{ file }">
+			<template #default="{ file, isHeader }">
+				<h2
+					v-if="isHeader"
+					:id="`file-picker-section-header-${file.id}`"
+					class="section-header">
+					<b>{{ dateMonth(file.id) }}</b>
+					{{ dateYear(file.id) }}
+				</h2>
 				<FileComponent
+					v-else
 					:file="files[file.id]"
 					:allowSelection="allowSelection"
 					:selected="selection[file.id] === true"
+					:isCollection="true"
 					@click="openViewer"
-					@selectToggled="onFileSelectToggle"
+					@favorite="toggleFavorite"
+					@remove="handleFileDeleted"
+					@select-toggled="onFileSelectToggle"
 					@deleted="onPhotoDeleted" />
 			</template>
 		</FilesListViewer>
@@ -54,6 +65,7 @@
 import type { File } from '@nextcloud/files'
 import type { PropType } from 'vue'
 import type { Collection } from '../../services/collectionFetcher.js'
+import { formatMonth, formatYear } from '../../utils/dateUtils.ts'
 import type { PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
@@ -130,7 +142,7 @@ export default defineComponent({
 		},
 
 		sortedCollectionFileIds() {
-			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1].attributes.timestamp < this.files[fileId2].attributes.timestamp ? -1 : 1)
+			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1]?.attributes.timestamp < this.files[fileId2]?.attributes.timestamp ? -1 : 1)
 		},
 	},
 
@@ -138,11 +150,14 @@ export default defineComponent({
 		subscribe('files:node:deleted', this.handleFileDeleted)
 	},
 
-	unmounted() {
+	destroyed() {
 		unsubscribe('files:node:deleted', this.handleFileDeleted)
 	},
 
 	methods: {
+		dateMonth: formatMonth,
+		dateYear: formatYear,
+
 		openViewer(fileId: string) {
 			window.OCA.Viewer.open({
 				fileInfo: toViewerFileInfo(this.files[fileId]),
@@ -163,6 +178,11 @@ export default defineComponent({
 
 		removeFromCollection(fileId: number) {
 			this.collectionsStore.removeFileIdsFromCollection(this.collection.root + this.collection.path, [fileId?.toString()])
+		},
+
+		async toggleFavorite(fileId) {
+			const newState = this.filesStore.files[fileId].attributes.favorite ? 0 : 1
+			await this.filesStore.toggleFavoriteForFiles([fileId], newState)
 		},
 
 		t: translate,
