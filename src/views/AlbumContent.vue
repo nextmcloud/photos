@@ -78,14 +78,13 @@
 					<template
 						v-if="album !== undefined"
 						#right>
-						<UploadPicker
+						<NcUploadPicker
+							v-if="albumAsFolder !== undefined"
 							:accept="allowedMimes"
-							:context="uploadContext"
+							:content="uploadDestinationContent"
 							:destination="albumAsFolder"
-							:root="uploadContext.root"
 							:multiple="true"
-							:noMenu="true"
-							@uploaded="onUpload" />
+							@upload:finished="onUpload" />
 
 						<NcButton
 							variant="primary"
@@ -218,13 +217,15 @@
 </template>
 
 <script lang="ts">
-import type { Album } from '../store/albums.js'
+import type { Node } from '@nextcloud/files'
+import type { IUpload } from '@nextcloud/files/upload'
+import type { Album } from '../store/albums.ts'
 import type { PhotoFile } from '../store/files.ts'
 
 import { getCurrentUser } from '@nextcloud/auth'
 import { Folder, davParsePermissions } from '@nextcloud/files'
+import { getUploader } from '@nextcloud/files/upload'
 import { translate, translatePlural } from '@nextcloud/l10n'
-import { UploadPicker, getUploader } from '@nextcloud/upload'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActions from '@nextcloud/vue/components/NcActions'
@@ -233,7 +234,7 @@ import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import NcModal from '@nextcloud/vue/components/NcModal'
-import debounce from 'debounce'
+import NcUploadPicker from '@nextcloud/vue/components/NcUploadPicker'
 import Close from 'vue-material-design-icons/Close.vue'
 import ImagePlusOutline from 'vue-material-design-icons/ImagePlusOutline.vue'
 import PencilOutline from 'vue-material-design-icons/PencilOutline.vue'
@@ -252,7 +253,7 @@ import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
 import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.js'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
-import allowedMimes from '../services/AllowedMimes.ts'
+import { allMimes as allowedMimes } from '../services/AllowedMimes.ts'
 import { logger } from '../services/logger.ts'
 import { albumFilesExtraProps, albumsExtraProps, useAlbumsStore } from '../store/albums.ts'
 import { useCollectionsStore } from '../store/collections.ts'
@@ -280,11 +281,11 @@ export default {
 		NcEmptyContent,
 		NcLoadingIcon,
 		NcModal,
+		NcUploadPicker,
 		PencilOutline,
 		PhotosPicker,
 		Plus,
 		ShareVariantOutline,
-		UploadPicker,
 		ViewDashboardOutline,
 		ViewGridOutline,
 	},
@@ -409,15 +410,7 @@ export default {
 			return this.userConfigStore.croppedLayout
 		},
 
-		uploadContext() {
-			return {
-				...this.album,
-				route: this.$route.name,
-				root: `dav/photos/${getCurrentUser()?.uid}/albums`,
-			}
-		},
-
-		albumAsFolder() {
+		albumAsFolder(): Folder | undefined {
 			if (this.album === undefined) {
 				return undefined
 			}
@@ -556,9 +549,23 @@ export default {
 			this.userConfigStore.updateUserConfig('croppedLayout', value)
 		},
 
-		onUpload: debounce(function() {
-			this.fetchAlbumContent()
-		}, 300),
+		/**
+		 * Return the existing album items so NcUploadPicker can detect
+		 * filename conflicts in the upload destination.
+		 */
+		async uploadDestinationContent(): Promise<Node[]> {
+			return this.albumPhotos
+		},
+
+		/**
+		 * Refresh the album after a file has been uploaded.
+		 *
+		 * @param _upload Finished upload
+		 */
+		async onUpload(_upload: IUpload) {
+			await this.fetchAlbumContent()
+			await this.fetchAlbum()
+		},
 
 		t: translate,
 		n: translatePlural,
@@ -593,6 +600,30 @@ export default {
 
 	&__details {
 		color: var(--color-text-lighter);
+	}
+}
+
+.photos-navigation {
+	position: relative;
+
+	// Add space at the bottom for the progress bar.
+	&--uploading {
+		margin-bottom: 30px;
+	}
+
+	:deep(.upload-picker) {
+		.upload-picker__progress {
+			position: absolute;
+			bottom: -30px;
+			inset-inline-start: 64px;
+			margin: 0;
+		}
+
+		.upload-picker__cancel {
+			position: absolute;
+			bottom: -24px;
+			inset-inline-end: 50px;
+		}
 	}
 }
 </style>
