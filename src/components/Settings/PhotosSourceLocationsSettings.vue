@@ -19,15 +19,16 @@
 				<PhotosFolder
 					:path="source"
 					canDelete
-					:rootFolderLabel="t('photos', 'All folders')"
+					:rootFolderLabel="t('photos', 'Entire MagentaCLOUD')"
 					:rootFolderIcon="FolderMultipleOutline"
-					@removeFolder="removeSourceFolder(index)" />
+					@removeFolder="removeSourceFolder(source)" />
 			</li>
 		</ul>
 
 		<NcButton
 			:aria-label="t('photos', 'Add a Photos source for the timelines')"
 			:wide="true"
+			variant="tertiary"
 			@click="debounceAddSourceFolder">
 			<template #icon>
 				<Plus :size="20" />
@@ -62,6 +63,8 @@ export default defineComponent({
 		return { userConfigStore: useUserConfigStore() }
 	},
 
+	emits: ['folders-update'],
+
 	data() {
 		return {
 			FolderMultipleOutline,
@@ -69,8 +72,23 @@ export default defineComponent({
 	},
 
 	computed: {
+		photosLocation(): string {
+			return this.userConfigStore.photosLocation
+		},
+
 		photosSourceFolders(): string[] {
 			return this.userConfigStore.photosSourceFolders
+		},
+
+		isPhotosLocationInPhotosSourceFolders(): boolean {
+			const normalizedPath = this.photosLocation.replace(/\/+$/, '')
+
+			return this.photosSourceFolders.some((source) => {
+				const normalizedSource = source.replace(/\/+$/, '')
+
+				return normalizedPath === normalizedSource
+					|| normalizedPath.startsWith(normalizedSource + '/')
+			})
 		},
 	},
 
@@ -86,6 +104,7 @@ export default defineComponent({
 				.allowDirectories()
 				.addButton({
 					label: t('photos', 'Pick folder'),
+					variant: 'primary',
 					callback: (nodes) => logger.debug('Picked', { nodes }),
 				})
 				.build()
@@ -93,18 +112,52 @@ export default defineComponent({
 			return picker.pick()
 		},
 
-		async addSourceFolder() {
+		async addSourceFolder(): Promise<void> {
 			const pickedFolder = await this.openFilePicker(t('photos', 'Select a source folder for your media'))
+
 			if (this.photosSourceFolders.includes(pickedFolder)) {
 				return
 			}
-			this.userConfigStore.updateUserConfig('photosSourceFolders', [...this.photosSourceFolders, pickedFolder])
+
+			const normalizedPickedFolder = normalizePath(pickedFolder)
+
+			const folderAlreadyExists = this.photosSourceFolders.some((source) => {
+				return normalizePath(source) === normalizedPickedFolder
+			})
+
+			if (folderAlreadyExists) {
+				return
+			}
+
+			const folders = [
+				...this.photosSourceFolders,
+				pickedFolder,
+			]
+
+			await this.userConfigStore.updateUserConfig(
+				'photosSourceFolders',
+				[...this.photosSourceFolders, pickedFolder],
+			)
+
+			this.$emit(
+				'folders-update',
+				this.isPhotosLocationInPhotosSourceFolders,
+			)
 		},
 
-		removeSourceFolder(index) {
+		async removeSourceFolder(index: number): Promise<void> {
 			const folders = [...this.photosSourceFolders]
 			folders.splice(index, 1)
-			this.userConfigStore.updateUserConfig('photosSourceFolders', folders)
+
+			await this.userConfigStore.updateUserConfig(
+				'photosSourceFolders',
+				folders,
+			)
+
+			this.$emit(
+				'folders-update',
+				this.isPhotosLocationInPhotosSourceFolders,
+			)
 		},
 
 		t,
