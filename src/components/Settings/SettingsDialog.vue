@@ -9,7 +9,7 @@
 		:name="t('photos', 'Photos settings')"
 		:legacy="false"
 		@update:open="onClose">
-		<NcAppSettingsSection id="layout-settings" :name="t('photos', 'General')">
+		<NcAppSettingsSection id="general-settings" :name="t('photos', 'General')">
 			<PhotosSourceLocationsSettings @folders-update="handleFoldersUpdate" />
 			<PhotosUploadLocationSettings @folders-update="handleFoldersUpdate" />
 
