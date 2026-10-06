@@ -173,7 +173,7 @@
 
 		<PhotosPicker
 			v-if="album !== undefined"
-			:open.sync="showAddPhotosModal"
+			v-model:open="showAddPhotosModal"
 			:blacklistIds="albumFileIds"
 			:destination="album.basename"
 			:name="t('photos', 'Add photos to {albumName}', { albumName: albumName }, undefined, { escape: false, sanitize: false })"
