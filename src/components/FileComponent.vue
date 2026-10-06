@@ -296,12 +296,15 @@ export default {
 	},
 
 	beforeUnmount() {
-		// cancel any pending load
-		if (this.$refs.imgSmall !== undefined) {
-			(this.$refs.imgSmall as HTMLImageElement).src = ''
+		const imgSmall = this.$refs.imgSmall as HTMLImageElement | null | undefined
+		const imgLarge = this.$refs.imgLarge as HTMLImageElement | null | undefined
+
+		if (imgSmall) {
+			imgSmall.removeAttribute('src')
 		}
-		if (this.$refs.imgLarge !== undefined) {
-			(this.$refs.imgLarge as HTMLImageElement).src = ''
+
+		if (imgLarge) {
+			imgLarge.removeAttribute('src')
 		}
 
 		this.cancelLongPress()
