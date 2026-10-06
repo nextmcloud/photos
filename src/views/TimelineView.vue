@@ -61,21 +61,21 @@
 						name="photos-density"
 						value="small"
 						:modelValue="gridDensity"
-						@update:model-value="setGridDensity">
+						@update:modelValue="setGridDensity">
 						{{ t('photos', 'Small tiles') }}
 					</NcActionRadio>
 					<NcActionRadio
 						name="photos-density"
 						value="medium"
 						:modelValue="gridDensity"
-						@update:model-value="setGridDensity">
+						@update:modelValue="setGridDensity">
 						{{ t('photos', 'Default') }}
 					</NcActionRadio>
 					<NcActionRadio
 						name="photos-density"
 						value="large"
 						:modelValue="gridDensity"
-						@update:model-value="setGridDensity">
+						@update:modelValue="setGridDensity">
 						{{ t('photos', 'Large tiles') }}
 					</NcActionRadio>
 				</NcActions>
@@ -215,7 +215,7 @@
 			<h2 class="album-creation__heading">
 				{{ t('photos', 'New album') }}
 			</h2>
-			<AlbumForm :filters-value="selectedFilters" @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
+			<AlbumForm :filtersValue="selectedFilters" @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
 		</NcModal>
 
 		<NcModal
@@ -223,7 +223,7 @@
 			key="albumPicker"
 			labelId="album-picker"
 			@close="showAlbumPicker = false">
-			<AlbumPicker @album-picked="addSelectionToAlbum" />
+			<AlbumPicker @albumPicked="addSelectionToAlbum" />
 		</NcModal>
 
 		<PhotosPicker
@@ -403,7 +403,7 @@ export default {
 
 		shouldFavoriteSelection(): boolean {
 			// Favorite all selection if at least one file is not in the favorites.
-			return this.selectedFileIds.some((fileId) => this.filesStore.files[fileId]?.attributes.favorite === 0)
+			return this.selectedFileIds.some((fileId) => this.filesStore.files[fileId].attributes.favorite === 0)
 		},
 
 		files() {
@@ -488,7 +488,7 @@ export default {
 		window.addEventListener('resize', this.handleResize)
 	},
 
-	destroyed() {
+	unmounted() {
 		unsubscribe(configChangedEvent, this.handleUserConfigChange)
 		window.removeEventListener('resize', this.handleResize)
 	},
@@ -527,7 +527,7 @@ export default {
 		onFileSelectToggle({ id, value }: { id: string, value: boolean }): void {
 			const fileIds = this.burstStacks[id]?.memberIds ?? [id]
 			for (const fileId of fileIds) {
-				this.$set(this.selection, fileId, value)
+				this.selection[fileId] = value
 			}
 		},
 
