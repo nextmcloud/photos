@@ -129,8 +129,18 @@ export default defineComponent({
 			return this.filesStore.files
 		},
 
-		sortedCollectionFileIds() {
-			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1].attributes.timestamp < this.files[fileId2].attributes.timestamp ? -1 : 1)
+		sortedCollectionFileIds(): string[] {
+			return this.collectionFileIds
+				.filter((fileId) => this.files[fileId] !== undefined)
+				.toSorted((fileId1, fileId2) => {
+					const file1 = this.files[fileId1]
+					const file2 = this.files[fileId2]
+
+					const timestamp1 = Number(file1.attributes.timestamp ?? 0)
+					const timestamp2 = Number(file2.attributes.timestamp ?? 0)
+
+					return timestamp1 - timestamp2
+				})
 		},
 	},
 
