@@ -4,22 +4,25 @@
 -->
 
 <template>
-	<div class="photos-location">
+	<div class="photos-locations">
+		<div class="photos-locations__description">
+			{{ t('photos', 'Choose the folder where photos and albums are uploaded to.') }}
+		</div>
+
 		<NcFormBox>
 			<NcFormBoxButton
-				:description="photosLocationName"
 				:invertedAccent="true"
 				@click="debounceSelectPhotosFolder">
 				<template #icon>
 					<FolderOpenOutline :size="20" />
 				</template>
-				{{ t('photos', 'Upload folder') }}
+				{{ photosLocationName }}
 			</NcFormBoxButton>
 		</NcFormBox>
 	</div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { getFilePickerBuilder } from '@nextcloud/dialogs'
 import { t } from '@nextcloud/l10n'
 import debounce from 'debounce'
@@ -27,6 +30,7 @@ import { defineComponent } from 'vue'
 import NcFormBox from '@nextcloud/vue/components/NcFormBox'
 import NcFormBoxButton from '@nextcloud/vue/components/NcFormBoxButton'
 import FolderOpenOutline from 'vue-material-design-icons/FolderOpenOutline.vue'
+import HomeOutline from 'vue-material-design-icons/HomeOutline.vue'
 import { logger } from '../../services/logger.ts'
 import { useUserConfigStore } from '../../store/userConfig.ts'
 
@@ -70,14 +74,10 @@ export default defineComponent({
 		},
 
 		isPhotosLocationInPhotosSourceFolders(): boolean {
-			const normalizedPath = this.photosLocation.replace(/\/+$/, '')
-
-			return this.photosSourceFolders.some((source) => {
-				const normalizedSource = source.replace(/\/+$/, '')
-
-				return normalizedPath === normalizedSource
-					|| normalizedPath.startsWith(normalizedSource + '/')
-			})
+			return this.isPathInsideSources(
+				this.photosLocation,
+				this.photosSourceFolders,
+			)
 		},
 	},
 
@@ -87,7 +87,14 @@ export default defineComponent({
 		}),
 
 		async selectPhotosFolder(): Promise<void> {
-			const pickedFolder = await this.openFilePicker(t('photos', 'Select the default upload location for your media'))
+			const pickedFolder = await this.openFilePicker(
+				t('photos', 'Select the default upload location for your media'),
+			)
+
+			if (!pickedFolder) {
+				return
+			}
+
 			await this.updatePhotosFolder(pickedFolder)
 		},
 
@@ -99,7 +106,6 @@ export default defineComponent({
 				.startAt(this.photosLocation)
 				.addButton({
 					label: t('photos', 'Pick folder'),
-					variant: 'primary',
 					callback: (nodes) => logger.debug('Picked', { nodes }),
 				})
 				.build()
@@ -112,8 +118,28 @@ export default defineComponent({
 
 			this.$emit(
 				'folders-update',
-				this.isPhotosLocationInPhotosSourceFolders,
+				this.isPathInsideSources(path, this.photosSourceFolders),
 			)
+		},
+
+		normalizePath(path: string): string {
+			return path.replace(/\/+$/, '')
+		},
+
+		isPathInsideSource(path: string, source: string): boolean {
+			const normalizedPath = this.normalizePath(path)
+			const normalizedSource = this.normalizePath(source)
+
+			return normalizedPath === normalizedSource
+				|| normalizedPath.startsWith(normalizedSource + '/')
+		},
+
+		isPathInsideSources(path: string, sources: string[]): boolean {
+			if (!path || sources.length === 0) {
+				return false
+			}
+
+			return sources.some((source) => this.isPathInsideSource(path, source))
 		},
 
 		t,
@@ -122,9 +148,17 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.photos-location {
-	display: flex;
-	flex-direction: column;
+.photos-locations {
+	&__title {
+		padding-inline-start: 12px;
+		font-weight: bold;
+	}
+
+	&__description {
+		padding-inline-start: 12px;
+		color: var(--color-text-lighter);
+		margin: 0 0 16px;
+	}
 
 	.folder {
 		margin-bottom: 16px;
