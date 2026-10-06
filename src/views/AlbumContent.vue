@@ -79,10 +79,10 @@
 						v-if="album !== undefined"
 						#right>
 						<NcUploadPicker
-							v-if="album !== undefined"
+							v-if="uploadFolder !== undefined"
 							:accept="allowedMimes"
 							:content="uploadDestinationContent"
-							:destination="album"
+							:destination="uploadFolder"
 							:multiple="true"
 							@upload:finished="onUpload" />
 
@@ -217,11 +217,14 @@
 </template>
 
 <script lang="ts">
-import type { Node } from '@nextcloud/files'
-import type { IUpload } from '@nextcloud/files/upload'
 import type { Album } from '../store/albums.ts'
 import type { PhotoFile } from '../store/files.ts'
 
+import type { Folder, Node } from '@nextcloud/files'
+import type { IUpload } from '@nextcloud/files/upload'
+
+import { FileType } from '@nextcloud/files'
+import { defaultRootPath } from '@nextcloud/files/dav'
 import { getUploader } from '@nextcloud/files/upload'
 import { translate, translatePlural } from '@nextcloud/l10n'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
@@ -252,6 +255,8 @@ import PhotosPicker from '../components/PhotosPicker.vue'
 import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.js'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import { allMimes as allowedMimes } from '../services/AllowedMimes.ts'
+import { fetchFile } from '../services/fileFetcher.ts'
+import { getFolderContent } from '../services/FolderContent.ts'
 import { logger } from '../services/logger.ts'
 import { albumFilesExtraProps, albumsExtraProps, useAlbumsStore } from '../store/albums.ts'
 import { useCollectionsStore } from '../store/collections.ts'
@@ -320,6 +325,7 @@ export default {
 			loadingAddCollaborators: false,
 			allowedMimes,
 			uploader: getUploader(),
+			uploadFolder: undefined as Folder | undefined,
 			windowWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
 		}
 	},
@@ -407,11 +413,35 @@ export default {
 		croppedLayout(): boolean {
 			return this.userConfigStore.croppedLayout
 		},
+
+		photosLocation(): string {
+			return this.userConfigStore.photosLocation || '/'
+		},
+
+		uploadFolderPath(): string {
+			const location = this.photosLocation
+				.replace(/^\/+/, '')
+				.replace(/\/+$/, '')
+
+			if (location === '') {
+				return defaultRootPath
+			}
+
+			return `${defaultRootPath.replace(/\/+$/, '')}/${location}`
+		},
+	},
+
+	watch: {
+		photosLocation() {
+			this.fetchUploadFolder()
+		},
 	},
 
 	async mounted() {
 		this.fetchAlbum()
 		this.fetchAlbumContent()
+		await this.fetchUploadFolder()
+
 		window.addEventListener('resize', this.handleResize)
 	},
 
@@ -534,22 +564,126 @@ export default {
 			this.userConfigStore.updateUserConfig('croppedLayout', value)
 		},
 
-		/**
-		 * Return the existing album items so NcUploadPicker can detect
-		 * filename conflicts in the upload destination.
-		 */
-		async uploadDestinationContent(): Promise<Node[]> {
-			return this.albumPhotos
+		async fetchUploadFolder(): Promise<void> {
+			try {
+				const node = await fetchFile(this.uploadFolderPath)
+
+				if (
+					node === null
+					|| node === undefined
+					|| node.type !== FileType.Folder
+					|| !node.source
+				) {
+					this.uploadFolder = undefined
+
+					logger.error('Invalid Photos upload folder', {
+						path: this.photosLocation,
+						davPath: this.uploadFolderPath,
+						node,
+					})
+					return
+				}
+
+				this.uploadFolder = node as Folder
+
+				logger.debug('Photos upload folder resolved', {
+					path: this.photosLocation,
+					source: node.source,
+				})
+			} catch (error) {
+				this.uploadFolder = undefined
+
+				logger.error('Failed to fetch Photos upload folder', {
+					error,
+					path: this.photosLocation,
+					davPath: this.uploadFolderPath,
+				})
+			}
 		},
 
-		/**
-		 * Refresh the album after a file has been uploaded.
-		 *
-		 * @param _upload Finished upload
-		 */
-		async onUpload(_upload: IUpload) {
-			await this.fetchAlbumContent()
-			await this.fetchAlbum()
+		async uploadDestinationContent(): Promise<Node[]> {
+			const { folders, files } = await getFolderContent(this.photosLocation)
+
+			return [
+				...folders,
+				...files,
+			]
+		},
+
+		async onUpload(upload) {
+			try {
+				const getFileUploads = (item) => {
+					if (item.children?.length) {
+						return item.children.flatMap(child => getFileUploads(child))
+					}
+					return item.source ? [item] : []
+				}
+
+				const waitForFinished = (item) => {
+					if (item.status === 4) {
+						return Promise.resolve()
+					}
+
+					return new Promise((resolve, reject) => {
+						const finished = () => {
+							item.removeEventListener('finished', finished)
+							if (item.status === 4) {
+								resolve()
+							} else {
+								reject(new Error(`Upload finished with status ${item.status}`))
+							}
+						}
+
+						item.addEventListener('finished', finished)
+
+						if (item.status === 4) {
+							finished()
+						}
+					})
+				}
+
+				const uploads = getFileUploads(upload)
+
+				await Promise.all(uploads.map(waitForFinished))
+
+				for (const fileUpload of uploads) {
+					const source = fileUpload.source
+					const davMarker = '/remote.php/dav'
+					const davIndex = source.indexOf(davMarker)
+
+					if (davIndex === -1) {
+						logger.error('Could not extract DAV path from uploaded file', { source })
+						continue
+					}
+
+					const davPath = source.slice(davIndex + davMarker.length)
+					const uploadedNode = await fetchFile(davPath)
+
+					if (!uploadedNode?.id) {
+						logger.error('Could not determine uploaded file id', {
+							source,
+							davPath,
+							uploadedNode,
+						})
+						continue
+					}
+
+					this.filesStore.appendFiles([uploadedNode])
+
+					await this.collectionsStore.addFilesToCollection(
+						this.album.root + this.album.path,
+						[String(uploadedNode.id)],
+					)
+				}
+
+				await this.fetchAlbumContent()
+				await this.fetchAlbum()
+			} catch (error) {
+				logger.error('Failed to add uploaded file to album', {
+					error,
+					upload,
+				})
+			}
 		},
 
 		t: translate,
