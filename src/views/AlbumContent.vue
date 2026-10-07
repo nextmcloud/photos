@@ -84,7 +84,8 @@
 							:content="uploadDestinationContent"
 							:destination="uploadFolder"
 							:multiple="true"
-							@upload:finished="onUpload" />
+							@upload:finished="onUploadFinished"
+							@finished="onUploadsFinished" />
 
 						<NcButton
 							variant="primary"
@@ -145,7 +146,7 @@
 			</template>
 
 			<!-- No content -->
-			<template #empty-content>
+			<template #emptyContent>
 				<NcEmptyContent
 					v-if="album !== undefined && album.attributes.nbItems === 0 && !(loadingCollectionFiles || loadingCollection)"
 					:name="t('photos', 'All that is missing are your photos')"
@@ -164,7 +165,7 @@
 							<template #icon>
 								<Plus />
 							</template>
-							{{ t('photos', 'Add') }}
+							{{ t('photos', "Add") }}
 						</NcButton>
 					</template>
 				</NcEmptyContent>
@@ -322,11 +323,14 @@ export default {
 			showAddPhotosModal: false,
 			showManageCollaboratorView: false,
 			showEditAlbumForm: false,
+
 			loadingAddCollaborators: false,
 			allowedMimes,
 			uploader: getUploader(),
 			uploadFolder: undefined as Folder | undefined,
 			windowWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
+
+			pendingUploadSources: new Set<string>(),
 		}
 	},
 
@@ -445,7 +449,7 @@ export default {
 		window.addEventListener('resize', this.handleResize)
 	},
 
-	destroyed() {
+	beforeUnmount() {
 		window.removeEventListener('resize', this.handleResize)
 	},
 
@@ -610,78 +614,136 @@ export default {
 			]
 		},
 
-		async onUpload(upload) {
+		collectUploadedFileSources(upload: IUpload): void {
+			if (upload.children.length > 0) {
+				for (const child of upload.children) {
+					this.collectUploadedFileSources(child)
+				}
+				return
+			}
+
+			if (upload.source) {
+				this.pendingUploadSources.add(upload.source)
+			}
+		},
+
+		onUploadFinished(upload: IUpload): void {
+			this.collectUploadedFileSources(upload)
+		},
+
+		async onUploadsFinished(): Promise<void> {
+			if (this.album === undefined) {
+				this.pendingUploadSources.clear()
+				return
+			}
+
+			const sources = [...this.pendingUploadSources]
+
+			// Direkt leeren, damit der nächste Upload-Batch sauber beginnt.
+			this.pendingUploadSources.clear()
+
+			if (sources.length === 0) {
+				return
+			}
+
 			try {
-				const getFileUploads = (item) => {
-					if (item.children?.length) {
-						return item.children.flatMap(child => getFileUploads(child))
-					}
-					return item.source ? [item] : []
-				}
+				const nodes = await Promise.all(
+					sources.map(async (source) => {
+						try {
+							const davMarker = '/remote.php/dav'
+							const davIndex = source.indexOf(davMarker)
 
-				const waitForFinished = (item) => {
-					if (item.status === 4) {
-						return Promise.resolve()
-					}
-
-					return new Promise((resolve, reject) => {
-						const finished = () => {
-							item.removeEventListener('finished', finished)
-							if (item.status === 4) {
-								resolve()
-							} else {
-								reject(new Error(`Upload finished with status ${item.status}`))
+							if (davIndex === -1) {
+								logger.error('Could not extract DAV path from uploaded file', {
+									source,
+								})
+								return undefined
 							}
-						}
 
-						item.addEventListener('finished', finished)
+							const davPath = decodeURI(
+								source.slice(davIndex + davMarker.length),
+							)
 
-						if (item.status === 4) {
-							finished()
+							logger.debug('Resolving uploaded file', {
+								source,
+								davPath,
+							})
+
+							const uploadedNode = await fetchFile(davPath)
+
+							if (
+								!uploadedNode?.id
+								|| uploadedNode.type !== FileType.File
+							) {
+								logger.debug('Ignoring uploaded non-file node', {
+									source,
+									davPath,
+									uploadedNode,
+								})
+								return undefined
+							}
+
+							return uploadedNode
+						} catch (error) {
+							logger.error('Could not resolve uploaded file', {
+								error,
+								source,
+							})
+							return undefined
 						}
-					})
+					}),
+				)
+
+				// Ein IUpload kann über mehrere Parent-Strukturen auftauchen.
+				// Deshalb zusätzlich anhand der tatsächlichen Nextcloud fileId
+				// deduplizieren.
+				const nodesById = new Map<string, Node>()
+
+				for (const node of nodes) {
+					if (node?.id) {
+						nodesById.set(String(node.id), node)
+					}
 				}
 
-				const uploads = getFileUploads(upload)
-
-				await Promise.all(uploads.map(waitForFinished))
-
-				for (const fileUpload of uploads) {
-					const source = fileUpload.source
-					const davMarker = '/remote.php/dav'
-					const davIndex = source.indexOf(davMarker)
-
-					if (davIndex === -1) {
-						logger.error('Could not extract DAV path from uploaded file', { source })
-						continue
-					}
-
-					const davPath = source.slice(davIndex + davMarker.length)
-					const uploadedNode = await fetchFile(davPath)
-
-					if (!uploadedNode?.id) {
-						logger.error('Could not determine uploaded file id', {
-							source,
-							davPath,
-							uploadedNode,
-						})
-						continue
-					}
-
-					this.filesStore.appendFiles([uploadedNode])
-
-					await this.collectionsStore.addFilesToCollection(
-						this.album.root + this.album.path,
-						[String(uploadedNode.id)],
-					)
+				if (nodesById.size === 0) {
+					return
 				}
+
+				// Serverseitigen Albumzustand aktualisieren, bevor wir entscheiden,
+				// welche Dateien noch hinzugefügt werden müssen.
+				await this.fetchAlbumContent()
+
+				const existingFileIds = new Set(this.albumFileIds)
+
+				const newNodes = [...nodesById.values()].filter(
+					(node) => !existingFileIds.has(String(node.id)),
+				)
+
+				if (newNodes.length === 0) {
+					logger.debug('Uploaded files are already part of the album')
+					return
+				}
+
+				const fileIds = newNodes.map((node) => String(node.id))
+
+				logger.debug('Adding uploaded files to album', {
+					album: this.album.basename,
+					fileIds,
+				})
+
+				this.filesStore.appendFiles(newNodes)
+
+				await this.collectionsStore.addFilesToCollection(
+					this.album.root + this.album.path,
+					fileIds,
+				)
 
 				await this.fetchAlbumContent()
 				await this.fetchAlbum()
 			} catch (error) {
-				logger.error('Failed to add uploaded file to album', {
+				logger.error('Failed to add uploaded files to album', {
 					error,
-					upload,
+					sources,
 				})
 			}
 		},
