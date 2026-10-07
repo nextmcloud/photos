@@ -35,9 +35,13 @@ export type TiledSection = Section & {
  * @param containerWidth
  * @param baseHeight
  */
-export function splitItemsInRows(items: TiledItem[], containerWidth: number, baseHeight: number = 200): TiledRow[] {
+export function splitItemsInRows(items: TiledItem[], containerWidth: number, baseHeight: number = 200, fixedSize: boolean = false): TiledRow[] {
 	if (containerWidth === 0) {
 		return []
+	}
+
+	if (fixedSize) {
+		return splitItemsInFixedRows(items, containerWidth, baseHeight)
 	}
 
 	const rows: TiledRow[] = []
@@ -47,7 +51,6 @@ export function splitItemsInRows(items: TiledItem[], containerWidth: number, bas
 	while (currentItem < items.length) {
 		const rowItems: TiledItem[] = []
 
-		// Fill the row with new items as long as the width is less than containerWidth.
 		do {
 			rowItems.push(items[currentItem++])
 		} while (
@@ -63,13 +66,38 @@ export function splitItemsInRows(items: TiledItem[], containerWidth: number, bas
 		)
 
 		rows[rowNumber] = {
-			items: rowItems.map((item) => ({ ...item, width: rowHeight * item.ratio, height: rowHeight })),
-			// Key to help vue to keep track of the row in VirtualScrolling.
+			items: rowItems.map((item) => ({
+				...item,
+				width: rowHeight * item.ratio,
+				height: rowHeight,
+			})),
 			height: rowHeight,
 			key: rowItems.map((item) => item.id).join('-'),
 		}
 
-		rowNumber += 1
+		rowNumber++
+	}
+
+	return rows
+}
+
+function splitItemsInFixedRows(items: TiledItem[], containerWidth: number, baseHeight: number): TiledRow[] {
+	const columns = Math.max(1, Math.floor(containerWidth / baseHeight))
+	const tileSize = containerWidth / columns
+	const rows: TiledRow[] = []
+
+	for (let index = 0; index < items.length; index += columns) {
+		const rowItems = items.slice(index, index + columns)
+
+		rows.push({
+			items: rowItems.map((item) => ({
+				...item,
+				width: tileSize,
+				height: tileSize,
+			})),
+			height: tileSize,
+			key: rowItems.map((item) => item.id).join('-'),
+		})
 	}
 
 	return rows
