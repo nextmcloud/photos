@@ -32,7 +32,10 @@
 			</div>
 		</div>
 
-		<TiledLayout :baseHeight="baseHeight" :sections="itemsBySections">
+		<TiledLayout
+			:baseHeight="baseHeight"
+			:sections="itemsBySections"
+			:fixedSize="croppedLayout">
 			<template #default="{ tiledSections }">
 				<VirtualScrolling
 					:useWindow="useWindow"
