@@ -40,7 +40,8 @@
 						v-if="selectedFileIds.length > 0"
 						#bulk>
 						<span class="photos-navigation__bulk-operations__selected">
-							<span class="icon-minus" />
+							<span class="icon-minus"
+								@click="resetSelection" />
 							<span class="selected__count">
 								{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
 							</span>
@@ -76,15 +77,15 @@
 					</template>
 
 					<template
-						v-if="album !== undefined"
+						v-if="album !== undefined && selectedFileIds.length === 0"
 						#right>
 						<NcUploadPicker
-							v-if="uploadFolder !== undefined"
+							v-if="selectedFileIds.length === 0 && uploadFolder !== undefined"
 							:accept="allowedMimes"
 							:content="uploadDestinationContent"
 							:destination="uploadFolder"
+							:label="t('photos', 'Upload')"
 							:multiple="true"
-							@upload:finished="onUploadFinished"
 							@finished="onUploadsFinished" />
 
 						<NcButton
@@ -95,11 +96,7 @@
 							</template>
 							{{ t('photos', 'Add') }}
 						</NcButton>
-					</template>
 
-					<template
-						v-if="album !== undefined"
-						#buttons>
 						<NcButton
 							:aria-label="t('photos', 'Enable squared photos view')"
 							variant="tertiary"
@@ -109,6 +106,11 @@
 								<ViewDashboardOutline v-else />
 							</template>
 						</NcButton>
+					</template>
+
+					<template
+						v-if="album !== undefined && selectedFileIds.length === 0"
+						#buttons>
 
 						<NcActions :aria-label="t('photos', 'Open actions menu')">
 							<NcActionButton
