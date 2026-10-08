@@ -47,71 +47,11 @@
 				</div>
 			</template>
 
-			<div class="timeline__header__left">
-				<!-- TODO: UploadPicker -->
-				<NcActions
-					v-if="selectedFileIds.length === 0"
-					:aria-label="t('photos', 'Change tile density')"
-					:menuName="t('photos', 'Density')"
-					data-cy-header-action="density">
-					<template #icon>
-						<ViewGridOutline :size="20" />
-					</template>
-					<NcActionRadio
-						name="photos-density"
-						value="small"
-						:modelValue="gridDensity"
-						@update:modelValue="setGridDensity">
-						{{ t('photos', 'Small tiles') }}
-					</NcActionRadio>
-					<NcActionRadio
-						name="photos-density"
-						value="medium"
-						:modelValue="gridDensity"
-						@update:modelValue="setGridDensity">
-						{{ t('photos', 'Default') }}
-					</NcActionRadio>
-					<NcActionRadio
-						name="photos-density"
-						value="large"
-						:modelValue="gridDensity"
-						@update:modelValue="setGridDensity">
-						{{ t('photos', 'Large tiles') }}
-					</NcActionRadio>
-				</NcActions>
-
-				<NcButton
-					v-if="selectedFileIds.length === 0 && fetchedFileIds.length > 0"
-					:aria-label="t('photos', 'Start slideshow')"
-					data-cy-header-action="slideshow"
-					@click="startSlideshow">
-					<template #icon>
-						<Play :size="20" />
-					</template>
-					<template v-if="!isMobile" #default>
-						{{ t('photos', 'Slideshow') }}
-					</template>
-				</NcButton>
-
-				<NcButton
-					ref="newAlbumButton"
-					:aria-label="createAlbumButtonLabel"
-					variant="primary"
-					data-cy-header-action="create-album"
-					@click="showAlbumCreationForm = true">
-					<template v-if="!isMobile" #default>
-						{{ createAlbumButtonLabel }}
-					</template>
-					<template #icon>
-						<PlusBoxMultipleOutline />
-					</template>
-				</NcButton>
-			</div>
-
 			<template v-if="selectedFileIds.length > 0" #bulk>
 				<!-- Filters -->
 				<span class="photos-navigation__bulk-operations__selected">
-					<span class="icon-minus" />
+					<span class="icon-minus"
+						@click="resetSelection" />
 					<span class="selected__count">
 						{{ selectedFileIds.length }} {{ t('photos', 'selected') }}
 					</span>
@@ -162,6 +102,80 @@
 					<ActionFavoriteButton :selected-file-ids="selectedFileIds" />
 				</NcActions>
 			</template>
+
+			<template
+				#right>
+
+				<NcButton
+					v-if="selectedFileIds.length === 0"
+					ref="newAlbumButton"
+					:aria-label="createAlbumButtonLabel"
+					variant="primary"
+					data-cy-header-action="create-album"
+					@click="showAlbumCreationForm = true">
+					<template v-if="!isMobile" #default>
+						{{ createAlbumButtonLabel }}
+					</template>
+					<template #icon>
+						<PlusBoxMultipleOutline />
+					</template>
+				</NcButton>
+			</template>
+
+			<template
+				#buttons>
+				<NcActions
+					v-if="selectedFileIds.length === 0"
+					:aria-label="t('photos', 'Change tile size')"
+					variant="tertiary"
+					data-cy-header-action="density">
+					<template #icon>
+						<MagnifyMinusOutline v-if="gridDensity === 'large'" :size="20" />
+						<MagnifyPlusOutline v-else :size="20" />
+					</template>
+					<NcActionRadio
+						name="photos-density"
+						value="small"
+						:modelValue="gridDensity"
+						@update:modelValue="setGridDensity">
+						{{ t('photos', 'Small tiles') }}
+					</NcActionRadio>
+					<NcActionRadio
+						name="photos-density"
+						value="medium"
+						:modelValue="gridDensity"
+						@update:modelValue="setGridDensity">
+						{{ t('photos', 'Default') }}
+					</NcActionRadio>
+					<NcActionRadio
+						name="photos-density"
+						value="large"
+						:modelValue="gridDensity"
+						@update:modelValue="setGridDensity">
+						{{ t('photos', 'Large tiles') }}
+					</NcActionRadio>
+				</NcActions>
+				
+				<NcButton
+					v-if="selectedFileIds.length === 0"
+					:aria-label="t('photos', 'Enable squared photos view')"
+					variant="tertiary"
+					@click="toggleCroppedLayout(!croppedLayout)">
+					<template #icon>
+						<ViewGridOutline v-if="croppedLayout" />
+						<ViewDashboardOutline v-else />
+					</template>
+				</NcButton>
+			</template>
+
+			<NcUploadPicker
+				v-if="selectedFileIds.length === 0 && uploadFolder !== undefined"
+				:accept="mimesType"
+				:content="uploadDestinationContent"
+				:destination="uploadFolder"
+				:label="t('photos', 'Upload')"
+				:multiple="true"
+				@finished="onUploadsFinished" />
 		</HeaderNavigation>
 
 		<FilesListViewer
@@ -242,6 +256,11 @@ import type { PropType } from 'vue'
 import type { Album } from '../store/albums.ts'
 import type { PhotoTarget } from '../utils/fileUtils.ts'
 
+import type { Folder, Node } from '@nextcloud/files'
+
+import { FileType } from '@nextcloud/files'
+import { defaultRootPath } from '@nextcloud/files/dav'
+
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { t, translatePlural } from '@nextcloud/l10n'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
@@ -252,6 +271,7 @@ import NcActions from '@nextcloud/vue/components/NcActions'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import NcModal from '@nextcloud/vue/components/NcModal'
+import NcUploadPicker from '@nextcloud/vue/components/NcUploadPicker'
 import AlertCircleOutline from 'vue-material-design-icons/AlertCircleOutline.vue'
 import Close from 'vue-material-design-icons/Close.vue'
 import FolderAlertOutline from 'vue-material-design-icons/FolderAlertOutline.vue'
@@ -261,6 +281,9 @@ import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOut
 import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import DownloadOutline from 'vue-material-design-icons/TrayArrowDown.vue'
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
+import MagnifyMinusOutline from 'vue-material-design-icons/MagnifyMinusOutline.vue'
+import MagnifyPlusOutline from 'vue-material-design-icons/MagnifyPlusOutline.vue'
+import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
 import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import AlbumPicker from '../components/Albums/AlbumPicker.vue'
@@ -276,10 +299,13 @@ import FilesByMonthMixin from '../mixins/FilesByMonthMixin.ts'
 import FilesSelectionMixin from '../mixins/FilesSelectionMixin.ts'
 import { allMimes } from '../services/AllowedMimes.ts'
 import { downloadFiles } from '../services/downloadFiles.ts'
+import { fetchFile } from '../services/fileFetcher.ts'
+import { getFolderContent } from '../services/FolderContent.ts'
+import { logger } from '../services/logger.ts'
 import { useCollectionsStore } from '../store/collections.ts'
 import { useFilesStore } from '../store/files.ts'
 import { useFilterStore } from '../store/filters.ts'
-import { configChangedEvent } from '../store/userConfig.ts'
+import { configChangedEvent, useUserConfigStore } from '../store/userConfig.ts'
 import { formatMonth, formatYear } from '../utils/dateUtils.ts'
 import { toViewerFileInfo } from '../utils/fileUtils.ts'
 
@@ -292,12 +318,15 @@ export default {
 		Close,
 		Play,
 		FolderAlertOutline,
+		MagnifyMinusOutline,
+		MagnifyPlusOutline,
 		NcEmptyContent,
 		NcModal,
 		NcActions,
 		NcActionButton,
 		NcActionRadio,
 		NcButton,
+		NcUploadPicker,
 		AlbumForm,
 		AlbumPicker,
 		DateScrubber,
@@ -307,6 +336,7 @@ export default {
 		PhotosSourceLocationsSettings,
 		AlertCircleOutline,
 		ViewGridOutline,
+		ViewDashboardOutline,
 		ActionFavoriteButton,
 		ImageMultipleOutline,
 		PhotosPicker,
@@ -359,6 +389,7 @@ export default {
 		return {
 			collectionsStore: useCollectionsStore(),
 			filesStore: useFilesStore(),
+			userConfigStore: useUserConfigStore(),
 			isMobile,
 			selectedFilters,
 			filtersQuery,
@@ -373,17 +404,22 @@ export default {
 			loadingCount: 0,
 			showAlbumCreationForm: false,
 			showAlbumPicker: false,
+
 			showPhotosPicker: false,
 			blacklistIds: [] as string[],
 			destination: '',
 			collection: '',
 			allowEmpty: true,
+
 			appContent: document.getElementById('app-content-vue'),
 			showFilters: false,
 			// Month section the user picked in the DateScrubber, forwarded to
 			// FilesListViewer's `scrollToSection`. Empty means no override.
 			scrubberTarget: '',
 			windowWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
+
+			allowedMimes: allMimes,
+			uploadFolder: undefined as Folder | undefined,
 		}
 	},
 
@@ -431,11 +467,7 @@ export default {
 		},
 
 		createAlbumButtonLabel() {
-			if (Object.keys(this.selectedFilters).length > 0) {
-				return this.t('photos', 'Create new album from filters')
-			} else {
-				return this.t('photos', 'Create new album')
-			}
+			return this.t('photos', 'Create new album')
 		},
 
 		filesCount(): number {
@@ -474,6 +506,26 @@ export default {
 
 			return `${firstFormatted} ${this.t('photos', 'to')} ${lastFormatted}`
 		},
+
+		croppedLayout() {
+			return this.userConfigStore.croppedLayout
+		},
+
+		photosLocation(): string {
+			return this.userConfigStore.photosLocation || '/'
+		},
+
+		uploadFolderPath(): string {
+			const location = this.photosLocation
+				.replace(/^\/+/, '')
+				.replace(/\/+$/, '')
+
+			if (location === '') {
+				return defaultRootPath
+			}
+
+			return `${defaultRootPath.replace(/\/+$/, '')}/${location}`
+		},
 	},
 
 	watch: {
@@ -481,11 +533,17 @@ export default {
 			this.resetFetchFilesState()
 			this.getContent()
 		},
+
+		photosLocation() {
+			this.fetchUploadFolder()
+		},
 	},
 
-	mounted() {
+	async mounted() {
 		subscribe(configChangedEvent, this.handleUserConfigChange)
 		window.addEventListener('resize', this.handleResize)
+
+		await this.fetchUploadFolder()
 	},
 
 	unmounted() {
@@ -506,7 +564,7 @@ export default {
 		dateYear: formatYear,
 
 		getContent() {
-			this.fetchFiles({
+			return this.fetchFiles({
 				mimesType: this.mimesType,
 				onThisDay: this.onThisDay,
 				onlyFavorites: this.onlyFavorites,
@@ -558,10 +616,6 @@ export default {
 				list: this.timelinePhotos.map(toViewerFileInfo),
 				startSlideshow: true,
 			})
-		},
-
-		openUploader() {
-			// TODO: finish when implementing upload
 		},
 
 		handleAlbumCreated({ album }: { album: Album }) {
@@ -651,6 +705,67 @@ export default {
 
 			const newState = file.attributes.favorite ? 0 : 1
 			await this.filesStore.toggleFavoriteForFiles([id], newState)
+		},
+
+		toggleCroppedLayout(value: boolean) {
+			this.userConfigStore.updateUserConfig('croppedLayout', value)
+		},
+
+		async fetchUploadFolder(): Promise<void> {
+			try {
+				const node = await fetchFile(this.uploadFolderPath)
+
+				if (
+					node === null
+					|| node === undefined
+					|| node.type !== FileType.Folder
+					|| !node.source
+				) {
+					this.uploadFolder = undefined
+
+					logger.error('Invalid Photos upload folder', {
+						path: this.photosLocation,
+						davPath: this.uploadFolderPath,
+						node,
+					})
+					return
+				}
+
+				this.uploadFolder = node as Folder
+
+				logger.debug('Photos upload folder resolved', {
+					path: this.photosLocation,
+					source: node.source,
+				})
+			} catch (error) {
+				this.uploadFolder = undefined
+
+				logger.error('Failed to fetch Photos upload folder', {
+					error,
+					path: this.photosLocation,
+					davPath: this.uploadFolderPath,
+				})
+			}
+		},
+
+		async uploadDestinationContent(): Promise<Node[]> {
+			const { folders, files } = await getFolderContent(this.photosLocation)
+
+			return [
+				...folders,
+				...files,
+			]
+		},
+
+		async onUploadsFinished(): Promise<void> {
+			try {
+				this.resetFetchFilesState()
+				await this.getContent()
+			} catch (error) {
+				logger.error('Failed to refresh timeline after upload', {
+					error,
+				})
+			}
 		},
 
 		t,
