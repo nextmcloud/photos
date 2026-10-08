@@ -52,12 +52,12 @@
 			<div class="photos-navigation__content__buttons">
 				<slot name="buttons" />
 			</div>
-		</div>
 
-		<div
-			v-if="$slots.bulk"
-			class="photos-navigation__bulk-operations">
-			<slot name="bulk" />
+			<div
+				v-if="$slots.bulk"
+				class="photos-navigation__bulk-operations">
+				<slot name="bulk" />
+			</div>
 		</div>
 	</div>
 </template>
