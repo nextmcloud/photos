@@ -19,7 +19,7 @@
 				name="location"
 				type="text"
 				:label="t('photos', 'Location of the album')">
-				<template #default>
+				<template #icon>
 					<MapMarkerOutline :size="20" />
 				</template>
 			</NcTextField>
