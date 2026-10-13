@@ -32,7 +32,10 @@ class FiltersManager {
 	) {
 		$this->registerFilter(new DateRangeFilter());
 		$this->registerFilter(new NameFilter());
-		$this->registerFilter(new PlacesFilter());
+
+		if (Application::LOCATION_FEATURES_ENABLED) {
+			$this->registerFilter(new PlacesFilter());
+		}
 	}
 
 	public function registerFilter(IFilter $filter): void {

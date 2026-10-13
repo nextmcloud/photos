@@ -44,6 +44,7 @@ class PublicAlbumController extends Controller {
 		$this->initialState->provideInitialState('maps', false);
 		$this->initialState->provideInitialState('recognize', false);
 		$this->initialState->provideInitialState('systemtags', false);
+		$this->initialState->provideInitialState('locationFeaturesEnabled', Application::LOCATION_FEATURES_ENABLED);
 
 		Util::addScript(Application::APP_ID, 'photos-public');
 		Util::addStyle(Application::APP_ID, 'photos-public');

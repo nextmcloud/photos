@@ -8,6 +8,7 @@ declare(strict_types=1);
 
 namespace OCA\Photos\Command;
 
+use OCA\Photos\AppInfo\Application;
 use OCA\Photos\Service\ReverseGeoCoderService;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -35,6 +36,10 @@ class UpdateReverseGeocodingFilesCommand extends Command {
 	#[\Override]
 	protected function execute(InputInterface $input, OutputInterface $output): int {
 		try {
+			if (!Application::LOCATION_FEATURES_ENABLED) {
+				throw new \Exception('Location features are disabled');
+			}
+
 			if (!$this->rgcService->arePlacesEnabled()) {
 				throw new \Exception('Places is disabled');
 			}
