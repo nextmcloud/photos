@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 /**
  * SPDX-FileCopyrightText: 2022 Nextcloud GmbH and Nextcloud contributors
  * SPDX-License-Identifier: AGPL-3.0-or-later
@@ -30,11 +31,16 @@ class UserConfigService {
 
 	public function getUserConfig(string $key): string {
 		$user = $this->userSession->getUser();
-		return $this->getConfigForUser($user->getUid(), $key);
+
+		if ($user === null) {
+			throw new Exception('No authenticated user available');
+		}
+
+		return $this->getConfigForUser($user->getUID(), $key);
 	}
 
 	public function getConfigForUser(string $userId, string $key): string {
-		if (!array_key_exists($key, self::DEFAULT_CONFIGS)) {
+		if (!in_array($key, array_keys(self::DEFAULT_CONFIGS))) {
 			throw new Exception('Unknown user config key');
 		}
 
@@ -61,7 +67,7 @@ class UserConfigService {
 	}
 
 	private function getDefaultUserPhotosLocation(string $userId): string {
-		$lang = $this->config->getUserValue($userId, 'core', 'lang', 'de_DE');
+		$lang = $this->userConfig->getValueString($userId, 'core', 'lang', 'de_DE');
 
 		return $lang === 'en_GB'
 			? '/Camera-Media'
