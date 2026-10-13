@@ -61,6 +61,8 @@ class Application extends App implements IBootstrap {
 		// 'video/x-matroska'	// too rarely used for photos
 	];
 
+	public const LOCATION_FEATURES_ENABLED = false;
+
 	public function __construct() {
 		parent::__construct(self::APP_ID);
 	}
@@ -83,8 +85,10 @@ class Application extends App implements IBootstrap {
 		$context->registerEventListener(MetadataBackgroundEvent::class, SizeMetadataProvider::class);
 		$context->registerEventListener(MetadataLiveEvent::class, OriginalDateTimeMetadataProvider::class);
 		$context->registerEventListener(MetadataBackgroundEvent::class, OriginalDateTimeMetadataProvider::class);
-		$context->registerEventListener(MetadataLiveEvent::class, PlaceMetadataProvider::class);
-		$context->registerEventListener(MetadataBackgroundEvent::class, PlaceMetadataProvider::class);
+		if (self::LOCATION_FEATURES_ENABLED) {
+			$context->registerEventListener(MetadataLiveEvent::class, PlaceMetadataProvider::class);
+			$context->registerEventListener(MetadataBackgroundEvent::class, PlaceMetadataProvider::class);
+		}
 
 		$context->registerEventListener(NodeDeletedEvent::class, AlbumsManagementEventListener::class);
 		$context->registerEventListener(UserRemovedEvent::class, AlbumsManagementEventListener::class);

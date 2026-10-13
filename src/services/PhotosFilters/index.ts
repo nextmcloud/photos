@@ -3,6 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import { locationFeaturesEnabled } from '../LocationFeatures.ts'
 import { dateRangeFilter } from './dateRangeFilter.ts'
 import { nameFilter } from './nameFilter.ts'
 import { placesFilter } from './placesFilter.ts'
@@ -10,5 +11,5 @@ import { placesFilter } from './placesFilter.ts'
 export const photosFilters = [
 	nameFilter,
 	dateRangeFilter,
-	placesFilter,
+	...(locationFeaturesEnabled ? [placesFilter] : []),
 ]
