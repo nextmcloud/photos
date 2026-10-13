@@ -17,8 +17,8 @@ class UserConfigService {
 	public const array DEFAULT_CONFIGS = [
 		'croppedLayout' => 'false',
 		'gridDensity' => 'medium',
-		'photosLocation' => '/Photos',
-		'photosSourceFolders' => '["/Photos"]',
+		'photosLocation' => '',
+		'photosSourceFolders' => '["/"]',
 		/** If you add any new configs, make sure to validate the contents in {@see \OCA\Photos\Controller\ApiController::setUserConfig} */
 	];
 
@@ -34,13 +34,37 @@ class UserConfigService {
 	}
 
 	public function getConfigForUser(string $userId, string $key): string {
-		if (!in_array($key, array_keys(self::DEFAULT_CONFIGS))) {
+		if (!array_key_exists($key, self::DEFAULT_CONFIGS)) {
 			throw new Exception('Unknown user config key');
 		}
 
-		$default = self::DEFAULT_CONFIGS[$key];
-		$value = $this->userConfig->getValueString($userId, Application::APP_ID, $key, $default);
+		if ($key === 'photosLocation'
+			&& !$this->userConfig->hasKey($userId, Application::APP_ID, $key)) {
+			$value = $this->getDefaultUserPhotosLocation($userId);
 
-		return $value;
+			$this->userConfig->setValueString(
+				$userId,
+				Application::APP_ID,
+				$key,
+				$value,
+			);
+
+			return $value;
+		}
+
+		return $this->userConfig->getValueString(
+			$userId,
+			Application::APP_ID,
+			$key,
+			self::DEFAULT_CONFIGS[$key],
+		);
+	}
+
+	private function getDefaultUserPhotosLocation(string $userId): string {
+		$lang = $this->config->getUserValue($userId, 'core', 'lang', 'de_DE');
+
+		return $lang === 'en_GB'
+			? '/Camera-Media'
+			: '/Kamera-Medien';
 	}
 }
