@@ -4,13 +4,6 @@
 -->
 <template>
 	<div class="album-container">
-		<AlbumHero
-			v-if="album !== undefined"
-			:coverFileId="coverFileId"
-			:blurhash="coverBlurhash"
-			:title="albumName"
-			:subtitle="albumSubtitle" />
-
 		<CollectionContent
 			ref="collectionContent"
 			:collection="album"
@@ -96,6 +89,44 @@
 							</template>
 							{{ t('photos', 'Add') }}
 						</NcButton>
+
+						<NcActions
+							:aria-label="t('photos', 'Change tile size')"
+							variant="tertiary"
+							data-cy-header-action="density">
+							<template #icon>
+								<MagnifyMinusOutline
+									v-if="gridDensity === 'large'"
+									:size="20" />
+								<MagnifyPlusOutline
+									v-else
+									:size="20" />
+							</template>
+
+							<NcActionRadio
+								name="photos-density"
+								value="small"
+								:modelValue="gridDensity"
+								@update:modelValue="setGridDensity">
+								{{ t('photos', 'Small tiles') }}
+							</NcActionRadio>
+
+							<NcActionRadio
+								name="photos-density"
+								value="medium"
+								:modelValue="gridDensity"
+								@update:modelValue="setGridDensity">
+								{{ t('photos', 'Default') }}
+							</NcActionRadio>
+
+							<NcActionRadio
+								name="photos-density"
+								value="large"
+								:modelValue="gridDensity"
+								@update:modelValue="setGridDensity">
+								{{ t('photos', 'Large tiles') }}
+							</NcActionRadio>
+						</NcActions>
 
 						<NcButton
 							:aria-label="t('photos', 'Enable squared photos view')"
@@ -233,6 +264,7 @@ import { translate, translatePlural } from '@nextcloud/l10n'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActions from '@nextcloud/vue/components/NcActions'
+import NcActionRadio from '@nextcloud/vue/components/NcActionRadio'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
@@ -241,6 +273,8 @@ import NcModal from '@nextcloud/vue/components/NcModal'
 import NcUploadPicker from '@nextcloud/vue/components/NcUploadPicker'
 import Close from 'vue-material-design-icons/Close.vue'
 import ImagePlusOutline from 'vue-material-design-icons/ImagePlusOutline.vue'
+import MagnifyMinusOutline from 'vue-material-design-icons/MagnifyMinusOutline.vue'
+import MagnifyPlusOutline from 'vue-material-design-icons/MagnifyPlusOutline.vue'
 import PencilOutline from 'vue-material-design-icons/PencilOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
 import ShareVariantOutline from 'vue-material-design-icons/ShareVariantOutline.vue'
@@ -249,12 +283,12 @@ import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline
 import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 
 import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
-import AlbumHero from '../components/AlbumHero.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import AlbumShare from '../components/Albums/AlbumShare.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
+import { useGridDensity } from '../composables/useGridDensity.ts'
 import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.js'
 import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import { allMimes as allowedMimes } from '../services/AllowedMimes.ts'
@@ -273,7 +307,6 @@ export default {
 	components: {
 		ActionFavoriteButton,
 		AlbumForm,
-		AlbumHero,
 		AlbumShare,
 		Close,
 		CollectionContent,
@@ -294,6 +327,9 @@ export default {
 		ShareVariantOutline,
 		ViewDashboardOutline,
 		ViewGridOutline,
+		NcActionRadio,
+		MagnifyMinusOutline,
+		MagnifyPlusOutline,
 	},
 
 	mixins: [
@@ -311,12 +347,19 @@ export default {
 	setup() {
 		const isMobile = useIsMobile()
 
+		const {
+			gridDensity,
+			setGridDensity,
+		} = useGridDensity()
+
 		return {
 			albumsStore: useAlbumsStore(),
 			collectionsStore: useCollectionsStore(),
 			filesStore: useFilesStore(),
 			userConfigStore: useUserConfigStore(),
 			isMobile,
+			gridDensity,
+			setGridDensity,
 		}
 	},
 
