@@ -4,6 +4,12 @@
 -->
 <template>
 	<form v-if="!showCollaboratorView" class="album-form" @submit.prevent="submit()">
+		<div class="form-cover">
+			<img
+				class="form-cover__image"
+				:src="albumCreateImage"
+				:alt="t('photos', 'Create album')">
+		</div>
 		<div class="form-inputs">
 			<NcTextField
 				ref="nameInput"
@@ -27,7 +33,7 @@
 
 		<PhotosFiltersDisplay
 			:selectedFilters="albumFilters"
-			@deselectFilter="deselectFilter" />
+			@deselect-filter="deselectFilter" />
 
 		<div class="form-buttons">
 			<span class="left-buttons">
@@ -36,6 +42,11 @@
 					variant="tertiary"
 					@click="back">
 					{{ t('photos', 'Back') }}
+				</NcButton>
+				<NcButton
+					variant="secondary"
+					@click="cancel()">
+					{{ t('photos', 'Cancel') }}
 				</NcButton>
 			</span>
 			<span class="right-buttons">
@@ -51,7 +62,7 @@
 			</span>
 		</div>
 	</form>
-	<CollaboratorsSelectionForm
+	<AlbumShare
 		v-else
 		:albumName="albumName"
 		:allowPublicLink="false">
@@ -76,7 +87,7 @@
 				</NcButton>
 			</span>
 		</template>
-	</CollaboratorsSelectionForm>
+	</AlbumShare>
 </template>
 
 <script lang='ts'>
@@ -88,7 +99,6 @@ import { InvalidFilenameError, InvalidFilenameErrorReason, validateFilename } fr
 import { resultToNode } from '@nextcloud/files/dav'
 import { t } from '@nextcloud/l10n'
 import { generateRemoteUrl } from '@nextcloud/router'
-import { toRaw } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import NcTextField from '@nextcloud/vue/components/NcTextField'
@@ -191,6 +201,10 @@ export default {
 		canSubmit() {
 			return this.albumName !== '' && this.albumNameValidationError === undefined && !this.loading
 		},
+
+		albumCreateImage() {
+			return '/customapps/photos/img/album.svg'
+		},
 	},
 
 	mounted() {
@@ -199,12 +213,12 @@ export default {
 			this.albumLocation = this.album?.attributes.location ?? ''
 			this.albumFilters = {
 				...this.albumFilters,
-				...structuredClone(toRaw(this.album?.attributes.filters ?? {})),
+				...structuredClone(this.album?.attributes.filters ?? {}),
 			}
 		} else {
 			this.albumFilters = {
 				...this.albumFilters,
-				...structuredClone(toRaw(this.filtersValue)),
+				...structuredClone(this.filtersValue),
 			}
 		}
 
@@ -282,7 +296,7 @@ export default {
 			try {
 				this.loading = true
 
-				let album = toRaw(this.album)?.clone() as Album
+				let album = this.album?.clone() as Album
 				const changes: string[] = []
 
 				if (this.album !== null && this.album.basename !== this.albumName) {
@@ -320,6 +334,10 @@ export default {
 
 		back() {
 			this.$emit('back')
+		},
+
+		cancel() {
+			this.$emit('closing')
 		},
 
 		t,
