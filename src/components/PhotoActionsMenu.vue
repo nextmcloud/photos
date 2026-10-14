@@ -9,7 +9,7 @@
 			:aria-label="t('photos', 'Actions for {name}', { name: photo.basename })"
 			forceMenu
 			:open="menuOpen"
-			@update:open="menuOpen = $event">
+			@update:open="onMenuOpenChanged">
 			<template #icon>
 				<DotsVertical :size="20" />
 			</template>
@@ -118,7 +118,7 @@ import { showError } from '@nextcloud/dialogs'
 import { Permission } from '@nextcloud/files'
 import { translate as t } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActions from '@nextcloud/vue/components/NcActions'
 import NcActionSeparator from '@nextcloud/vue/components/NcActionSeparator'
@@ -139,17 +139,15 @@ import PhotoMetadataDialog from './PhotoMetadataDialog.vue'
 import PhotoMetadataEditDialog from './PhotoMetadataEditDialog.vue'
 import PhotoTagsDialog from './PhotoTagsDialog.vue'
 import { areTagsInstalled } from '../services/AreTagsInstalled.ts'
+import { fetchFile } from '../services/fileFetcher.ts'
 import { logger } from '../services/logger.ts'
 import { useCollectionsStore } from '../store/collections.ts'
 import { useFilesStore } from '../store/files.ts'
 
 const props = defineProps<{
-	/** Photo the actions apply to. */
 	photo: PhotoTarget
 }>()
 
-// The photo is gone from the server once it is deleted, but each view keeps
-// its own list of the photos it shows and has to drop it from there.
 const emit = defineEmits<{
 	(event: 'deleted', photo: PhotoTarget): void
 }>()
@@ -163,26 +161,91 @@ const metadataEditShown = ref(false)
 const tagsShown = ref(false)
 const albumPickerShown = ref(false)
 const deleteConfirmationShown = ref(false)
+const resolvedCanShare = ref<boolean | null>(null)
+const resolvingSharePermission = ref(false)
 
-// Public shares are browsed without an account, the actions writing anything
-// have nowhere to write to.
 const isLoggedIn = getCurrentUser() !== null
 
-// Writing is the permission to change the content of the photo, which is what
-// the server checks before it stores corrected metadata.
 const canEdit = computed(() => isLoggedIn && (props.photo.permissions & Permission.WRITE) !== 0)
-const canShare = computed(() => isLoggedIn && (props.photo.permissions & Permission.SHARE) !== 0)
-const canDelete = computed(() => isLoggedIn && (props.photo.permissions & Permission.DELETE) !== 0)
+const canShare = computed(() => {
+	if (!isLoggedIn) {
+		return false
+	}
 
-// Tags belong to their own app, and the server refuses to put one on a photo
-// the account cannot write to.
+	if ((props.photo.permissions & Permission.SHARE) !== 0) {
+		return true
+	}
+
+	return resolvedCanShare.value === true
+})
+const canDelete = computed(() => isLoggedIn && (props.photo.permissions & Permission.DELETE) !== 0)
 const canTag = computed(() => areTagsInstalled && canEdit.value)
 
-// The sharing UI lives in the details sidebar of the Files app, and its API
-// needs a navigation context which the photos app does not set up, so the user
-// is sent there with the sidebar already open.
+watch(() => props.photo.fileid, () => {
+	resolvedCanShare.value = null
+	resolvingSharePermission.value = false
+})
+
+function onMenuOpenChanged(open: boolean): void {
+	menuOpen.value = open
+
+	if (open) {
+		resolveSharePermission()
+	}
+}
+
+async function resolveSharePermission(): Promise<void> {
+	if (
+		!isLoggedIn
+		|| (props.photo.permissions & Permission.SHARE) !== 0
+		|| resolvedCanShare.value !== null
+		|| resolvingSharePermission.value
+		|| !props.photo.davPath
+	) {
+		return
+	}
+
+	const fileid = props.photo.fileid
+	const davPath = props.photo.davPath
+
+	resolvingSharePermission.value = true
+
+	try {
+		const node = await fetchFile(davPath)
+
+		if (props.photo.fileid !== fileid || props.photo.davPath !== davPath) {
+			return
+		}
+
+		resolvedCanShare.value = !!node && (node.permissions & Permission.SHARE) !== 0
+	} catch (error) {
+		if (props.photo.fileid === fileid) {
+			resolvedCanShare.value = false
+		}
+
+		logger.debug('Could not resolve share permission for photo', {
+			error,
+			fileid,
+			davPath,
+		})
+	} finally {
+		if (props.photo.fileid === fileid) {
+			resolvingSharePermission.value = false
+		}
+	}
+}
+
 function share(): void {
-	window.location.href = generateUrl('/apps/files/files/{fileid}?opendetails=true', { fileid: props.photo.fileid })
+	sessionStorage.setItem('nmcsharing:pending-share', JSON.stringify({
+		fileid: props.photo.fileid,
+		davPath: props.photo.davPath,
+	}))
+
+	const url = generateUrl('/f/{fileid}', {
+		fileid: props.photo.fileid,
+	})
+
+	window.location.href = `${url}?openfile=false&opendetails=true`
 }
 
 async function toggleFavorite(): Promise<void> {
@@ -191,7 +254,11 @@ async function toggleFavorite(): Promise<void> {
 	try {
 		await filesStore.setPhotoFavorite(props.photo, favorite)
 	} catch (error) {
-		logger.error('Error setting the favorite state of a photo', { error, filename: props.photo.basename })
+		logger.error('Error setting the favorite state of a photo', {
+			error,
+			filename: props.photo.basename,
+		})
+
 		showError(favorite
 			? t('photos', 'Failed to add {fileName} to the favorites', { fileName: props.photo.basename })
 			: t('photos', 'Failed to remove {fileName} from the favorites', { fileName: props.photo.basename }))
@@ -200,7 +267,6 @@ async function toggleFavorite(): Promise<void> {
 
 async function addToAlbum(album: Album): Promise<void> {
 	albumPickerShown.value = false
-
 	await collectionsStore.addFilesToCollection(album.root + album.path, [props.photo.fileid.toString()])
 }
 
@@ -211,7 +277,10 @@ async function confirmDelete(): Promise<void> {
 		await filesStore.deletePhoto(props.photo)
 		emit('deleted', props.photo)
 	} catch (error) {
-		logger.error('Error deleting a photo', { error, filename: props.photo.basename })
+		logger.error('Error deleting a photo', {
+			error,
+			filename: props.photo.basename,
+		})
 		showError(t('photos', 'Failed to delete {fileName}', { fileName: props.photo.basename }))
 	}
 }
@@ -220,19 +289,16 @@ async function confirmDelete(): Promise<void> {
 <style lang="scss" scoped>
 .photo-actions {
 	position: absolute;
-	z-index: 5; // above the preview layers
+	z-index: 5;
 	inset-block-start: calc(var(--default-grid-baseline) * 2);
 	inset-inline-start: calc(var(--default-grid-baseline) * 2);
 	opacity: 0;
 	transition: opacity var(--animation-quick) ease-out;
 
-	// The menu is detached from the tile, so hovering it does not keep the
-	// tile hovered: the trigger has to stay visible on its own.
 	&--open {
 		opacity: 1;
 	}
 
-	// The button sits on top of the photo, which can be of any color.
 	:deep(.button-vue) {
 		background-color: rgba(0, 0, 0, 0.4);
 		color: #fff;

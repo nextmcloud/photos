@@ -35,7 +35,7 @@
 			:containerElement="appContent"
 			class="collection__media"
 			:fileIds="sortedCollectionFileIds"
-			:baseHeight="isMobile ? 120 : 200"
+			:baseHeight="tileBaseHeight"
 			:loading="loading">
 			<template #default="{ file }">
 				<FileComponent
@@ -58,13 +58,13 @@ import type { PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { translate } from '@nextcloud/l10n'
-import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { defineComponent } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import AlertCircleOutline from 'vue-material-design-icons/AlertCircleOutline.vue'
 import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
 import FileComponent from '../FileComponent.vue'
 import FilesListViewer from '../FilesListViewer.vue'
+import { useGridDensity } from '../../composables/useGridDensity.ts'
 import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
 import { useCollectionsStore } from '../../store/collections.ts'
 import { useFilesStore } from '../../store/files.ts'
@@ -111,10 +111,12 @@ export default defineComponent({
 	},
 
 	setup() {
+		const { tileBaseHeight } = useGridDensity()
+
 		return {
-			isMobile: useIsMobile(),
 			collectionsStore: useCollectionsStore(),
 			filesStore: useFilesStore(),
+			tileBaseHeight,
 		}
 	},
 
@@ -129,8 +131,18 @@ export default defineComponent({
 			return this.filesStore.files
 		},
 
-		sortedCollectionFileIds() {
-			return this.collectionFileIds.toSorted((fileId1, fileId2) => this.files[fileId1].attributes.timestamp < this.files[fileId2].attributes.timestamp ? -1 : 1)
+		sortedCollectionFileIds(): string[] {
+			return this.collectionFileIds
+				.filter((fileId) => this.files[fileId] !== undefined)
+				.toSorted((fileId1, fileId2) => {
+					const file1 = this.files[fileId1]
+					const file2 = this.files[fileId2]
+
+					const timestamp1 = Number(file1.attributes.timestamp ?? 0)
+					const timestamp2 = Number(file2.attributes.timestamp ?? 0)
+
+					return timestamp1 - timestamp2
+				})
 		},
 	},
 
