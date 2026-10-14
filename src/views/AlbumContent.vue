@@ -79,6 +79,7 @@
 							:destination="uploadFolder"
 							:label="t('photos', 'Upload')"
 							:multiple="true"
+							@upload:finished="onUploadFinished"
 							@finished="onUploadsFinished" />
 
 						<NcButton

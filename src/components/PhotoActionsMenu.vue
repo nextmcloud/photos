@@ -236,11 +236,16 @@ async function resolveSharePermission(): Promise<void> {
 }
 
 function share(): void {
+	sessionStorage.setItem('nmcsharing:pending-share', JSON.stringify({
+		fileid: props.photo.fileid,
+		davPath: props.photo.davPath,
+	}))
+
 	const url = generateUrl('/f/{fileid}', {
 		fileid: props.photo.fileid,
 	})
 
-	window.location.href = `${url}?opendetails=true`
+	window.location.href = `${url}?openfile=false&opendetails=true`
 }
 
 async function toggleFavorite(): Promise<void> {
