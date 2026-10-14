@@ -296,12 +296,15 @@ export default {
 	},
 
 	beforeUnmount() {
-		// cancel any pending load
-		if (this.$refs.imgSmall !== undefined) {
-			(this.$refs.imgSmall as HTMLImageElement).src = ''
+		const imgSmall = this.$refs.imgSmall as HTMLImageElement | null | undefined
+		const imgLarge = this.$refs.imgLarge as HTMLImageElement | null | undefined
+
+		if (imgSmall) {
+			imgSmall.removeAttribute('src')
 		}
-		if (this.$refs.imgLarge !== undefined) {
-			(this.$refs.imgLarge as HTMLImageElement).src = ''
+
+		if (imgLarge) {
+			imgLarge.removeAttribute('src')
 		}
 
 		this.cancelLongPress()
@@ -477,11 +480,13 @@ $magnify-transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 	// A tile standing for a run of photos taken in one go pads the corner the deck
 	// peeks out of, so that the cards stay inside the tile instead of covering the
 	// photo next to it.
-	&--stack {
-		--stack-peek: 6px;
-		padding-inline-end: var(--stack-peek);
-		padding-block-end: var(--stack-peek);
-	}
+	/*
+		&--stack {
+			--stack-peek: 6px;
+			padding-inline-end: var(--stack-peek);
+			padding-block-end: var(--stack-peek);
+		}
+	*/
 
 	&--uncropped {
 		--preview-fit: contain;
