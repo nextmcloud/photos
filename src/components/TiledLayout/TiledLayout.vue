@@ -42,6 +42,11 @@ export default {
 			type: Number,
 			default: 200,
 		},
+
+		fixedSize: {
+			type: Boolean,
+			default: false,
+		},
 	},
 
 	data() {
@@ -56,7 +61,7 @@ export default {
 			logger.debug('[TiledLayout] Computing rows', { items: this.sections })
 
 			return this.sections.map((section) => {
-				const rows = splitItemsInRows(section.items, this.containerWidth, this.baseHeight)
+				const rows = splitItemsInRows(section.items, this.containerWidth, this.baseHeight, this.fixedSize)
 				return {
 					...section,
 					key: section.id,
