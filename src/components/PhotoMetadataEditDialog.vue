@@ -16,7 +16,7 @@
 				type="datetime-local"
 				:label="t('photos', 'Date and time the photo was taken')" />
 
-			<fieldset class="metadata-editor__location">
+			<fieldset v-if="locationFeaturesEnabled" class="metadata-editor__location">
 				<legend>{{ t('photos', 'Location') }}</legend>
 
 				<div class="metadata-editor__location__coordinates">
@@ -82,6 +82,7 @@ import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import NcTextField from '@nextcloud/vue/components/NcTextField'
 import MapMarkerOffOutline from 'vue-material-design-icons/MapMarkerOffOutline.vue'
 import { fetchPhotoExif } from '../services/exifFetcher.ts'
+import { locationFeaturesEnabled } from '../services/LocationFeatures.ts'
 import { logger } from '../services/logger.ts'
 import { useFilesStore } from '../store/files.ts'
 import { COORDINATE_LIMITS, getPhotoLocation, parseCoordinate } from '../utils/exif.ts'
@@ -182,7 +183,7 @@ async function save(): Promise<void> {
 	try {
 		await filesStore.updatePhotoMetadata(props.photo, {
 			takenAt: Math.floor(date.getTime() / 1000),
-			location: location.value,
+			...(locationFeaturesEnabled ? { location: location.value } : {}),
 		})
 		emit('close')
 	} catch (error) {
