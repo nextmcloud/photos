@@ -15,80 +15,68 @@
 	</div>
 </template>
 
-<script lang='ts'>
-import type { PropType } from 'vue'
-import type { Section, TiledSection } from '../../services/TiledLayout.js'
+<script setup lang="ts" generic="I extends TiledItem">
+import type { Section, TiledItem, TiledSection } from '../../services/TiledLayout.ts'
 
+import { computed, onBeforeUnmount, onMounted, ref, useTemplateRef } from 'vue'
 import TiledRows from './TiledRows.vue'
 import { logger } from '../../services/logger.ts'
-import {
-	splitItemsInRows,
-} from '../../services/TiledLayout.js'
+import { splitItemsInRows } from '../../services/TiledLayout.ts'
 
-export default {
-	name: 'TiledLayout',
+const props = withDefaults(defineProps<{
+	sections: Section<I>[]
+	baseHeight?: number
+	fixedSize?: boolean
+}>(), {
+	baseHeight: 200,
+	fixedSize: false,
+})
 
-	components: {
-		TiledRows,
-	},
+defineSlots<{
+	default(props: { tiledSections: TiledSection<I>[] }): unknown
+}>()
 
-	props: {
-		sections: {
-			type: Array as PropType<Section[]>,
-			required: true,
-		},
+const tiledLayoutContainer = useTemplateRef<HTMLDivElement>('tiledLayoutContainer')
 
-		baseHeight: {
-			type: Number,
-			default: 200,
-		},
+const containerWidth = ref(0)
+let resizeObserver: ResizeObserver | null = null
 
-		fixedSize: {
-			type: Boolean,
-			default: false,
-		},
-	},
+const tiledSections = computed<TiledSection<I>[]>(() => {
+	logger.debug('[TiledLayout] Computing rows', { items: props.sections })
 
-	data() {
+	return props.sections.map((section) => {
+		const rows = splitItemsInRows(
+			section.items,
+			containerWidth.value,
+			props.baseHeight,
+			props.fixedSize,
+		)
+
 		return {
-			containerWidth: 0,
-			resizeObserver: null as ResizeObserver | null,
+			...section,
+			key: section.id,
+			rows: rows.map((row) => ({ ...row, sectionKey: section.id })),
+			height: rows.reduce((totalHeight, row) => totalHeight + row.height, 0),
 		}
-	},
+	})
+})
 
-	computed: {
-		tiledSections(): TiledSection[] {
-			logger.debug('[TiledLayout] Computing rows', { items: this.sections })
-
-			return this.sections.map((section) => {
-				const rows = splitItemsInRows(section.items, this.containerWidth, this.baseHeight, this.fixedSize)
-				return {
-					...section,
-					key: section.id,
-					rows: rows.map((row) => ({ ...row, sectionKey: section.id })),
-					height: rows.reduce((totalHeight, row) => totalHeight + row.height, 0),
-				}
-			})
-		},
-	},
-
-	mounted() {
-		this.resizeObserver = new ResizeObserver((entries) => {
-			for (const entry of entries) {
-				const cr = entry.contentRect
-				if (entry.target.classList.contains('tiled-container')) {
-					this.containerWidth = cr.width
-				}
+onMounted(() => {
+	resizeObserver = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			const cr = entry.contentRect
+			if (entry.target.classList.contains('tiled-container')) {
+				containerWidth.value = cr.width
 			}
-		})
+		}
+	})
 
-		this.resizeObserver.observe(this.$refs.tiledLayoutContainer as Element)
-	},
+	resizeObserver.observe(tiledLayoutContainer.value as Element)
+})
 
-	beforeUnmount() {
-		this.resizeObserver?.disconnect()
-	},
-}
+onBeforeUnmount(() => {
+	resizeObserver?.disconnect()
+})
 </script>
 
 <style scoped lang="scss">
