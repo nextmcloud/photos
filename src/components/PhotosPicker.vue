@@ -48,13 +48,12 @@
 			:baseHeight="100"
 			:sectionHeaderHeight="50"
 			:scrollToSection="targetMonth"
-			@need-content="getFiles"
-			@focusout.native="onFocusOut">
-			<template #default="{ file, height, isHeader }">
+			@needContent="getFiles"
+			@focusout="onFocusOut">
+			<template #default="{ file, isHeader }">
 				<h3
 					v-if="isHeader"
 					:id="`photos-picker-section-header-${file.id}`"
-					:style="{ height: `${height}px` }"
 					class="section-header">
 					{{ dateMonthAndYear(file.id) }}
 				</h3>
@@ -71,15 +70,12 @@
 	</NcDialog>
 </template>
 
-<script lang='ts'>
+<script setup lang="ts">
 import type { File } from '@nextcloud/files'
-import type { PropType } from 'vue'
 
 import { t } from '@nextcloud/l10n'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
-import {
-	defineComponent,
-} from 'vue'
+import { computed, ref, watch } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
@@ -87,135 +83,91 @@ import ImageAlbum from 'vue-material-design-icons/ImageAlbum.vue'
 import ImagePlusOutline from 'vue-material-design-icons/ImagePlusOutline.vue'
 import FileComponent from './FileComponent.vue'
 import FilesListViewer from './FilesListViewer.vue'
-import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
-import FilesByMonthMixin from '../mixins/FilesByMonthMixin.js'
-import FilesSelectionMixin from '../mixins/FilesSelectionMixin.js'
+import { useFetchFiles } from '../composables/useFetchFiles.ts'
+import { useFilesByMonth } from '../composables/useFilesByMonth.ts'
+import { useFilesSelection } from '../composables/useFilesSelection.ts'
 import { useFilesStore } from '../store/files.ts'
 import { formatMonthAndYear } from '../utils/dateUtils.ts'
 
-export default defineComponent({
-	name: 'PhotosPicker',
+const props = withDefaults(defineProps<{
+	/**
+	 * If the photos picker should be opened
+	 */
+	open?: boolean
 
-	components: {
-		FileComponent,
-		FilesListViewer,
-		ImageAlbum,
-		ImagePlusOutline,
-		NcButton,
-		NcDialog,
-		NcLoadingIcon,
-	},
+	/**
+	 * Name to be used as heading
+	 */
+	name: string
 
-	mixins: [
-		FetchFilesMixin,
-		FilesByMonthMixin,
-		FilesSelectionMixin,
-	],
+	// Label to show in the submit button.
+	destination: string
 
-	props: {
-		/**
-		 * If the photos picker should be opened
-		 */
-		open: {
-			type: Boolean,
-			default: true,
-		},
+	// List of file ids to not show.
+	blacklistIds?: string[]
 
-		/**
-		 * Name to be used as heading
-		 */
-		name: {
-			type: String,
-			required: true,
-		},
+	// Whether we should disable the submit button and show a spinner.
+	loading?: boolean
 
-		// Label to show in the submit button.
-		destination: {
-			type: String,
-			required: true,
-		},
-
-		// List of file ids to not show.
-		blacklistIds: {
-			type: Array as PropType<string[]>,
-			default: () => [],
-		},
-
-		// Whether we should disable the submit button and show a spinner.
-		loading: {
-			type: Boolean,
-			default: false,
-		},
-
-		// Whether we allow to create empty album.
-		allowempty: {
-			type: Boolean,
-			default: false,
-			required: false,
-		},
-	},
-
-	emits: ['files-picked', 'update:open', 'closed'],
-
-	setup() {
-		return {
-			filesStore: useFilesStore(),
-			isMobile: useIsMobile(),
-		}
-	},
-
-	data() {
-		return {
-			targetMonth: null as string | null,
-		}
-	},
-
-	computed: {
-		files() {
-			return this.filesStore.files
-		},
-	},
-
-	watch: {
-		monthsList(value) {
-			if (this.targetMonth === null) {
-				this.targetMonth = value[0]
-			}
-		},
-	},
-
-	methods: {
-		onFocusOut(event: FocusEvent) {
-			if (event.relatedTarget === null) { // Focus escaping to body
-				event.target?.focus({ preventScroll: true })
-			}
-		},
-
-		getFiles() {
-			this.fetchFiles({}, this.shouldShowFile)
-		},
-
-		shouldShowFile(file: File) {
-			return file.attributes['mount-type'] === '' && !this.blacklistIds.includes(file.fileid?.toString() ?? '')
-		},
-
-		emitPickedEvent() {
-			this.$emit('files-picked', this.selectedFileIds)
-			this.resetSelection()
-		},
-
-		/**
-		 * @param date - In the following format: YYYYMM
-		 */
-		dateMonthAndYear(date: string) {
-			return this.isMobile
-				? formatMonthAndYear(date, true)
-				: formatMonthAndYear(date)
-		},
-
-		t,
-	},
+	// Whether we allow to create empty album.
+	allowempty?: boolean
+}>(), {
+	open: true,
+	blacklistIds: () => [],
+	loading: false,
+	allowempty: false,
 })
+
+const emit = defineEmits<{
+	filesPicked: [fileIds: string[]]
+	'update:open': [open: boolean]
+	closed: []
+}>()
+
+const isMobile = useIsMobile()
+const filesStore = useFilesStore()
+const { fetchFiles, fetchedFileIds, loadingFiles } = useFetchFiles()
+const { selection, selectedFileIds, onFileSelectToggle, resetSelection } = useFilesSelection()
+
+const targetMonth = ref<string>()
+
+const files = computed(() => filesStore.files)
+
+const { fileIdsByMonth, monthsList } = useFilesByMonth(fetchedFileIds, files)
+
+watch(monthsList, (value) => {
+	if (targetMonth.value === undefined) {
+		targetMonth.value = value[0]
+	}
+})
+
+function onFocusOut(event: FocusEvent) {
+	if (event.relatedTarget === null) { // Focus escaping to body
+		(event.target as HTMLElement | null)?.focus({ preventScroll: true })
+	}
+}
+
+function getFiles() {
+	fetchFiles({}, shouldShowFile)
+}
+
+function shouldShowFile(file: File) {
+	return file.attributes['mount-type'] === '' && !props.blacklistIds.includes(file.fileid?.toString() ?? '')
+}
+
+function emitPickedEvent() {
+	emit('filesPicked', selectedFileIds.value)
+	resetSelection()
+}
+
+/**
+ * @param date - In the following format: YYYYMM
+ */
+function dateMonthAndYear(date: string) {
+	return isMobile.value
+		? formatMonthAndYear(date, true)
+		: formatMonthAndYear(date)
+}
 </script>
 
 <style lang="scss" scoped>
