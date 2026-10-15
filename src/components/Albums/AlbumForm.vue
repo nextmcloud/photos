@@ -4,6 +4,12 @@
 -->
 <template>
 	<form v-if="!showCollaboratorView" class="album-form" @submit.prevent="submit()">
+		<div class="form-cover">
+			<img
+				class="form-cover__image"
+				:src="albumCreateImage"
+				:alt="t('photos', 'Create album')">
+		</div>
 		<div class="form-inputs">
 			<NcTextField
 				ref="nameInput"
@@ -19,18 +25,15 @@
 				name="location"
 				type="text"
 				:label="t('photos', 'Location of the album')">
-				<template #default>
+				<template #icon>
 					<MapMarkerOutline :size="20" />
 				</template>
 			</NcTextField>
 		</div>
 
-		<PhotosFiltersInput
-			:selectedFilters="albumFilters"
-			@selectFilter="selectFilter" />
 		<PhotosFiltersDisplay
 			:selectedFilters="albumFilters"
-			@deselectFilter="deselectFilter" />
+			@deselect-filter="deselectFilter" />
 
 		<div class="form-buttons">
 			<span class="left-buttons">
@@ -40,32 +43,26 @@
 					@click="back">
 					{{ t('photos', 'Back') }}
 				</NcButton>
+				<NcButton
+					variant="secondary"
+					@click="cancel()">
+					{{ t('photos', 'Cancel') }}
+				</NcButton>
 			</span>
 			<span class="right-buttons">
-				<NcButton
-					v-if="sharingEnabled && !editMode"
-					variant="secondary"
-					:disabled="!canSubmit"
-					@click="showCollaboratorView = true">
-					<template #icon>
-						<AccountMultiplePlusOutline :size="20" />
-					</template>
-					{{ t('photos', 'Add collaborators') }}
-				</NcButton>
 				<NcButton
 					variant="primary"
 					:disabled="!canSubmit"
 					@click="submit()">
-					<template #icon>
-						<NcLoadingIcon v-if="loading" :size="20" />
-						<SendOutline v-else :size="20" />
+					<template v-if="loading" #icon>
+						<NcLoadingIcon :size="20" />
 					</template>
 					{{ editMode ? t('photos', 'Save') : t('photos', 'Create album') }}
 				</NcButton>
 			</span>
 		</div>
 	</form>
-	<CollaboratorsSelectionForm
+	<AlbumShare
 		v-else
 		:albumName="albumName"
 		:allowPublicLink="false">
@@ -90,12 +87,11 @@
 				</NcButton>
 			</span>
 		</template>
-	</CollaboratorsSelectionForm>
+	</AlbumShare>
 </template>
 
 <script setup lang="ts">
 import type { Collection } from '../../services/collectionFetcher.ts'
-import type { FilterOption } from '../../services/PhotosFilters/PhotosFilter.ts'
 import type { Album, AlbumEditableProperties, Collaborator } from '../../store/albums.ts'
 
 import { InvalidFilenameError, InvalidFilenameErrorReason, validateFilename } from '@nextcloud/files'
@@ -106,12 +102,10 @@ import { computed, nextTick, onMounted, ref, toRaw, useTemplateRef } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import NcTextField from '@nextcloud/vue/components/NcTextField'
-import AccountMultiplePlusOutline from 'vue-material-design-icons/AccountMultiplePlusOutline.vue'
 import MapMarkerOutline from 'vue-material-design-icons/MapMarkerOutline.vue'
 import SendOutline from 'vue-material-design-icons/SendOutline.vue'
 import PhotosFiltersDisplay from '../PhotosFilters/PhotosFiltersDisplay.vue'
-import PhotosFiltersInput from '../PhotosFilters/PhotosFiltersInput.vue'
-import CollaboratorsSelectionForm from './CollaboratorsSelectionForm.vue'
+import AlbumShare from './AlbumShare.vue'
 import { photosFilters as filters } from '../../services/PhotosFilters/index.ts'
 import { albumsPrefix } from '../../store/albums.ts'
 import { useAlbumsStore } from '../../store/albums.ts'
@@ -130,6 +124,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
 	back: []
+	closing: []
 	done: [event: { album: Collection, changes?: string[] }]
 }>()
 
@@ -183,6 +178,8 @@ const albumNameValidationError = computed<string | undefined>(() => {
 
 const canSubmit = computed(() => albumName.value !== '' && albumNameValidationError.value === undefined && !loading.value)
 
+const albumCreateImage = '/customapps/photos/img/album.svg'
+
 function submit(collaborators: Collaborator[] = []) {
 	if (!canSubmit.value) {
 		return
@@ -190,9 +187,15 @@ function submit(collaborators: Collaborator[] = []) {
 
 	if (editMode.value) {
 		handleUpdateAlbum()
-	} else {
-		handleCreateAlbum(collaborators)
+		return
 	}
+
+	if (sharingEnabled.value && !showCollaboratorView.value) {
+		showCollaboratorView.value = true
+		return
+	}
+
+	handleCreateAlbum(collaborators)
 }
 
 async function handleCreateAlbum(collaborators: Collaborator[] = []) {
@@ -279,10 +282,6 @@ async function handleUpdateAlbum() {
 	}
 }
 
-function selectFilter(filterOption: FilterOption<unknown>) {
-	albumFilters.value[filterOption.filterId].push(filterOption.value)
-}
-
 function deselectFilter(filterOption: { filterId: string, value: unknown }) {
 	const index = albumFilters.value[filterOption.filterId].indexOf(filterOption.value)
 
@@ -293,6 +292,10 @@ function deselectFilter(filterOption: { filterId: string, value: unknown }) {
 
 function back() {
 	emit('back')
+}
+
+function cancel() {
+	emit('closing')
 }
 
 onMounted(() => {
@@ -323,6 +326,10 @@ onMounted(() => {
 	justify-content: space-between;
 	height: 350px;
 	padding: calc(var(--default-grid-baseline) * 4);
+
+	.form-cover {
+		margin-block-end: calc(var(--default-grid-baseline) * 6);
+	}
 
 	.form-title {
 		font-weight: bold;
