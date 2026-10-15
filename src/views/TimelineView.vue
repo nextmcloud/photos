@@ -27,7 +27,6 @@
 		<!-- Header -->
 		<HeaderNavigation
 			key="navigation"
-			:loading="loadingCount > 0"
 			path="/"
 			:title="rootTitle"
 			:rootTitle="rootTitle"
@@ -179,7 +178,6 @@
 		</HeaderNavigation>
 
 		<FilesListViewer
-			ref="filesListViewer"
 			:containerElement="appContent"
 			class="timeline__file-list"
 			:fileIdsBySection="fileIdsByMonth"
@@ -189,26 +187,24 @@
 			:emptyMessage="createAlbumButtonLabel"
 			:scrollToSection="scrubberTarget"
 			@add-collection="showAlbumCreationForm = $event"
-			@need-content="getContent">
+      @needContent="getContent">
 			<template #default="{ file, isHeader }">
-				<h2
-					v-if="isHeader"
-					:id="`file-picker-section-header-${file.id}`"
-					class="section-header">
-					{{ dateMonth(file.id) }} {{ dateYear(file.id) }}
-				</h2>
+        <h2
+          v-if="isHeader"
+          :id="`file-picker-section-header-${file.id}`"
+          class="section-header">
+          <b>{{ formatMonth(file.id) }}</b>
+          {{ formatYear(file.id) }}
+        </h2>
 				<FileComponent
-					v-else
-					:file="files[file.id]"
-					:allowSelection="true"
-					:burstCount="burstCount(file.id)"
-					:selected="selection[file.id] === true"
-					:is-collection="true"
-					@click="openViewer"
-					@favorite="toggleFavorite"
-					@remove="handleFileDeleted"
-					@select-toggled="onFileSelectToggle"
-					@deleted="onPhotoDeleted" />
+	v-else
+	:file="files[file.id]"
+	:allowSelection="true"
+	:burstCount="burstCount(file.id)"
+	:selected="selection[file.id] === true"
+	@click="openViewer"
+	@selectToggled="onFileSelectToggle"
+	@deleted="onPhotoDeleted" />
 			</template>
 		</FilesListViewer>
 
@@ -221,16 +217,20 @@
 			@jump="onScrubberJump" />
 
 		<NcModal
-			v-if="showAlbumCreationForm"
-			key="albumCreationForm"
-			labelId="new-album-form"
-			:lightBackdrop="true"
-			@close="handleAlbumCreateCancel">
-			<h2 class="album-creation__heading">
-				{{ t('photos', 'New album') }}
-			</h2>
-			<AlbumForm :filtersValue="selectedFilters" @done="handleAlbumCreated" @closing="handleAlbumCreateCancel" />
-		</NcModal>
+      v-if="showAlbumCreationForm"
+      key="albumCreationForm"
+      labelId="new-album-form"
+      :lightBackdrop="true"
+      :setReturnFocus="newAlbumButton?.$el"
+      @close="handleAlbumCreateCancel">
+      <h2 class="timeline__heading">
+        {{ t('photos', 'New album') }}
+      </h2>
+      <AlbumForm
+        :filtersValue="selectedFilters"
+        @done="handleAlbumCreated"
+        @closing="handleAlbumCreateCancel" />
+    </NcModal>
 
 		<NcModal
 			v-if="showAlbumPicker"
@@ -241,30 +241,31 @@
 		</NcModal>
 
 		<PhotosPicker
-			:open.sync="showPhotosPicker"
-			:blacklist-ids="blacklistIds"
-			:destination="destination"
-			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
-			:allowempty="allowEmpty"
-			@closed="handlePickerClose"
-			@files-picked="handleFilesPicked" />
+      v-model:open="showPhotosPicker"
+      :blacklist-ids="blacklistIds"
+      :destination="destination"
+      :name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
+      :allowempty="allowEmpty"
+      @closed="handlePickerClose"
+      @files-picked="handleFilesPicked" />
 	</div>
 </template>
 
-<script lang='ts'>
-import type { PropType } from 'vue'
+<script setup lang="ts">
+import type { Folder, Node } from '@nextcloud/files'
+import type { Collection } from '../services/collectionFetcher.ts'
 import type { Album } from '../store/albums.ts'
 import type { PhotoTarget } from '../utils/fileUtils.ts'
 
-import type { Folder, Node } from '@nextcloud/files'
-
+import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { FileType } from '@nextcloud/files'
 import { defaultRootPath } from '@nextcloud/files/dav'
-
-import { subscribe, unsubscribe } from '@nextcloud/event-bus'
-import { t, translatePlural } from '@nextcloud/l10n'
+import { n, t } from '@nextcloud/l10n'
+import { getViewer } from '@nextcloud/viewer'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { storeToRefs } from 'pinia'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+import { onBeforeRouteLeave, useRouter } from 'vue-router'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActionRadio from '@nextcloud/vue/components/NcActionRadio'
 import NcActions from '@nextcloud/vue/components/NcActions'
@@ -276,14 +277,13 @@ import AlertCircleOutline from 'vue-material-design-icons/AlertCircleOutline.vue
 import Close from 'vue-material-design-icons/Close.vue'
 import FolderAlertOutline from 'vue-material-design-icons/FolderAlertOutline.vue'
 import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
-import Play from 'vue-material-design-icons/Play.vue'
+import MagnifyMinusOutline from 'vue-material-design-icons/MagnifyMinusOutline.vue'
+import MagnifyPlusOutline from 'vue-material-design-icons/MagnifyPlusOutline.vue'
 import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
 import DeleteOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import DownloadOutline from 'vue-material-design-icons/TrayArrowDown.vue'
-import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
-import MagnifyMinusOutline from 'vue-material-design-icons/MagnifyMinusOutline.vue'
-import MagnifyPlusOutline from 'vue-material-design-icons/MagnifyPlusOutline.vue'
 import ViewDashboardOutline from 'vue-material-design-icons/ViewDashboardOutline.vue'
+import ViewGridOutline from 'vue-material-design-icons/ViewGridOutline.vue'
 import ActionFavoriteButton from '../components/Actions/ActionFavoriteButton.vue'
 import AlbumForm from '../components/Albums/AlbumForm.vue'
 import AlbumPicker from '../components/Albums/AlbumPicker.vue'
@@ -293,10 +293,10 @@ import FilesListViewer from '../components/FilesListViewer.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
 import PhotosSourceLocationsSettings from '../components/Settings/PhotosSourceLocationsSettings.vue'
+import { useFetchFiles } from '../composables/useFetchFiles.ts'
+import { useFilesByMonth } from '../composables/useFilesByMonth.ts'
+import { useFilesSelection } from '../composables/useFilesSelection.ts'
 import { useGridDensity } from '../composables/useGridDensity.ts'
-import FetchFilesMixin from '../mixins/FetchFilesMixin.ts'
-import FilesByMonthMixin from '../mixins/FilesByMonthMixin.ts'
-import FilesSelectionMixin from '../mixins/FilesSelectionMixin.ts'
 import { allMimes } from '../services/AllowedMimes.ts'
 import { downloadFiles } from '../services/downloadFiles.ts'
 import { fetchFile } from '../services/fileFetcher.ts'
@@ -307,472 +307,359 @@ import { useFilesStore } from '../store/files.ts'
 import { useFilterStore } from '../store/filters.ts'
 import { configChangedEvent, useUserConfigStore } from '../store/userConfig.ts'
 import { formatMonth, formatYear } from '../utils/dateUtils.ts'
-import { toViewerFileInfo } from '../utils/fileUtils.ts'
-
-export default {
-	name: 'TimelineView',
-	components: {
-		DeleteOutline,
-		PlusBoxMultipleOutline,
-		DownloadOutline,
-		Close,
-		Play,
-		FolderAlertOutline,
-		MagnifyMinusOutline,
-		MagnifyPlusOutline,
-		NcEmptyContent,
-		NcModal,
-		NcActions,
-		NcActionButton,
-		NcActionRadio,
-		NcButton,
-		NcUploadPicker,
-		AlbumForm,
-		AlbumPicker,
-		DateScrubber,
-		FilesListViewer,
-		FileComponent,
-		HeaderNavigation,
-		PhotosSourceLocationsSettings,
-		AlertCircleOutline,
-		ViewGridOutline,
-		ViewDashboardOutline,
-		ActionFavoriteButton,
-		ImageMultipleOutline,
-		PhotosPicker,
-	},
-
-	mixins: [
-		FetchFilesMixin,
-		FilesSelectionMixin,
-		FilesByMonthMixin,
-	],
-
-	beforeRouteLeave(to, from, next) {
-		this.appContent?.scrollTo(0, 0)
-		next()
-		Object.keys(this.selectedFilters).forEach((key) => {
-			this.selectedFilters[key] = []
-		})
-	},
-
-	props: {
-		onlyFavorites: {
-			type: Boolean,
-			default: false,
-		},
-
-		mimesType: {
-			type: Array as PropType<string[]>,
-			default: () => allMimes,
-		},
-
-		onThisDay: {
-			type: Boolean,
-			default: false,
-		},
-
-		rootTitle: {
-			type: String,
-			required: true,
-		},
-	},
-
-	setup() {
-		const isMobile = useIsMobile()
-
-		const filtersStore = useFilterStore()
-		const { selectedFilters, filtersQuery } = storeToRefs(filtersStore)
-
-		const { gridDensity, tileBaseHeight, setGridDensity } = useGridDensity()
-
-		return {
-			collectionsStore: useCollectionsStore(),
-			filesStore: useFilesStore(),
-			userConfigStore: useUserConfigStore(),
-			isMobile,
-			selectedFilters,
-			filtersQuery,
-			gridDensity,
-			tileBaseHeight,
-			setGridDensity,
-		}
-	},
-
-	data() {
-		return {
-			loadingCount: 0,
-			showAlbumCreationForm: false,
-			showAlbumPicker: false,
-
-			showPhotosPicker: false,
-			blacklistIds: [] as string[],
-			destination: '',
-			collection: '',
-			allowEmpty: true,
-
-			appContent: document.getElementById('app-content-vue'),
-			showFilters: false,
-			// Month section the user picked in the DateScrubber, forwarded to
-			// FilesListViewer's `scrollToSection`. Empty means no override.
-			scrubberTarget: '',
-			windowWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
-
-			allowedMimes: allMimes,
-			uploadFolder: undefined as Folder | undefined,
-		}
-	},
-
-	computed: {
-		inlineActions() {
-			if (this.windowWidth < 512) {
-				return 0
-			}
-			if (this.windowWidth < 768) {
-				return 1
-			}
-			if (this.windowWidth < 1024) {
-				return 2
-			}
-			return 3
-		},
-
-		shouldFavoriteSelection(): boolean {
-			// Favorite all selection if at least one file is not in the favorites.
-			return this.selectedFileIds.some((fileId) => this.filesStore.files[fileId].attributes.favorite === 0)
-		},
-
-		files() {
-			return this.filesStore.files
-		},
-
-		// Photos of the timeline that are loaded, in the order they are shown.
-		timelinePhotos() {
-			return this.fetchedFileIds
-				.map((fileId: number) => this.files[fileId])
-				.filter((file) => file !== undefined)
-		},
-
-		// Photos taken in one go are shown as a single tile of the timeline, and are
-		// reachable from the viewer it opens.
-		foldBursts(): boolean {
-			return true
-		},
-
-		// Photo count per month, drives the density ticks of the scrubber. Counted
-		// before the folding, so a month of bursts reads as dense as it is.
-		monthCounts(): Record<string, number> {
-			const entries = Object.entries(this.fileIdsByMonthUngrouped as Record<string, string[]>)
-			return Object.fromEntries(entries.map(([month, fileIds]) => [month, fileIds.length]))
-		},
-
-		createAlbumButtonLabel() {
-			return this.t('photos', 'Create new album')
-		},
-
-		filesCount(): number {
-			return Object.values(this.fileIdsByMonth)
-				.reduce((sum, ids) => sum + ids.length, 0)
-		},
-
-		photosCount(): number {
-			return Object.values(this.fileIdsByMonth).flat().filter((fileId) => {
-				const file = this.files[fileId]
-				return file?.mime?.startsWith('image/')
-			}).length
-		},
-
-		videosCount(): number {
-			return Object.values(this.fileIdsByMonth).flat().filter((fileId) => {
-				const file = this.files[fileId]
-				return file?.mime?.startsWith('video/')
-			}).length
-		},
-
-		dateCreated(): string {
-			const months = Object.keys(this.fileIdsByMonth).sort()
-			if (months.length === 0) {
-				return ''
-			}
-
-			const firstMonth = months[0]
-			const lastMonth = months[months.length - 1]
-			const firstFormatted = `${this.dateMonth(firstMonth)} ${this.dateYear(firstMonth)}`
-			const lastFormatted = `${this.dateMonth(lastMonth)} ${this.dateYear(lastMonth)}`
-
-			if (firstFormatted === lastFormatted) {
-				return firstFormatted
-			}
-
-			return `${firstFormatted} ${this.t('photos', 'to')} ${lastFormatted}`
-		},
-
-		croppedLayout() {
-			return this.userConfigStore.croppedLayout
-		},
-
-		photosLocation(): string {
-			return this.userConfigStore.photosLocation || '/'
-		},
-
-		uploadFolderPath(): string {
-			const location = this.photosLocation
-				.replace(/^\/+/, '')
-				.replace(/\/+$/, '')
-
-			if (location === '') {
-				return defaultRootPath
-			}
-
-			return `${defaultRootPath.replace(/\/+$/, '')}/${location}`
-		},
-	},
-
-	watch: {
-		filtersQuery() {
-			this.resetFetchFilesState()
-			this.getContent()
-		},
-
-		photosLocation() {
-			this.fetchUploadFolder()
-		},
-	},
-
-	async mounted() {
-		subscribe(configChangedEvent, this.handleUserConfigChange)
-		window.addEventListener('resize', this.handleResize)
-
-		await this.fetchUploadFolder()
-	},
-
-	unmounted() {
-		unsubscribe(configChangedEvent, this.handleUserConfigChange)
-		window.removeEventListener('resize', this.handleResize)
-	},
-
-	methods: {
-		async favoriteSelection(): Promise<void> {
-			await this.filesStore.toggleFavoriteForFiles(this.selectedFileIds, 1)
-		},
-
-		async unFavoriteSelection(): Promise<void> {
-			await this.filesStore.toggleFavoriteForFiles(this.selectedFileIds, 0)
-		},
-
-		dateMonth: formatMonth,
-		dateYear: formatYear,
-
-		getContent() {
-			return this.fetchFiles({
-				mimesType: this.mimesType,
-				onThisDay: this.onThisDay,
-				onlyFavorites: this.onlyFavorites,
-				extraFilters: this.filtersQuery,
-			})
-		},
-
-		// FilesListViewer scrolls on its `scrollToSection` prop, so stashing
-		// the month is all there is to do.
-		onScrubberJump(month: string) {
-			this.scrubberTarget = month
-		},
-
-		// Selecting the tile of a run selects every photo of it: the photos folded
-		// into it have no tile of their own to be picked from, and favoriting,
-		// downloading or deleting a part of a burst would silently leave the rest
-		// behind.
-		onFileSelectToggle({ id, value }: { id: string, value: boolean }): void {
-			const fileIds = this.burstStacks[id]?.memberIds ?? [id]
-			for (const fileId of fileIds) {
-				this.selection[fileId] = value
-			}
-		},
-
-		// How many photos the tile of a photo stands for, one being itself.
-		burstCount(fileId: string): number {
-			return this.burstStacks[fileId]?.memberIds.length ?? 1
-		},
-
-		openViewer(fileId: string) {
-			// A tile standing for a run of photos hands the viewer that run alone, so
-			// flipping through it stays inside the burst rather than leaving it for the
-			// rest of the timeline. Every other tile hands it the whole grid.
-			const fileIds = this.burstStacks[fileId]?.memberIds
-				?? Object.values(this.fileIdsByMonth).flat()
-
-			window.OCA.Viewer.open({
-				fileInfo: toViewerFileInfo(this.files[fileId]),
-				list: fileIds
-					.map((id) => this.files[id])
-					.filter((file) => file !== undefined)
-					.map(toViewerFileInfo),
-			})
-		},
-
-		startSlideshow() {
-			window.OCA.Viewer.open({
-				fileInfo: toViewerFileInfo(this.timelinePhotos[0]),
-				list: this.timelinePhotos.map(toViewerFileInfo),
-				startSlideshow: true,
-			})
-		},
-
-		handleAlbumCreated({ album }: { album: Album }) {
-			this.showAlbumCreationForm = false
-			this.destination = album.basename
-			this.collection = album.root + album.path
-			this.showPhotosPicker = true
-		},
-
-		handlePickerClose() {
-			this.$router.push(`/albums/${this.destination}`)
-		},
-
-		async handleFilesPicked(fileIds: string[]) {
-			await this.collectionsStore.addFilesToCollection(
-				this.collection,
-				fileIds,
-			)
-
-			this.showPhotosPicker = false
-			this.$router.push(`/albums/${this.destination}`)
-		},
-
-		handleAlbumCreateCancel() {
-			this.showAlbumCreationForm = false
-		},
-
-		async addSelectionToAlbum(album: Album) {
-			this.showAlbumPicker = false
-			await this.collectionsStore.addFilesToCollection(album.root + album.path, this.selectedFileIds)
-		},
-
-		// The photo is already gone from the store, it only has to leave the
-		// list of the photos this timeline fetched.
-		onPhotoDeleted(photo: PhotoTarget) {
-			this.onUncheckFiles([photo.fileid.toString()])
-			this.fetchedFileIds = this.fetchedFileIds.filter((fileId) => fileId !== photo.fileid)
-		},
-
-		async deleteSelection() {
-			// Need to store the file ids so it is not changed before the deleteFiles call.
-			const fileIds = this.selectedFileIds
-			this.onUncheckFiles(fileIds)
-			this.fetchedFileIds = this.fetchedFileIds.filter((fileId) => !fileIds.includes(fileId.toString()))
-			await this.filesStore.deleteFiles(fileIds)
-		},
-
-		handleUserConfigChange({ key }) {
-			if (key === 'photosSourceFolders') {
-				this.resetFetchFilesState()
-			}
-		},
-
-		handleFormCreationDone({ album }: { album: Album }) {
-			this.showAlbumCreationForm = false
-			this.$router.push(`/albums/${album.basename}`)
-		},
-
-		handleResize() {
-			this.windowWidth = window.innerWidth
-		},
-
-		downloadSelectedFiles() {
-			const fileIds = this.selectedFileIds
-			this.onUncheckFiles(fileIds)
-			downloadFiles(fileIds.map((fileId) => this.files[fileId]))
-		},
-
-		async handleFileDeleted({ fileid }: { fileid?: number }) {
-			if (fileid === undefined) {
-				return
-			}
-
-			const fileId = fileid.toString()
-			this.onUncheckFiles([fileId])
-			this.fetchedFileIds = this.fetchedFileIds.filter((id) => id.toString() !== fileId)
-			await this.filesStore.deleteFiles([fileId])
-		},
-
-		async toggleFavorite(fileId: number) {
-			const id = fileId.toString()
-			const file = this.filesStore.files[id]
-
-			if (file === undefined) {
-				return
-			}
-
-			const newState = file.attributes.favorite ? 0 : 1
-			await this.filesStore.toggleFavoriteForFiles([id], newState)
-		},
-
-		toggleCroppedLayout(value: boolean) {
-			this.userConfigStore.updateUserConfig('croppedLayout', value)
-		},
-
-		async fetchUploadFolder(): Promise<void> {
-			try {
-				const node = await fetchFile(this.uploadFolderPath)
-
-				if (
-					node === null
-					|| node === undefined
-					|| node.type !== FileType.Folder
-					|| !node.source
-				) {
-					this.uploadFolder = undefined
-
-					logger.error('Invalid Photos upload folder', {
-						path: this.photosLocation,
-						davPath: this.uploadFolderPath,
-						node,
-					})
-					return
-				}
-
-				this.uploadFolder = node as Folder
-
-				logger.debug('Photos upload folder resolved', {
-					path: this.photosLocation,
-					source: node.source,
-				})
-			} catch (error) {
-				this.uploadFolder = undefined
-
-				logger.error('Failed to fetch Photos upload folder', {
-					error,
-					path: this.photosLocation,
-					davPath: this.uploadFolderPath,
-				})
-			}
-		},
-
-		async uploadDestinationContent(): Promise<Node[]> {
-			const { folders, files } = await getFolderContent(this.photosLocation)
-
-			return [
-				...folders,
-				...files,
-			]
-		},
-
-		async onUploadsFinished(): Promise<void> {
-			try {
-				this.resetFetchFilesState()
-				await this.getContent()
-			} catch (error) {
-				logger.error('Failed to refresh timeline after upload', {
-					error,
-				})
-			}
-		},
-
-		t,
-
-		n: translatePlural,
-	},
+
+const props = withDefaults(defineProps<{
+	onlyFavorites?: boolean
+	mimesType?: string[]
+	onThisDay?: boolean
+	rootTitle: string
+}>(), {
+	onlyFavorites: false,
+	mimesType: () => allMimes,
+	onThisDay: false,
+})
+
+const router = useRouter()
+const isMobile = useIsMobile()
+
+const collectionsStore = useCollectionsStore()
+const filesStore = useFilesStore()
+const filtersStore = useFilterStore()
+const userConfigStore = useUserConfigStore()
+const { selectedFilters, filtersQuery } = storeToRefs(filtersStore)
+
+const { gridDensity, tileBaseHeight, setGridDensity } = useGridDensity()
+const { fetchFiles, resetFetchFilesState, fetchedFileIds, loadingFiles, errorFetchingFiles } = useFetchFiles()
+const { selection, selectedFileIds, onUncheckFiles, resetSelection } = useFilesSelection()
+
+const newAlbumButton = useTemplateRef<InstanceType<typeof NcButton>>('newAlbumButton')
+
+const showAlbumCreationForm = ref(false)
+const showAlbumPicker = ref(false)
+const showPhotosPicker = ref(false)
+
+const blacklistIds = ref<string[]>([])
+const destination = ref('')
+const collection = ref('')
+const allowEmpty = true
+
+const appContent = document.getElementById('app-content-vue')
+
+// Month section the user picked in the DateScrubber, forwarded to
+// FilesListViewer's `scrollToSection`. Empty means no override.
+const scrubberTarget = ref('')
+
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 0)
+
+const uploadFolder = ref<Folder | undefined>()
+
+const files = computed(() => filesStore.files)
+
+// Photos taken in one go are shown as a single tile of the timeline, and are
+// reachable from the viewer it opens.
+const { fileIdsByMonthUngrouped, burstStacks, fileIdsByMonth, monthsList } = useFilesByMonth(fetchedFileIds, files, true)
+
+// Photo count per month, drives the density ticks of the scrubber. Counted
+// before the folding, so a month of bursts reads as dense as it is.
+const monthCounts = computed<Record<string, number>>(() => {
+	const entries = Object.entries(fileIdsByMonthUngrouped.value)
+	return Object.fromEntries(entries.map(([month, fileIds]) => [month, fileIds.length]))
+})
+
+const createAlbumButtonLabel = computed(() => {
+	if (Object.values(selectedFilters.value).some((values) => values.length > 0)) {
+		return t('photos', 'Create new album from filters')
+	}
+
+	return t('photos', 'Create new album')
+})
+
+const inlineActions = computed(() => {
+	if (windowWidth.value < 512) {
+		return 0
+	}
+
+	if (windowWidth.value < 768) {
+		return 1
+	}
+
+	if (windowWidth.value < 1024) {
+		return 2
+	}
+
+	return 3
+})
+
+const filesCount = computed<number>(() => Object.values(fileIdsByMonth.value)
+	.reduce((sum, ids) => sum + ids.length, 0))
+
+const photosCount = computed<number>(() => Object.values(fileIdsByMonth.value)
+	.flat()
+	.filter((fileId) => files.value[fileId]?.mime?.startsWith('image/'))
+	.length)
+
+const videosCount = computed<number>(() => Object.values(fileIdsByMonth.value)
+	.flat()
+	.filter((fileId) => files.value[fileId]?.mime?.startsWith('video/'))
+	.length)
+
+const dateCreated = computed<string>(() => {
+	const months = Object.keys(fileIdsByMonth.value).sort()
+
+	if (months.length === 0) {
+		return ''
+	}
+
+	const firstMonth = months[0]
+	const lastMonth = months[months.length - 1]
+
+	const firstFormatted = `${formatMonth(firstMonth)} ${formatYear(firstMonth)}`
+	const lastFormatted = `${formatMonth(lastMonth)} ${formatYear(lastMonth)}`
+
+	if (firstFormatted === lastFormatted) {
+		return firstFormatted
+	}
+
+	return `${firstFormatted} ${t('photos', 'to')} ${lastFormatted}`
+})
+
+const croppedLayout = computed(() => userConfigStore.croppedLayout)
+
+const photosLocation = computed<string>(() => userConfigStore.photosLocation || '/')
+
+const uploadFolderPath = computed<string>(() => {
+	const location = photosLocation.value
+		.replace(/^\/+/, '')
+		.replace(/\/+$/, '')
+
+	if (location === '') {
+		return defaultRootPath
+	}
+
+	return `${defaultRootPath.replace(/\/+$/, '')}/${location}`
+})
+
+// Photos of the timeline that are loaded, in the order they are shown.
+const timelinePhotos = computed(() => fetchedFileIds.value
+	.map((fileId) => files.value[fileId])
+	.filter((file) => file !== undefined))
+
+watch(filtersQuery, () => {
+	resetFetchFilesState()
+	getContent()
+})
+
+watch(photosLocation, () => {
+	fetchUploadFolder()
+})
+
+function handleResize(): void {
+	windowWidth.value = window.innerWidth
 }
+
+function getContent() {
+	return fetchFiles({
+		mimesType: props.mimesType,
+		onThisDay: props.onThisDay,
+		onlyFavorites: props.onlyFavorites,
+		extraFilters: filtersQuery.value,
+	})
+}
+
+// FilesListViewer scrolls on its `scrollToSection` prop, so stashing
+// the month is all there is to do.
+function onScrubberJump(month: string) {
+	scrubberTarget.value = month
+}
+
+// Selecting the tile of a run selects every photo of it: the photos folded
+// into it have no tile of their own to be picked from, and favoriting,
+// downloading or deleting a part of a burst would silently leave the rest
+// behind.
+function onFileSelectToggle({ id, value }: { id: number, value: boolean }): void {
+	const fileIds = burstStacks.value[id]?.memberIds ?? [String(id)]
+
+	for (const fileId of fileIds) {
+		selection.value[fileId] = value
+	}
+}
+
+// How many photos the tile of a photo stands for, one being itself.
+function burstCount(fileId: string): number {
+	return burstStacks.value[fileId]?.memberIds.length ?? 1
+}
+
+function openViewer(fileId: number): void {
+	// A tile standing for a run of photos hands the viewer that run alone, so
+	// flipping through it stays inside the burst rather than leaving it for the
+	// rest of the timeline. Every other tile hands it the whole grid.
+	const fileIds = burstStacks.value[fileId]?.memberIds
+		?? Object.values(fileIdsByMonth.value).flat()
+
+	getViewer().open(
+		fileIds
+			.map((id) => files.value[id])
+			.filter((file) => file !== undefined),
+		files.value[fileId],
+	)
+}
+
+function startSlideshow(): void {
+	getViewer().open(
+		timelinePhotos.value,
+		timelinePhotos.value[0],
+		{ startSlideshow: true },
+	)
+}
+
+function handleAlbumCreated({ album }: { album: Collection }): void {
+	showAlbumCreationForm.value = false
+	destination.value = album.basename
+	collection.value = album.root + album.path
+	showPhotosPicker.value = true
+}
+
+function handleAlbumCreateCancel(): void {
+	showAlbumCreationForm.value = false
+}
+
+function handlePickerClose(): void {
+	if (destination.value !== '') {
+		router.push(`/albums/${destination.value}`)
+	}
+}
+
+async function handleFilesPicked(fileIds: string[]): Promise<void> {
+	await collectionsStore.addFilesToCollection(
+		collection.value,
+		fileIds,
+	)
+
+	showPhotosPicker.value = false
+	await router.push(`/albums/${destination.value}`)
+}
+
+async function addSelectionToAlbum(album: Album): Promise<void> {
+	showAlbumPicker.value = false
+
+	await collectionsStore.addFilesToCollection(
+		album.root + album.path,
+		selectedFileIds.value,
+	)
+}
+
+// The photo is already gone from the store, it only has to leave the
+// list of the photos this timeline fetched.
+function onPhotoDeleted(photo: PhotoTarget): void {
+	onUncheckFiles([photo.fileid.toString()])
+	fetchedFileIds.value = fetchedFileIds.value.filter((fileId) => fileId !== photo.fileid)
+}
+
+async function deleteSelection(): Promise<void> {
+	// Need to store the file ids so it is not changed before the deleteFiles call.
+	const fileIds = selectedFileIds.value
+
+	onUncheckFiles(fileIds)
+	fetchedFileIds.value = fetchedFileIds.value.filter(
+		(fileId) => !fileIds.includes(fileId.toString()),
+	)
+
+	await filesStore.deleteFiles(fileIds)
+}
+
+function downloadSelectedFiles(): void {
+	const fileIds = selectedFileIds.value
+
+	onUncheckFiles(fileIds)
+	downloadFiles(fileIds.map((fileId) => files.value[fileId]))
+}
+
+function handleUserConfigChange({ key }: { key: string }): void {
+	if (key === 'photosSourceFolders') {
+		resetFetchFilesState()
+	}
+}
+
+function toggleCroppedLayout(value: boolean): void {
+	userConfigStore.updateUserConfig('croppedLayout', value)
+}
+
+async function fetchUploadFolder(): Promise<void> {
+	try {
+		const node = await fetchFile(uploadFolderPath.value)
+
+		if (
+			node === null
+			|| node === undefined
+			|| node.type !== FileType.Folder
+			|| !node.source
+		) {
+			uploadFolder.value = undefined
+
+			logger.error('Invalid Photos upload folder', {
+				path: photosLocation.value,
+				davPath: uploadFolderPath.value,
+				node,
+			})
+			return
+		}
+
+		uploadFolder.value = node as Folder
+
+		logger.debug('Photos upload folder resolved', {
+			path: photosLocation.value,
+			source: node.source,
+		})
+	} catch (error) {
+		uploadFolder.value = undefined
+
+		logger.error('Failed to fetch Photos upload folder', {
+			error,
+			path: photosLocation.value,
+			davPath: uploadFolderPath.value,
+		})
+	}
+}
+
+async function uploadDestinationContent(): Promise<Node[]> {
+	const { folders, files } = await getFolderContent(photosLocation.value)
+
+	return [
+		...folders,
+		...files,
+	]
+}
+
+async function onUploadsFinished(): Promise<void> {
+	try {
+		resetFetchFilesState()
+		await getContent()
+	} catch (error) {
+		logger.error('Failed to refresh timeline after upload', {
+			error,
+		})
+	}
+}
+
+onBeforeRouteLeave(() => {
+	appContent?.scrollTo(0, 0)
+
+	Object.keys(selectedFilters.value).forEach((key) => {
+		selectedFilters.value[key] = []
+	})
+})
+
+onMounted(async () => {
+	subscribe(configChangedEvent, handleUserConfigChange)
+	window.addEventListener('resize', handleResize)
+
+	await fetchUploadFolder()
+})
+
+onUnmounted(() => {
+	unsubscribe(configChangedEvent, handleUserConfigChange)
+	window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <style lang="scss" scoped>
