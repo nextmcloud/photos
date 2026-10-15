@@ -53,6 +53,7 @@
 <script lang="ts">
 import type { PropType } from 'vue'
 import type { Collaborator } from '../../store/albums.js'
+
 import { showError } from '@nextcloud/dialogs'
 import { translate } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
@@ -61,21 +62,20 @@ import NcButton from '@nextcloud/vue/components/NcButton'
 import CalendarMonthIcon from 'vue-material-design-icons/CalendarMonth.vue'
 import ChevronRightIcon from 'vue-material-design-icons/ChevronRight.vue'
 import EyeIcon from 'vue-material-design-icons/EyeCircleOutline.vue'
-import FetchCollectionContentMixin from '../../mixins/FetchCollectionContentMixin.ts'
+import { useFetchCollectionContent } from '../../composables/useFetchCollectionContent.ts'
 import { logger } from '../../services/logger.ts'
 import { albumsExtraProps, albumsPrefix } from '../../store/albums.ts'
 import { useCollectionsStore } from '../../store/collections.ts'
 
 export default {
 	name: 'AlbumShare',
+
 	components: {
 		NcButton,
 		EyeIcon,
 		ChevronRightIcon,
 		CalendarMonthIcon,
 	},
-
-	mixins: [FetchCollectionContentMixin],
 
 	props: {
 		albumName: {
@@ -92,11 +92,14 @@ export default {
 		},
 	},
 
-    setup() {
-        return {
-            collectionsStore: useCollectionsStore(),
-        }
-    },
+	setup() {
+		const { fetchCollection } = useFetchCollectionContent()
+
+		return {
+			collectionsStore: useCollectionsStore(),
+			fetchCollection,
+		}
+	},
 
 	data() {
 		return {
@@ -110,18 +113,23 @@ export default {
 		hasPublicLink(): boolean {
 			return this.publicLinkId !== ''
 		},
+
 		publicLinkURL(): string {
 			return `${window.location.protocol}//${window.location.host}${generateUrl(`apps/photos/public/${this.publicLinkId}`)}`
 		},
+
 		title(): string {
 			return this.t('files_sharing', 'Share link')
 		},
+
 		canViewText(): string {
 			return this.t('nmcsharing', 'Anyone with the link can only view')
 		},
-        albumFileName(): string {
-            return `${albumsPrefix}/${this.albumName}`
-        },
+
+		albumFileName(): string {
+			return `${albumsPrefix}/${this.albumName}`
+		},
+
 		publicLink(): Collaborator {
 			return this.availableCollaborators[ShareType.Link]
 		},
@@ -164,11 +172,17 @@ export default {
 					...this.collaborators.filter((c: Collaborator) => c.type !== ShareType.Link),
 					{ id: '', label: this.t('photos', 'Public link'), type: ShareType.Link },
 				]
-                await this.collectionsStore.updateCollection(
-                    this.albumFileName,
-                    { collaborators: newCollaborators },
-                )
-				const collection = await this.fetchCollection(this.albumFileName, albumsExtraProps)
+
+				await this.collectionsStore.updateCollection(
+					this.albumFileName,
+					{ collaborators: newCollaborators },
+				)
+
+				const collection = await this.fetchCollection(
+					this.albumFileName,
+					albumsExtraProps,
+				)
+
 				const link = (collection?.attributes?.collaborators || []).find((c: Collaborator) => c.type === ShareType.Link)
 				this.publicLinkId = link ? link.id : ''
 				this.availableCollaborators = {
@@ -184,27 +198,40 @@ export default {
 				showError(this.t('photos', 'Failed to create public link.'))
 			}
 		},
+
 		async deletePublicLink() {
 			try {
 				const newCollaborators = this.collaborators.filter((c: Collaborator) => c.type !== ShareType.Link)
-                await this.collectionsStore.updateCollection(
-                    this.albumFileName,
-                    { collaborators: newCollaborators },
-                )
-				await this.fetchCollection(this.albumFileName, albumsExtraProps)
+
+				await this.collectionsStore.updateCollection(
+					this.albumFileName,
+					{ collaborators: newCollaborators },
+				)
+
+				await this.fetchCollection(
+					this.albumFileName,
+					albumsExtraProps,
+				)
+
 				this.publicLinkId = ''
 				this.publicLinkCopied = false
-				this.availableCollaborators[ShareType.Link] = { id: '', label: this.t('photos', 'Public link'), type: ShareType.Link }
+				this.availableCollaborators[ShareType.Link] = {
+					id: '',
+					label: this.t('photos', 'Public link'),
+					type: ShareType.Link,
+				}
 			} catch (error) {
 				logger.error('[AlbumShare] Error deleting public link', { error })
 				showError(this.t('photos', 'Failed to delete public link.'))
 			}
 		},
+
 		async copyPublicLink() {
 			await navigator.clipboard.writeText(this.publicLinkURL)
 			this.publicLinkCopied = true
 			setTimeout(() => (this.publicLinkCopied = false), 3000)
 		},
+
 		t: translate,
 	},
 }
