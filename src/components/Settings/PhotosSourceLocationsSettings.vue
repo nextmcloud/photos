@@ -5,29 +5,26 @@
 
 <template>
 	<div class="photos-locations">
-		<div class="photos-locations__title">
-			{{ t('photos', 'Media folders') }}
-		</div>
 		<div class="photos-locations__description">
 			{{ t('photos', 'Choose the folders from where photos and videos are shown.') }}
 		</div>
 
 		<ul class="photos-locations__list">
 			<li
-				v-for="(source, index) in photosSourceFolders"
-				:key="index">
+				v-for="source in photosSourceFolders"
+				:key="source">
 				<PhotosFolder
 					:path="source"
 					canDelete
-					:rootFolderLabel="t('photos', 'All folders')"
+					:rootFolderLabel="t('photos', 'Entire MagentaCLOUD')"
 					:rootFolderIcon="FolderMultipleOutline"
-					@removeFolder="removeSourceFolder(index)" />
+					@removeFolder="removeSourceFolder(source)" />
 			</li>
 		</ul>
 
 		<NcButton
 			:aria-label="t('photos', 'Add a Photos source for the timelines')"
-			:wide="true"
+			variant="tertiary"
 			@click="debounceAddSourceFolder">
 			<template #icon>
 				<Plus :size="20" />
@@ -49,7 +46,13 @@ import PhotosFolder from './PhotosFolder.vue'
 import { logger } from '../../services/logger.ts'
 import { useUserConfigStore } from '../../store/userConfig.ts'
 
+const emit = defineEmits<{
+	'folders-update': [photosLocationInsideSources: boolean]
+}>()
+
 const userConfigStore = useUserConfigStore()
+
+const photosLocation = computed<string>(() => userConfigStore.photosLocation)
 
 const photosSourceFolders = computed<string[]>(() => userConfigStore.photosSourceFolders)
 
@@ -62,6 +65,7 @@ async function openFilePicker(title: string): Promise<string> {
 		.allowDirectories()
 		.addButton({
 			label: t('photos', 'Pick folder'),
+			variant: 'primary',
 			callback: (nodes) => logger.debug('Picked', { nodes }),
 		})
 		.build()
@@ -69,18 +73,71 @@ async function openFilePicker(title: string): Promise<string> {
 	return picker.pick()
 }
 
-async function addSourceFolder() {
-	const pickedFolder = await openFilePicker(t('photos', 'Select a source folder for your media'))
-	if (photosSourceFolders.value.includes(pickedFolder)) {
+async function addSourceFolder(): Promise<void> {
+	const pickedFolder = await openFilePicker(
+		t('photos', 'Select a source folder for your media'),
+	)
+
+	if (!pickedFolder) {
 		return
 	}
-	userConfigStore.updateUserConfig('photosSourceFolders', [...photosSourceFolders.value, pickedFolder])
+
+	const normalizedPickedFolder = normalizePath(pickedFolder)
+
+	const folderAlreadyExists = photosSourceFolders.value.some((source) => {
+		return normalizePath(source) === normalizedPickedFolder
+	})
+
+	if (folderAlreadyExists) {
+		return
+	}
+
+	const folders = [
+		...photosSourceFolders.value,
+		pickedFolder,
+	]
+
+	await userConfigStore.updateUserConfig('photosSourceFolders', folders)
+
+	emit(
+		'folders-update',
+		isPathInsideSources(photosLocation.value, folders),
+	)
 }
 
-function removeSourceFolder(index: number) {
-	const folders = [...photosSourceFolders.value]
-	folders.splice(index, 1)
-	userConfigStore.updateUserConfig('photosSourceFolders', folders)
+async function removeSourceFolder(sourceToRemove: string): Promise<void> {
+	const normalizedSourceToRemove = normalizePath(sourceToRemove)
+
+	const folders = photosSourceFolders.value.filter((source) => {
+		return normalizePath(source) !== normalizedSourceToRemove
+	})
+
+	await userConfigStore.updateUserConfig('photosSourceFolders', folders)
+
+	emit(
+		'folders-update',
+		isPathInsideSources(photosLocation.value, folders),
+	)
+}
+
+function normalizePath(path: string): string {
+	return path.replace(/\/+$/, '')
+}
+
+function isPathInsideSource(path: string, source: string): boolean {
+	const normalizedPath = normalizePath(path)
+	const normalizedSource = normalizePath(source)
+
+	return normalizedPath === normalizedSource
+		|| normalizedPath.startsWith(normalizedSource + '/')
+}
+
+function isPathInsideSources(path: string, sources: string[]): boolean {
+	if (!path || sources.length === 0) {
+		return false
+	}
+
+	return sources.some((source) => isPathInsideSource(path, source))
 }
 </script>
 
@@ -98,7 +155,7 @@ function removeSourceFolder(index: number) {
 
 	&__list {
 		padding-inline-start: 12px;
-		margin: 16px 0;
+		margin: 16px 0 0;
 
 		li {
 			list-style: none;
