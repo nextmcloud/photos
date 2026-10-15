@@ -50,137 +50,95 @@
 	</div>
 </template>
 
-<script lang='ts'>
-import type { File } from '@nextcloud/files'
-import type { PropType } from 'vue'
-import type { Collection } from '../../services/collectionFetcher.js'
+<script setup lang="ts">
+import type { Node } from '@nextcloud/files'
+import type { Collection } from '../../services/collectionFetcher.ts'
 import type { PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
-import { translate } from '@nextcloud/l10n'
-import { defineComponent } from 'vue'
+import { t } from '@nextcloud/l10n'
+import { getViewer } from '@nextcloud/viewer'
+import { computed, onMounted, onUnmounted } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import AlertCircleOutline from 'vue-material-design-icons/AlertCircleOutline.vue'
 import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
 import FileComponent from '../FileComponent.vue'
 import FilesListViewer from '../FilesListViewer.vue'
+import { useFilesSelection } from '../../composables/useFilesSelection.ts'
 import { useGridDensity } from '../../composables/useGridDensity.ts'
-import FilesSelectionMixin from '../../mixins/FilesSelectionMixin.js'
 import { useCollectionsStore } from '../../store/collections.ts'
 import { useFilesStore } from '../../store/files.ts'
-import { toViewerFileInfo } from '../../utils/fileUtils.js'
 
-export default defineComponent({
-	name: 'CollectionContent',
-
-	components: {
-		AlertCircleOutline,
-		ImageMultipleOutline,
-		NcEmptyContent,
-		FilesListViewer,
-		FileComponent,
-	},
-
-	mixins: [FilesSelectionMixin],
-
-	props: {
-		collection: {
-			type: Object as PropType<Collection>,
-			default: () => undefined,
-		},
-
-		collectionFileIds: {
-			type: Array as PropType<string[]>,
-			required: true,
-		},
-
-		loading: {
-			type: Boolean,
-			default: false,
-		},
-
-		allowSelection: {
-			type: Boolean,
-			default: true,
-		},
-
-		error: {
-			type: [Error, Number],
-			default: null,
-		},
-	},
-
-	setup() {
-		const { tileBaseHeight } = useGridDensity()
-
-		return {
-			collectionsStore: useCollectionsStore(),
-			filesStore: useFilesStore(),
-			tileBaseHeight,
-		}
-	},
-
-	data() {
-		return {
-			appContent: document.getElementById('app-content-vue'),
-		}
-	},
-
-	computed: {
-		files() {
-			return this.filesStore.files
-		},
-
-		sortedCollectionFileIds(): string[] {
-			return this.collectionFileIds
-				.filter((fileId) => this.files[fileId] !== undefined)
-				.toSorted((fileId1, fileId2) => {
-					const file1 = this.files[fileId1]
-					const file2 = this.files[fileId2]
-
-					const timestamp1 = Number(file1.attributes.timestamp ?? 0)
-					const timestamp2 = Number(file2.attributes.timestamp ?? 0)
-
-					return timestamp1 - timestamp2
-				})
-		},
-	},
-
-	mounted() {
-		subscribe('files:node:deleted', this.handleFileDeleted)
-	},
-
-	unmounted() {
-		unsubscribe('files:node:deleted', this.handleFileDeleted)
-	},
-
-	methods: {
-		openViewer(fileId: string) {
-			window.OCA.Viewer.open({
-				fileInfo: toViewerFileInfo(this.files[fileId]),
-				list: this.sortedCollectionFileIds.map((fileId) => toViewerFileInfo(this.files[fileId])),
-			})
-		},
-
-		handleFileDeleted({ fileid }: File) {
-			this.removeFromCollection(fileid as number)
-		},
-
-		// The photo is already gone from the store, it only has to leave the
-		// collection it was shown in.
-		onPhotoDeleted(photo: PhotoTarget) {
-			this.onUncheckFiles([photo.fileid.toString()])
-			this.removeFromCollection(photo.fileid)
-		},
-
-		removeFromCollection(fileId: number) {
-			this.collectionsStore.removeFileIdsFromCollection(this.collection.root + this.collection.path, [fileId?.toString()])
-		},
-
-		t: translate,
-	},
+const props = withDefaults(defineProps<{
+	collection?: Collection
+	collectionFileIds: string[]
+	loading?: boolean
+	allowSelection?: boolean
+	error?: Error | number | null
+}>(), {
+	collection: undefined,
+	loading: false,
+	allowSelection: true,
+	error: null,
 })
 
+const collectionsStore = useCollectionsStore()
+const filesStore = useFilesStore()
+const { selection, selectedFileIds, onFileSelectToggle, onUncheckFiles, resetSelection } = useFilesSelection()
+const { tileBaseHeight } = useGridDensity()
+
+const appContent = document.getElementById('app-content-vue')
+
+const files = computed(() => filesStore.files)
+
+const sortedCollectionFileIds = computed(() => props.collectionFileIds
+	.filter((fileId) => files.value[fileId] !== undefined)
+	.toSorted((fileId1, fileId2) => {
+		const file1 = files.value[fileId1]
+		const file2 = files.value[fileId2]
+
+		const timestamp1 = Number(file1.attributes.timestamp ?? 0)
+		const timestamp2 = Number(file2.attributes.timestamp ?? 0)
+
+		return timestamp1 - timestamp2
+	}))
+
+function openViewer(fileId: number): void {
+	getViewer().open(
+		sortedCollectionFileIds.value.map((fileId) => files.value[fileId]),
+		files.value[fileId],
+		{ enableSidebar: false },
+	)
+}
+
+function handleFileDeleted({ fileid }: Node): void {
+	removeFromCollection(fileid as number)
+}
+
+// The photo is already gone from the store, it only has to leave the
+// collection it was shown in.
+function onPhotoDeleted(photo: PhotoTarget): void {
+	onUncheckFiles([photo.fileid.toString()])
+	removeFromCollection(photo.fileid)
+}
+
+function removeFromCollection(fileId: number): void {
+	if (props.collection === undefined) {
+		return
+	}
+
+	collectionsStore.removeFileIdsFromCollection(props.collection.root + props.collection.path, [fileId?.toString()])
+}
+
+onMounted(() => {
+	subscribe('files:node:deleted', handleFileDeleted)
+})
+
+onUnmounted(() => {
+	unsubscribe('files:node:deleted', handleFileDeleted)
+})
+
+defineExpose({ selectedFileIds, onUncheckFiles })
 </script>
 
 <style lang="scss" scoped>

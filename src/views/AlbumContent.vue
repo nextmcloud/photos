@@ -251,18 +251,19 @@
 	</div>
 </template>
 
-<script lang="ts">
-import type { Album } from '../store/albums.ts'
-import type { PhotoFile } from '../store/files.ts'
-
+<script setup lang="ts">
 import type { Folder, Node } from '@nextcloud/files'
 import type { IUpload } from '@nextcloud/files/upload'
+import type { Collection } from '../services/collectionFetcher.ts'
+import type { Collaborator } from '../store/albums.ts'
+import type { PhotoFile } from '../store/files.ts'
 
 import { FileType } from '@nextcloud/files'
 import { defaultRootPath } from '@nextcloud/files/dav'
 import { getUploader } from '@nextcloud/files/upload'
-import { translate, translatePlural } from '@nextcloud/l10n'
-import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
+import { n, t } from '@nextcloud/l10n'
+import { computed, onMounted, onUnmounted, ref, useTemplateRef, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
 import NcActions from '@nextcloud/vue/components/NcActions'
 import NcActionRadio from '@nextcloud/vue/components/NcActionRadio'
@@ -289,9 +290,8 @@ import AlbumShare from '../components/Albums/AlbumShare.vue'
 import CollectionContent from '../components/Collection/CollectionContent.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
+import { useFetchCollectionContent } from '../composables/useFetchCollectionContent.ts'
 import { useGridDensity } from '../composables/useGridDensity.ts'
-import FetchCollectionContentMixin from '../mixins/FetchCollectionContentMixin.js'
-import FetchFilesMixin from '../mixins/FetchFilesMixin.js'
 import { allMimes as allowedMimes } from '../services/AllowedMimes.ts'
 import { fetchFile } from '../services/fileFetcher.ts'
 import { getFolderContent } from '../services/FolderContent.ts'
@@ -300,504 +300,379 @@ import { albumFilesExtraProps, albumsExtraProps, useAlbumsStore } from '../store
 import { useCollectionsStore } from '../store/collections.ts'
 import { useFilesStore } from '../store/files.ts'
 import { useUserConfigStore } from '../store/userConfig.ts'
-import { pickAlbumCover } from '../utils/albumCover.ts'
-
-export default {
-	name: 'AlbumContent',
-
-	components: {
-		ActionFavoriteButton,
-		AlbumForm,
-		AlbumShare,
-		Close,
-		CollectionContent,
-		DeleteOutline,
-		HeaderNavigation,
-		ImagePlusOutline,
-		NcActionButton,
-		NcActions,
-		NcButton,
-		NcDialog,
-		NcEmptyContent,
-		NcLoadingIcon,
-		NcModal,
-		NcUploadPicker,
-		PencilOutline,
-		PhotosPicker,
-		Plus,
-		ShareVariantOutline,
-		ViewDashboardOutline,
-		ViewGridOutline,
-		NcActionRadio,
-		MagnifyMinusOutline,
-		MagnifyPlusOutline,
-	},
-
-	mixins: [
-		FetchCollectionContentMixin,
-		FetchFilesMixin,
-	],
-
-	props: {
-		albumName: {
-			type: String,
-			default: '/',
-		},
-	},
-
-	setup() {
-		const isMobile = useIsMobile()
-
-		const {
-			gridDensity,
-			setGridDensity,
-		} = useGridDensity()
-
-		return {
-			albumsStore: useAlbumsStore(),
-			collectionsStore: useCollectionsStore(),
-			filesStore: useFilesStore(),
-			userConfigStore: useUserConfigStore(),
-			isMobile,
-			gridDensity,
-			setGridDensity,
-		}
-	},
-
-	data() {
-		return {
-			showAddPhotosModal: false,
-			showManageCollaboratorView: false,
-			showEditAlbumForm: false,
-
-			loadingAddCollaborators: false,
-			allowedMimes,
-			uploader: getUploader(),
-			uploadFolder: undefined as Folder | undefined,
-			windowWidth: typeof window !== 'undefined' ? window.innerWidth : 0,
-
-			pendingUploadSources: new Set<string>(),
-		}
-	},
-
-	computed: {
-		album(): Album | undefined {
-			return this.albumsStore.getAlbum(this.albumName)
-		},
-
-		albumFileIds(): string[] {
-			return this.albumsStore.getAlbumFiles(this.albumName)
-		},
-
-		sharingEnabled(): boolean {
-			return OC.Share !== undefined
-		},
-
-		albumFileName(): string {
-			return this.albumsStore.getAlbumName(this.albumName)
-		},
-
-		albumPhotos(): PhotoFile[] {
-			return this.albumFileIds
-				.map((fileId) => this.filesStore.files[fileId])
-				.filter((file): file is PhotoFile => file !== undefined)
-		},
-
-		coverPhoto(): PhotoFile | undefined {
-			return pickAlbumCover(
-				this.albumPhotos,
-				this.album?.attributes['last-photo'] ?? -1,
-			)
-		},
-
-		coverFileId(): number {
-			return this.coverPhoto?.fileid
-				?? this.album?.attributes['last-photo']
-				?? -1
-		},
-
-		coverBlurhash(): string | undefined {
-			return this.coverPhoto?.attributes['metadata-blurhash']
-		},
-
-		albumSubtitle(): string {
-			if (this.album === undefined) {
-				return ''
-			}
-
-			return [
-				this.album.attributes.location,
-				translatePlural(
-					'photos',
-					'%n photo',
-					'%n photos',
-					this.album.attributes.nbItems,
-				),
-			].filter((part) => part !== '').join(' · ')
-		},
-
-		removableSelectedFiles(): string[] {
-			return ((this.$refs.collectionContent?.selectedFileIds ?? []) as string[])
-				.map((fileId) => this.filesStore.files[fileId])
-				.filter((file): file is PhotoFile => file !== undefined)
-				.filter((file) => file.attributes['photos-album-file-origin'] !== 'filters')
-				.map((file) => file.fileid.toString())
-		},
-
-		inlineActions(): number {
-			if (this.windowWidth < 512) {
-				return 0
-			}
-
-			if (this.windowWidth < 768) {
-				return 1
-			}
-
-			if (this.windowWidth < 1024) {
-				return 2
-			}
-
-			return 3
-		},
-
-		croppedLayout(): boolean {
-			return this.userConfigStore.croppedLayout
-		},
-
-		photosLocation(): string {
-			return this.userConfigStore.photosLocation || '/'
-		},
-
-		uploadFolderPath(): string {
-			const location = this.photosLocation
-				.replace(/^\/+/, '')
-				.replace(/\/+$/, '')
-
-			if (location === '') {
-				return defaultRootPath
-			}
-
-			return `${defaultRootPath.replace(/\/+$/, '')}/${location}`
-		},
-	},
-
-	watch: {
-		photosLocation() {
-			this.fetchUploadFolder()
-		},
-	},
-
-	async mounted() {
-		this.fetchAlbum()
-		this.fetchAlbumContent()
-		await this.fetchUploadFolder()
-
-		window.addEventListener('resize', this.handleResize)
-	},
-
-	beforeUnmount() {
-		window.removeEventListener('resize', this.handleResize)
-	},
-
-	methods: {
-		handleResize() {
-			this.windowWidth = window.innerWidth
-		},
-
-		async fetchAlbum() {
-			await this.fetchCollection(
-				this.albumFileName,
-				albumsExtraProps,
-			)
-		},
-
-		async fetchAlbumContent() {
-			await this.fetchCollectionFiles(
-				this.albumFileName,
-				albumFilesExtraProps,
-			)
-		},
-
-		async handleAlbumUpdate({ album, changes }) {
-			this.showEditAlbumForm = false
-
-			if (changes.includes('name')) {
-				await this.$router.push(`/albums/${album.basename}`)
-			}
-
-			if (changes.includes('filters')) {
-				this.fetchAlbumContent()
-			}
-		},
-
-		redirectToNewName(payload) {
-			return this.handleAlbumUpdate(payload)
-		},
-
-		async handleFilesPicked(fileIds: string[]) {
-			this.showAddPhotosModal = false
-
-			if (this.album === undefined) {
-				return
-			}
-
-			await this.collectionsStore.addFilesToCollection(
-				this.album.root + this.album.path,
-				fileIds,
-			)
-
-			// Re-fetch album content to have the proper filenames.
-			await this.fetchAlbumContent()
-		},
-
-		async handleRemoveFilesFromAlbum(fileIds: string[]) {
-			if (this.album === undefined) {
-				return
-			}
-
-			this.$refs.collectionContent?.onUncheckFiles(fileIds)
-
-			await this.collectionsStore.removeFilesFromCollection(
-				this.album.root + this.album.path,
-				fileIds,
-			)
-		},
-
-		async handleDeleteAlbum() {
-			if (this.album === undefined) {
-				return
-			}
-
-			const isDeleted = await this.collectionsStore.deleteCollection(
-				this.album.root + this.album.path,
-			)
-
-			if (isDeleted) {
-				this.$router.push('/albums')
-			}
-		},
-
-		async handleSetCollaborators(collaborators) {
-			if (this.album === undefined) {
-				return
-			}
-
-			try {
-				this.loadingAddCollaborators = true
-				this.showManageCollaboratorView = false
-
-				await this.collectionsStore.updateCollection(
-					this.album.root + this.album.path,
-					{ collaborators },
-				)
-			} catch (error) {
-				logger.error('Error while setting album collaborators', { error })
-			} finally {
-				this.loadingAddCollaborators = false
-			}
-		},
-
-		async handleFiltersChange(filters) {
-			if (this.album === undefined) {
-				return
-			}
-
-			await this.collectionsStore.updateCollection(
-				this.album.root + this.album.path,
-				{ filters },
-			)
-
-			this.fetchAlbumContent()
-		},
-
-		toggleCroppedLayout(value: boolean) {
-			this.userConfigStore.updateUserConfig('croppedLayout', value)
-		},
-
-		async fetchUploadFolder(): Promise<void> {
-			try {
-				const node = await fetchFile(this.uploadFolderPath)
-
-				if (
-					node === null
-					|| node === undefined
-					|| node.type !== FileType.Folder
-					|| !node.source
-				) {
-					this.uploadFolder = undefined
-
-					logger.error('Invalid Photos upload folder', {
-						path: this.photosLocation,
-						davPath: this.uploadFolderPath,
-						node,
-					})
-					return
-				}
-
-				this.uploadFolder = node as Folder
-
-				logger.debug('Photos upload folder resolved', {
-					path: this.photosLocation,
-					source: node.source,
-				})
-			} catch (error) {
-				this.uploadFolder = undefined
-
-				logger.error('Failed to fetch Photos upload folder', {
-					error,
-					path: this.photosLocation,
-					davPath: this.uploadFolderPath,
-				})
-			}
-		},
-
-		async uploadDestinationContent(): Promise<Node[]> {
-			const { folders, files } = await getFolderContent(this.photosLocation)
-
-			return [
-				...folders,
-				...files,
-			]
-		},
-
-		collectUploadedFileSources(upload: IUpload): void {
-			if (upload.children.length > 0) {
-				for (const child of upload.children) {
-					this.collectUploadedFileSources(child)
-				}
-				return
-			}
-
-			if (upload.source) {
-				this.pendingUploadSources.add(upload.source)
-			}
-		},
-
-		onUploadFinished(upload: IUpload): void {
-			this.collectUploadedFileSources(upload)
-		},
-
-		async onUploadsFinished(): Promise<void> {
-			if (this.album === undefined) {
-				this.pendingUploadSources.clear()
-				return
-			}
-
-			const sources = [...this.pendingUploadSources]
-
-			// Direkt leeren, damit der nächste Upload-Batch sauber beginnt.
-			this.pendingUploadSources.clear()
-
-			if (sources.length === 0) {
-				return
-			}
-
-			try {
-				const nodes = await Promise.all(
-					sources.map(async (source) => {
-						try {
-							const davMarker = '/remote.php/dav'
-							const davIndex = source.indexOf(davMarker)
-
-							if (davIndex === -1) {
-								logger.error('Could not extract DAV path from uploaded file', {
-									source,
-								})
-								return undefined
-							}
-
-							const davPath = decodeURI(
-								source.slice(davIndex + davMarker.length),
-							)
-
-							logger.debug('Resolving uploaded file', {
-								source,
-								davPath,
-							})
-
-							const uploadedNode = await fetchFile(davPath)
-
-							if (
-								!uploadedNode?.id
-								|| uploadedNode.type !== FileType.File
-							) {
-								logger.debug('Ignoring uploaded non-file node', {
-									source,
-									davPath,
-									uploadedNode,
-								})
-								return undefined
-							}
-
-							return uploadedNode
-						} catch (error) {
-							logger.error('Could not resolve uploaded file', {
-								error,
-								source,
-							})
-							return undefined
-						}
-					}),
-				)
-
-				// Ein IUpload kann über mehrere Parent-Strukturen auftauchen.
-				// Deshalb zusätzlich anhand der tatsächlichen Nextcloud fileId
-				// deduplizieren.
-				const nodesById = new Map<string, Node>()
-
-				for (const node of nodes) {
-					if (node?.id) {
-						nodesById.set(String(node.id), node)
-					}
-				}
-
-				if (nodesById.size === 0) {
-					return
-				}
-
-				// Serverseitigen Albumzustand aktualisieren, bevor wir entscheiden,
-				// welche Dateien noch hinzugefügt werden müssen.
-				await this.fetchAlbumContent()
-
-				const existingFileIds = new Set(this.albumFileIds)
-
-				const newNodes = [...nodesById.values()].filter(
-					(node) => !existingFileIds.has(String(node.id)),
-				)
-
-				if (newNodes.length === 0) {
-					logger.debug('Uploaded files are already part of the album')
-					return
-				}
-
-				const fileIds = newNodes.map((node) => String(node.id))
-
-				logger.debug('Adding uploaded files to album', {
-					album: this.album.basename,
-					fileIds,
-				})
-
-				this.filesStore.appendFiles(newNodes)
-
-				await this.collectionsStore.addFilesToCollection(
-					this.album.root + this.album.path,
-					fileIds,
-				)
-
-				await this.fetchAlbumContent()
-				await this.fetchAlbum()
-			} catch (error) {
-				logger.error('Failed to add uploaded files to album', {
-					error,
-					sources,
-				})
-			}
-		},
-
-		t: translate,
-		n: translatePlural,
-	},
+
+const props = withDefaults(defineProps<{
+	albumName?: string
+}>(), {
+	albumName: '/',
+})
+
+const router = useRouter()
+const albumsStore = useAlbumsStore()
+const collectionsStore = useCollectionsStore()
+const filesStore = useFilesStore()
+const userConfigStore = useUserConfigStore()
+const {
+	fetchCollection,
+	fetchCollectionFiles,
+	loadingCollection,
+	loadingCollectionFiles,
+	errorFetchingCollection,
+	errorFetchingCollectionFiles,
+} = useFetchCollectionContent()
+const {
+	gridDensity,
+	setGridDensity,
+} = useGridDensity()
+
+const collectionContent = useTemplateRef<InstanceType<typeof CollectionContent>>('collectionContent')
+
+const showAddPhotosModal = ref(false)
+const showManageCollaboratorView = ref(false)
+const showEditAlbumForm = ref(false)
+const loadingAddCollaborators = ref(false)
+const uploader = getUploader()
+const uploadFolder = ref<Folder | undefined>()
+const windowWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 0)
+const pendingUploadSources = new Set<string>()
+
+const album = computed(() => albumsStore.getAlbum(props.albumName))
+
+const albumFileIds = computed(() => albumsStore.getAlbumFiles(props.albumName))
+
+const sharingEnabled = computed(() => OC.Share !== undefined)
+
+const albumFileName = computed(() => albumsStore.getAlbumName(props.albumName))
+
+const removableSelectedFiles = computed(() => (collectionContent.value?.selectedFileIds ?? [])
+	.map((fileId) => filesStore.files[fileId])
+	.filter((file): file is PhotoFile => file !== undefined)
+	.filter((file) => file.attributes['photos-album-file-origin'] !== 'filters')
+	.map((file) => file.fileid.toString()))
+
+const inlineActions = computed(() => {
+	if (windowWidth.value < 512) {
+		return 0
+	}
+
+	if (windowWidth.value < 768) {
+		return 1
+	}
+
+	if (windowWidth.value < 1024) {
+		return 2
+	}
+
+	return 3
+})
+
+const croppedLayout = computed(() => userConfigStore.croppedLayout)
+
+const photosLocation = computed(() => userConfigStore.photosLocation || '/')
+
+const uploadFolderPath = computed(() => {
+	const location = photosLocation.value
+		.replace(/^\/+/, '')
+		.replace(/\/+$/, '')
+
+	if (location === '') {
+		return defaultRootPath
+	}
+
+	return `${defaultRootPath.replace(/\/+$/, '')}/${location}`
+})
+
+function handleResize(): void {
+	windowWidth.value = window.innerWidth
 }
+
+async function fetchAlbum(): Promise<void> {
+	await fetchCollection(
+		albumFileName.value,
+		albumsExtraProps,
+	)
+}
+
+async function fetchAlbumContent(): Promise<void> {
+	await fetchCollectionFiles(
+		albumFileName.value,
+		albumFilesExtraProps,
+	)
+}
+
+async function handleAlbumUpdate({ album: updatedAlbum, changes = [] }: { album: Collection, changes?: string[] }): Promise<void> {
+	showEditAlbumForm.value = false
+
+	if (changes.includes('name')) {
+		await router.push(`/albums/${updatedAlbum.basename}`)
+	}
+
+	if (changes.includes('filters')) {
+		fetchAlbumContent()
+	}
+}
+
+function redirectToNewName(payload: { album: Collection, changes?: string[] }): Promise<void> {
+	return handleAlbumUpdate(payload)
+}
+
+async function handleFilesPicked(fileIds: string[]): Promise<void> {
+	showAddPhotosModal.value = false
+
+	if (album.value === undefined) {
+		return
+	}
+
+	await collectionsStore.addFilesToCollection(
+		album.value.root + album.value.path,
+		fileIds,
+	)
+
+	// Re-fetch album content to have the proper filenames.
+	await fetchAlbumContent()
+}
+
+async function handleRemoveFilesFromAlbum(fileIds: string[]): Promise<void> {
+	if (album.value === undefined) {
+		return
+	}
+
+	collectionContent.value?.onUncheckFiles(fileIds)
+
+	await collectionsStore.removeFilesFromCollection(
+		album.value.root + album.value.path,
+		fileIds,
+	)
+}
+
+async function handleDeleteAlbum(): Promise<void> {
+	if (album.value === undefined) {
+		return
+	}
+
+	const isDeleted = await collectionsStore.deleteCollection(
+		album.value.root + album.value.path,
+	)
+
+	if (isDeleted) {
+		router.push('/albums')
+	}
+}
+
+async function handleSetCollaborators(collaborators: Collaborator[]): Promise<void> {
+	if (album.value === undefined) {
+		return
+	}
+
+	try {
+		loadingAddCollaborators.value = true
+		showManageCollaboratorView.value = false
+
+		await collectionsStore.updateCollection(
+			album.value.root + album.value.path,
+			{ collaborators },
+		)
+	} catch (error) {
+		logger.error('Error while setting album collaborators', { error })
+	} finally {
+		loadingAddCollaborators.value = false
+	}
+}
+
+function toggleCroppedLayout(value: boolean): void {
+	userConfigStore.updateUserConfig('croppedLayout', value)
+}
+
+async function fetchUploadFolder(): Promise<void> {
+	try {
+		const node = await fetchFile(uploadFolderPath.value)
+
+		if (
+			node === null
+			|| node === undefined
+			|| node.type !== FileType.Folder
+			|| !node.source
+		) {
+			uploadFolder.value = undefined
+
+			logger.error('Invalid Photos upload folder', {
+				path: photosLocation.value,
+				davPath: uploadFolderPath.value,
+				node,
+			})
+			return
+		}
+
+		uploadFolder.value = node as Folder
+
+		logger.debug('Photos upload folder resolved', {
+			path: photosLocation.value,
+			source: node.source,
+		})
+	} catch (error) {
+		uploadFolder.value = undefined
+
+		logger.error('Failed to fetch Photos upload folder', {
+			error,
+			path: photosLocation.value,
+			davPath: uploadFolderPath.value,
+		})
+	}
+}
+
+async function uploadDestinationContent(): Promise<Node[]> {
+	const { folders, files } = await getFolderContent(photosLocation.value)
+
+	return [
+		...folders,
+		...files,
+	]
+}
+
+function collectUploadedFileSources(upload: IUpload): void {
+	if (upload.children.length > 0) {
+		for (const child of upload.children) {
+			collectUploadedFileSources(child)
+		}
+		return
+	}
+
+	if (upload.source) {
+		pendingUploadSources.add(upload.source)
+	}
+}
+
+function onUploadFinished(upload: IUpload): void {
+	collectUploadedFileSources(upload)
+}
+
+async function onUploadsFinished(): Promise<void> {
+	if (album.value === undefined) {
+		pendingUploadSources.clear()
+		return
+	}
+
+	const sources = [...pendingUploadSources]
+
+	// Direkt leeren, damit der nächste Upload-Batch sauber beginnt.
+	pendingUploadSources.clear()
+
+	if (sources.length === 0) {
+		return
+	}
+
+	try {
+		const nodes = await Promise.all(
+			sources.map(async (source) => {
+				try {
+					const davMarker = '/remote.php/dav'
+					const davIndex = source.indexOf(davMarker)
+
+					if (davIndex === -1) {
+						logger.error('Could not extract DAV path from uploaded file', {
+							source,
+						})
+						return undefined
+					}
+
+					const davPath = decodeURI(
+						source.slice(davIndex + davMarker.length),
+					)
+
+					logger.debug('Resolving uploaded file', {
+						source,
+						davPath,
+					})
+
+					const uploadedNode = await fetchFile(davPath)
+
+					if (
+						!uploadedNode?.id
+						|| uploadedNode.type !== FileType.File
+					) {
+						logger.debug('Ignoring uploaded non-file node', {
+							source,
+							davPath,
+							uploadedNode,
+						})
+						return undefined
+					}
+
+					return uploadedNode
+				} catch (error) {
+					logger.error('Could not resolve uploaded file', {
+						error,
+						source,
+					})
+					return undefined
+				}
+			}),
+		)
+
+		const nodesById = new Map<string, Node>()
+
+		for (const node of nodes) {
+			if (node?.id) {
+				nodesById.set(String(node.id), node)
+			}
+		}
+
+		if (nodesById.size === 0) {
+			return
+		}
+
+		await fetchAlbumContent()
+
+		const existingFileIds = new Set(albumFileIds.value)
+
+		const newNodes = [...nodesById.values()].filter(
+			(node) => !existingFileIds.has(String(node.id)),
+		)
+
+		if (newNodes.length === 0) {
+			logger.debug('Uploaded files are already part of the album')
+			return
+		}
+
+		const fileIds = newNodes.map((node) => String(node.id))
+
+		logger.debug('Adding uploaded files to album', {
+			album: album.value.basename,
+			fileIds,
+		})
+
+		filesStore.appendFiles(newNodes)
+
+		await collectionsStore.addFilesToCollection(
+			album.value.root + album.value.path,
+			fileIds,
+		)
+
+		await fetchAlbumContent()
+		await fetchAlbum()
+	} catch (error) {
+		logger.error('Failed to add uploaded files to album', {
+			error,
+			sources,
+		})
+	}
+}
+
+watch(photosLocation, () => {
+	fetchUploadFolder()
+})
+
+onMounted(async () => {
+	fetchAlbum()
+	fetchAlbumContent()
+	await fetchUploadFolder()
+
+	window.addEventListener('resize', handleResize)
+})
+
+onUnmounted(() => {
+	window.removeEventListener('resize', handleResize)
+})
 </script>
 
 <style lang="scss" scoped>

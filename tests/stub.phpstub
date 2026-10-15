@@ -166,7 +166,7 @@ namespace OC\Files\Search {
 	use OCP\Files\Search\ISearchBinaryOperator;
 	use OCP\Files\Search\ISearchOperator;
 
-	class SearchBinaryOperator implements ISearchBinaryOperator {
+	class SearchBinaryOperator implements ISearchBinaryOperator, ISearchOperator {
 		/** @var string */
 		private $type;
 		/** @var (SearchBinaryOperator|SearchComparison)[] */
@@ -283,19 +283,6 @@ namespace OCA\DAV\Events {
 		* @since 26.0.0
 		*/
 		public function getServer(): Server;
-	}
-}
-
-namespace OCA\Viewer\Event {
-	use OCP\EventDispatcher\Event;
-
-	/**
-	* This event is triggered whenever the viewer is loaded and extensions should be loaded.
-	*
-	* @since 17.0.0
-	* @psalm-immutable
-	*/
-	class LoadViewer extends Event {
 	}
 }
 

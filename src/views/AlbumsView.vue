@@ -91,7 +91,7 @@
 		</NcModal>
 
 		<PhotosPicker
-			:open.sync="showPhotosPicker"
+	    v-model:open="showPhotosPicker"
 			:blacklist-ids="blacklistIds"
 			:destination="destination"
 			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
@@ -101,11 +101,14 @@
 	</div>
 </template>
 
-<script lang='ts'>
-import { translate, translatePlural } from '@nextcloud/l10n'
+<script setup lang="ts">
+import type { Collection } from '../services/collectionFetcher.ts'
+
+import { n, t } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
 import { useIsSmallMobile } from '@nextcloud/vue/composables/useIsMobile'
-import { defineComponent } from 'vue'
+import { computed, onBeforeMount, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcModal from '@nextcloud/vue/components/NcModal'
 import ExportVariant from 'vue-material-design-icons/ExportVariant.vue'
@@ -115,132 +118,86 @@ import CollectionCover from '../components/Collection/CollectionCover.vue'
 import CollectionsList from '../components/Collection/CollectionsList.vue'
 import HeaderNavigation from '../components/HeaderNavigation.vue'
 import PhotosPicker from '../components/PhotosPicker.vue'
-import FetchCollectionsMixin from '../mixins/FetchCollectionsMixin.js'
-import { albumsExtraProps, albumsPrefix } from '../store/albums.js'
-import { useAlbumsStore } from '../store/albums.ts'
+import { useFetchCollections } from '../composables/useFetchCollections.ts'
+import { albumsExtraProps, albumsPrefix, useAlbumsStore } from '../store/albums.ts'
 import { useCollectionsStore } from '../store/collections.ts'
 
-export default defineComponent({
-	name: 'AlbumsView',
-	components: {
-		Plus,
-		NcModal,
-		NcButton,
-		CollectionsList,
-		CollectionCover,
-		HeaderNavigation,
-		AlbumForm,
-		ExportVariant,
-		PhotosPicker,
-	},
+const router = useRouter()
+const isMobile = useIsSmallMobile()
+const albumsStore = useAlbumsStore()
+const collectionsStore = useCollectionsStore()
+const { fetchCollections, errorFetchingCollections, loadingCollections } = useFetchCollections()
 
-	mixins: [FetchCollectionsMixin],
+const showAlbumCreationForm = ref(false)
+const showPhotosPicker = ref(false)
+const blacklistIds = ref<string[]>([])
+const destination = ref('')
+const collection = ref('')
+const allowEmpty = true
 
-	setup() {
-		const isMobile = useIsSmallMobile()
-		return {
-			isMobile,
-			albumsStore: useAlbumsStore(),
-			collectionsStore: useCollectionsStore(),
-		}
-	},
+const albums = computed(() => {
+	const albums = albumsStore.albums
 
-	data() {
-		return {
-			showAlbumCreationForm: false,
-			showPhotosPicker: false,
-			createdAlbum: null,
-			blacklistIds: [],
-			destination: '',
-			collection: '',
-			allowEmpty: true,
-		}
-	},
+	if (!albums || typeof albums !== 'object') {
+		return []
+	}
 
-	computed: {
-		albums() {
-			const albums = this.albumsStore.albums
+	const list = Array.isArray(albums)
+		? [...albums]
+		: Object.values(albums)
 
-			if (!albums || typeof albums !== 'object') {
-				return []
-			}
+	return list.sort((a, b) =>
+		a.basename.localeCompare(b.basename, 'de', { sensitivity: 'base' }))
+})
 
-			const list = Array.isArray(albums)
-				? [...albums]
-				: Object.values(albums)
+function coverUrl(lastPhoto: number): string {
+	if (lastPhoto === -1) {
+		return ''
+	}
 
-			return list.sort((a, b) =>
-				a.basename.localeCompare(b.basename, 'de', { sensitivity: 'base' })
-			)
-		},
-	},
+	return generateUrl(`/apps/photos/api/v1/preview/${lastPhoto}?x=${512}&y=${512}`)
+}
 
-	async beforeMount() {
-		this.fetchAlbums()
-	},
+function fetchAlbums(): void {
+	fetchCollections(
+		albumsPrefix,
+		albumsExtraProps,
+	)
+}
 
-	methods: {
-		coverUrl(lastPhoto: number): string {
-			if (lastPhoto === -1) {
-				return ''
-			}
+function handleAlbumCreated({ album }: { album: Collection }): void {
+	showAlbumCreationForm.value = false
+	destination.value = album.basename
+	collection.value = album.root + album.path
+	showPhotosPicker.value = true
+}
 
-			return generateUrl(`/apps/photos/api/v1/preview/${lastPhoto}?x=${512}&y=${512}`)
-		},
+function handleAlbumCreateCancel(): void {
+	showAlbumCreationForm.value = false
+}
 
-		fetchAlbums() {
-			this.fetchCollections(
-				albumsPrefix,
-				albumsExtraProps,
-			)
-		},
+function handlePickerClose(): void {
+	if (destination.value !== '') {
+		router.push(`/albums/${destination.value}`)
+	}
+}
 
-		handleAlbumCreated({ album }) {
-			this.showAlbumCreationForm = false
-			this.destination = album.basename
-			this.collection = album.root + album.path
-			this.showPhotosPicker = true
-		},
+async function handleFilesPicked(fileIds: string[]): Promise<void> {
+	await collectionsStore.addFilesToCollection(
+		collection.value,
+		fileIds,
+	)
 
-		handleAlbumCreateCancel() {
-			this.showAlbumCreationForm = false
-			this.createdAlbum = null
-		},
+	showPhotosPicker.value = false
+	await router.push(`/albums/${destination.value}`)
+}
 
-		handlePickerClose() {
-			this.$router.push(`/albums/${this.destination}`)
-		},
+function isShared(album: Collection): boolean {
+	return album.attributes.collaborators.length !== 0
+}
 
-		async handleFilesPicked(fileIds: string[]) {
-			await this.collectionsStore.addFilesToCollection(
-				this.collection,
-				fileIds,
-			)
-
-			this.showPhotosPicker = false
-			this.$router.push(`/albums/${this.destination}`)
-		},
-
-		async handleDeleteAlbum() {
-			await this.collectionsStore.deleteCollection(this.collection)
-
-			this.$router.push('/albums')
-		},
-
-		/**
-		 * @param {object} album
-		 * @return {boolean}
-		 */
-		isShared(album) {
-			if (album.attributes.collaborators.length === 0) {
-				return false
-			}
-			return true
-		},
-
-		t: translate,
-		n: translatePlural,
-	},
+onBeforeMount(() => {
+	fetchAlbums()
 })
 </script>
 
