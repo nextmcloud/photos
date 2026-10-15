@@ -22,129 +22,94 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { getFilePickerBuilder } from '@nextcloud/dialogs'
 import { t } from '@nextcloud/l10n'
 import debounce from 'debounce'
-import { defineComponent } from 'vue'
+import { computed } from 'vue'
 import NcFormBox from '@nextcloud/vue/components/NcFormBox'
 import NcFormBoxButton from '@nextcloud/vue/components/NcFormBoxButton'
 import FolderOpenOutline from 'vue-material-design-icons/FolderOpenOutline.vue'
-import HomeOutline from 'vue-material-design-icons/HomeOutline.vue'
 import { logger } from '../../services/logger.ts'
 import { useUserConfigStore } from '../../store/userConfig.ts'
 
-export default defineComponent({
-	name: 'PhotosUploadLocationSettings',
+const emit = defineEmits<{
+	'folders-update': [photosLocationInsideSources: boolean]
+}>()
 
-	components: {
-		NcFormBox,
-		NcFormBoxButton,
-		FolderOpenOutline,
-	},
+const userConfigStore = useUserConfigStore()
 
-	setup() {
-		return { userConfigStore: useUserConfigStore() }
-	},
+const photosLocation = computed<string>(() => userConfigStore.photosLocation)
 
-	data() {
-		return {
-			HomeOutline,
-		}
-	},
+const photosSourceFolders = computed<string[]>(() => userConfigStore.photosSourceFolders)
 
-	emits: ['folders-update'],
-
-	computed: {
-		photosLocation(): string {
-			return this.userConfigStore.photosLocation
-		},
-
-		photosSourceFolders(): string[] {
-			return this.userConfigStore.photosSourceFolders
-		},
-
-		photosLocationName(): string {
-			switch (this.photosLocation) {
-				case '/':
-					return t('photos', 'Home')
-				default:
-					return this.photosLocation
-			}
-		},
-
-		isPhotosLocationInPhotosSourceFolders(): boolean {
-			return this.isPathInsideSources(
-				this.photosLocation,
-				this.photosSourceFolders,
-			)
-		},
-	},
-
-	methods: {
-		debounceSelectPhotosFolder: debounce(function() {
-			this.selectPhotosFolder()
-		}),
-
-		async selectPhotosFolder(): Promise<void> {
-			const pickedFolder = await this.openFilePicker(
-				t('photos', 'Select the default upload location for your media'),
-			)
-
-			if (!pickedFolder) {
-				return
-			}
-
-			await this.updatePhotosFolder(pickedFolder)
-		},
-
-		async openFilePicker(title: string): Promise<string> {
-			const picker = getFilePickerBuilder(title)
-				.setMultiSelect(false)
-				.addMimeTypeFilter('httpd/unix-directory')
-				.allowDirectories()
-				.startAt(this.photosLocation)
-				.addButton({
-					label: t('photos', 'Pick folder'),
-					callback: (nodes) => logger.debug('Picked', { nodes }),
-				})
-				.build()
-
-			return picker.pick()
-		},
-
-		async updatePhotosFolder(path: string): Promise<void> {
-			await this.userConfigStore.updateUserConfig('photosLocation', path)
-
-			this.$emit(
-				'folders-update',
-				this.isPathInsideSources(path, this.photosSourceFolders),
-			)
-		},
-
-		normalizePath(path: string): string {
-			return path.replace(/\/+$/, '')
-		},
-
-		isPathInsideSource(path: string, source: string): boolean {
-			const normalizedPath = this.normalizePath(path)
-			const normalizedSource = this.normalizePath(source)
-
-			return normalizedPath === normalizedSource
-				|| normalizedPath.startsWith(normalizedSource + '/')
-		},
-
-		isPathInsideSources(path: string, sources: string[]): boolean {
-			if (!path || sources.length === 0) {
-				return false
-			}
-
-			return sources.some((source) => this.isPathInsideSource(path, source))
-		},
-
-		t,
-	},
+const photosLocationName = computed<string>(() => {
+	switch (photosLocation.value) {
+		case '/':
+			return t('photos', 'Home')
+		default:
+			return photosLocation.value
+	}
 })
+
+const debounceSelectPhotosFolder = debounce(selectPhotosFolder)
+
+async function selectPhotosFolder(): Promise<void> {
+	const pickedFolder = await openFilePicker(
+		t('photos', 'Select the default upload location for your media'),
+	)
+
+	if (!pickedFolder) {
+		return
+	}
+
+	await updatePhotosFolder(pickedFolder)
+}
+
+async function openFilePicker(title: string): Promise<string> {
+	const picker = getFilePickerBuilder(title)
+		.setMultiSelect(false)
+		.addMimeTypeFilter('httpd/unix-directory')
+		.allowDirectories()
+		.startAt(photosLocation.value)
+		.addButton({
+			label: t('photos', 'Pick folder'),
+			variant: 'primary',
+			callback: (nodes) => logger.debug('Picked', { nodes }),
+		})
+		.build()
+
+	return picker.pick()
+}
+
+async function updatePhotosFolder(path: string): Promise<void> {
+	await userConfigStore.updateUserConfig('photosLocation', path)
+
+	emit(
+		'folders-update',
+		isPathInsideSources(path, photosSourceFolders.value),
+	)
+}
+
+function normalizePath(path: string): string {
+	return path.replace(/\/+$/, '')
+}
+
+function isPathInsideSource(path: string, source: string): boolean {
+	const normalizedPath = normalizePath(path)
+	const normalizedSource = normalizePath(source)
+
+	return normalizedPath === normalizedSource
+		|| normalizedPath.startsWith(normalizedSource + '/')
+}
+
+function isPathInsideSources(path: string, sources: string[]): boolean {
+	if (!path || sources.length === 0) {
+		return false
+	}
+
+	return sources.some((source) => isPathInsideSource(path, source))
+}
 </script>
 
 <style lang="scss" scoped>

@@ -34,11 +34,11 @@
 	</div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { getFilePickerBuilder } from '@nextcloud/dialogs'
 import { t } from '@nextcloud/l10n'
 import debounce from 'debounce'
-import { defineComponent } from 'vue'
+import { computed } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import FolderMultipleOutline from 'vue-material-design-icons/FolderMultipleOutline.vue'
 import Plus from 'vue-material-design-icons/Plus.vue'
@@ -46,134 +46,99 @@ import PhotosFolder from './PhotosFolder.vue'
 import { logger } from '../../services/logger.ts'
 import { useUserConfigStore } from '../../store/userConfig.ts'
 
-export default defineComponent({
-	name: 'PhotosSourceLocationsSettings',
+const emit = defineEmits<{
+	'folders-update': [photosLocationInsideSources: boolean]
+}>()
 
-	components: {
-		NcButton,
-		PhotosFolder,
-		Plus,
-	},
+const userConfigStore = useUserConfigStore()
 
-	setup() {
-		return { userConfigStore: useUserConfigStore() }
-	},
+const photosLocation = computed<string>(() => userConfigStore.photosLocation)
 
-	emits: ['folders-update'],
+const photosSourceFolders = computed<string[]>(() => userConfigStore.photosSourceFolders)
 
-	data() {
-		return {
-			FolderMultipleOutline,
-		}
-	},
+const debounceAddSourceFolder = debounce(addSourceFolder, 200, { immediate: false })
 
-	computed: {
-		photosLocation(): string {
-			return this.userConfigStore.photosLocation
-		},
+async function openFilePicker(title: string): Promise<string> {
+	const picker = getFilePickerBuilder(title)
+		.setMultiSelect(false)
+		.addMimeTypeFilter('httpd/unix-directory')
+		.allowDirectories()
+		.addButton({
+			label: t('photos', 'Pick folder'),
+			variant: 'primary',
+			callback: (nodes) => logger.debug('Picked', { nodes }),
+		})
+		.build()
 
-		photosSourceFolders(): string[] {
-			return this.userConfigStore.photosSourceFolders
-		},
+	return picker.pick()
+}
 
-		isPhotosLocationInPhotosSourceFolders(): boolean {
-			return this.isPathInsideSources(
-				this.photosLocation,
-				this.photosSourceFolders,
-			)
-		},
-	},
+async function addSourceFolder(): Promise<void> {
+	const pickedFolder = await openFilePicker(
+		t('photos', 'Select a source folder for your media'),
+	)
 
-	methods: {
-		debounceAddSourceFolder: debounce(function(...args) {
-			this.addSourceFolder(...args)
-		}, 200, { immediate: false }),
+	if (!pickedFolder) {
+		return
+	}
 
-		async openFilePicker(title: string): Promise<string> {
-			const picker = getFilePickerBuilder(title)
-				.setMultiSelect(false)
-				.addMimeTypeFilter('httpd/unix-directory')
-				.allowDirectories()
-				.addButton({
-					label: t('photos', 'Pick folder'),
-					variant: 'primary',
-					callback: (nodes) => logger.debug('Picked', { nodes }),
-				})
-				.build()
+	const normalizedPickedFolder = normalizePath(pickedFolder)
 
-			return picker.pick()
-		},
+	const folderAlreadyExists = photosSourceFolders.value.some((source) => {
+		return normalizePath(source) === normalizedPickedFolder
+	})
 
-		async addSourceFolder(): Promise<void> {
-			const pickedFolder = await this.openFilePicker(
-				t('photos', 'Select a source folder for your media'),
-			)
+	if (folderAlreadyExists) {
+		return
+	}
 
-			if (!pickedFolder) {
-				return
-			}
+	const folders = [
+		...photosSourceFolders.value,
+		pickedFolder,
+	]
 
-			const normalizedPickedFolder = this.normalizePath(pickedFolder)
+	await userConfigStore.updateUserConfig('photosSourceFolders', folders)
 
-			const folderAlreadyExists = this.photosSourceFolders.some((source) => {
-				return this.normalizePath(source) === normalizedPickedFolder
-			})
+	emit(
+		'folders-update',
+		isPathInsideSources(photosLocation.value, folders),
+	)
+}
 
-			if (folderAlreadyExists) {
-				return
-			}
+async function removeSourceFolder(sourceToRemove: string): Promise<void> {
+	const normalizedSourceToRemove = normalizePath(sourceToRemove)
 
-			const folders = [
-				...this.photosSourceFolders,
-				pickedFolder,
-			]
+	const folders = photosSourceFolders.value.filter((source) => {
+		return normalizePath(source) !== normalizedSourceToRemove
+	})
 
-			await this.userConfigStore.updateUserConfig('photosSourceFolders', [...this.photosSourceFolders, pickedFolder])
+	await userConfigStore.updateUserConfig('photosSourceFolders', folders)
 
-			this.$emit(
-				'folders-update',
-				this.isPathInsideSources(this.photosLocation, folders),
-			)
-		},
+	emit(
+		'folders-update',
+		isPathInsideSources(photosLocation.value, folders),
+	)
+}
 
-		async removeSourceFolder(sourceToRemove: string): Promise<void> {
-			const normalizedSourceToRemove = this.normalizePath(sourceToRemove)
+function normalizePath(path: string): string {
+	return path.replace(/\/+$/, '')
+}
 
-			const folders = this.photosSourceFolders.filter((source) => {
-				return this.normalizePath(source) !== normalizedSourceToRemove
-			})
+function isPathInsideSource(path: string, source: string): boolean {
+	const normalizedPath = normalizePath(path)
+	const normalizedSource = normalizePath(source)
 
-			await this.userConfigStore.updateUserConfig('photosSourceFolders', folders)
+	return normalizedPath === normalizedSource
+		|| normalizedPath.startsWith(normalizedSource + '/')
+}
 
-			this.$emit(
-				'folders-update',
-				this.isPathInsideSources(this.photosLocation, folders),
-			)
-		},
+function isPathInsideSources(path: string, sources: string[]): boolean {
+	if (!path || sources.length === 0) {
+		return false
+	}
 
-		normalizePath(path: string): string {
-			return path.replace(/\/+$/, '')
-		},
-
-		isPathInsideSource(path: string, source: string): boolean {
-			const normalizedPath = this.normalizePath(path)
-			const normalizedSource = this.normalizePath(source)
-
-			return normalizedPath === normalizedSource
-				|| normalizedPath.startsWith(normalizedSource + '/')
-		},
-
-		isPathInsideSources(path: string, sources: string[]): boolean {
-			if (!path || sources.length === 0) {
-				return false
-			}
-
-			return sources.some((source) => this.isPathInsideSource(path, source))
-		},
-
-		t,
-	},
-})
+	return sources.some((source) => isPathInsideSource(path, source))
+}
 </script>
 
 <style lang="scss" scoped>
