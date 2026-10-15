@@ -19,17 +19,17 @@
 					<dt>{{ entry.label }}</dt>
 					<dd>{{ entry.value }}</dd>
 				</div>
-				<div v-if="metadata?.place" class="photo-metadata__entry">
+				<div v-if="locationFeaturesEnabled && metadata?.place" class="photo-metadata__entry">
 					<dt>{{ t('photos', 'Place') }}</dt>
 					<dd>{{ metadata.place }}</dd>
 				</div>
-				<div v-if="location !== null" class="photo-metadata__entry">
+				<div v-if="locationFeaturesEnabled && location !== null" class="photo-metadata__entry">
 					<dt>{{ t('photos', 'Location') }}</dt>
 					<dd>{{ formatCoordinates(location) }}</dd>
 				</div>
 			</dl>
 
-			<div v-if="location !== null" class="photo-metadata__map">
+			<div v-if="locationFeaturesEnabled && location !== null" class="photo-metadata__map">
 				<LocationMap
 					height="200px"
 					:latitude="location.latitude"
@@ -54,6 +54,7 @@ import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
 import { fetchPhotoExif } from '../services/exifFetcher.ts'
+import { locationFeaturesEnabled } from '../services/LocationFeatures.ts'
 import { formatCoordinates, getExifSummary, getPhotoLocation } from '../utils/exif.ts'
 
 const props = defineProps<{
@@ -72,7 +73,7 @@ const LocationMap = defineAsyncComponent(() => import('./LocationMap.vue'))
 const metadata = ref<PhotoExif | undefined>()
 
 const exifEntries = computed(() => metadata.value === undefined ? undefined : getExifSummary(metadata.value))
-const location = computed(() => metadata.value === undefined ? null : getPhotoLocation(metadata.value.gps))
+const location = computed(() => !locationFeaturesEnabled || metadata.value === undefined ? null : getPhotoLocation(metadata.value.gps))
 
 // The EXIF properties are not part of the file listings, they are only fetched
 // once the user asks for them.
