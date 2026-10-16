@@ -276,6 +276,7 @@ OC.L10N.register(
     "Creation Date" : "Aufnahmedatum",
     "Last Modified" : "Zuletzt geändert",
     "Upload Date" : "Hochladedatum",
+    "Upload" : "Hochladen",
     "You are about to delete {imageName}. Are you sure?" : "Du bist dabei, {imageName} zu löschen. Bist Du sicher?"
 },
 "nplurals=2; plural=(n != 1);");
