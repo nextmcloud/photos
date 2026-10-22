@@ -1,44 +1,23 @@
-/**
- * SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
- * SPDX-License-Identifier: AGPL-3.0-or-later
- */
-
-import type { ComputedRef, Ref } from 'vue'
+import type { Ref } from 'vue'
 import type { PhotoFile } from '../store/files.ts'
 
 import { showError } from '@nextcloud/dialogs'
 import { t } from '@nextcloud/l10n'
-import { computed, onUnmounted, ref } from 'vue'
+import { onUnmounted, ref } from 'vue'
 import { allMimes } from '../services/AllowedMimes.ts'
 import { logger } from '../services/logger.ts'
 import { getPhotos } from '../services/PhotoSearch.ts'
-import { useFilesStore } from '../store/files.ts'
 
-/**
- * Number of photos fetched at once. Views built on top of the loaded photos
- * need a decent amount of them to show something meaningful, but they are not
- * paginated, so this stays a single batch.
- */
-const BATCH_SIZE = 500
+const BATCH_SIZE = 2000
 
-/**
- * Access the photos that are currently loaded in the store, and load a batch of
- * them for the views which are not driven by the timeline.
- */
 export function useLoadedPhotos(): {
-	photos: ComputedRef<PhotoFile[]>
+	photos: Ref<PhotoFile[]>
 	loading: Ref<boolean>
 	loadPhotos: () => Promise<void>
 } {
-	const filesStore = useFilesStore()
 	const abortController = new AbortController()
 	const loading = ref(false)
-
-	// The store also holds the folders and their content, so only the files
-	// with a media mime type are kept here.
-	const photos = computed<PhotoFile[]>(() => Object.values(filesStore.files)
-		.filter((file) => allMimes.includes(file.mime ?? ''))
-		.sort((photo1, photo2) => photo2.attributes.timestamp - photo1.attributes.timestamp))
+	const photos = ref<PhotoFile[]>([])
 
 	async function loadPhotos(): Promise<void> {
 		if (loading.value) {
@@ -47,14 +26,61 @@ export function useLoadedPhotos(): {
 
 		try {
 			loading.value = true
-			const files = await getPhotos({
-				mimesType: allMimes,
-				nbResults: BATCH_SIZE,
-				signal: abortController.signal,
+
+			const start = performance.now()
+			const loadedPhotos: PhotoFile[] = []
+			let firstResult = 0
+			let requests = 0
+
+			while (true) {
+				const requestStart = performance.now()
+
+				const files = await getPhotos({
+					firstResult,
+					nbResults: BATCH_SIZE,
+					mimesType: allMimes,
+					signal: abortController.signal,
+				})
+
+				requests++
+
+				console.debug('[Memories performance] fetched batch', {
+					firstResult,
+					files: files.length,
+					duration: `${Math.round(performance.now() - requestStart)} ms`,
+				})
+
+				for (const file of files) {
+					if (file.attributes.hidden) {
+						continue
+					}
+
+					const date = new Date(
+						(file.attributes['metadata-photos-original_date_time'] * 1000)
+						|| file.mtime
+						|| Date.now(),
+					)
+
+					file.attributes.timestamp = Math.floor(date.getTime() / 1000)
+					loadedPhotos.push(file as PhotoFile)
+				}
+
+				if (files.length < BATCH_SIZE) {
+					break
+				}
+
+				firstResult += BATCH_SIZE
+			}
+
+			photos.value = loadedPhotos
+
+			console.debug('[Memories performance] loaded all photos', {
+				photos: photos.value.length,
+				requests,
+				duration: `${Math.round(performance.now() - start)} ms`,
 			})
-			filesStore.appendFiles(files)
 		} catch (error) {
-			if (error instanceof DOMException && error.code === error.ABORT_ERR) {
+			if (error instanceof DOMException && error.name === 'AbortError') {
 				return
 			}
 
