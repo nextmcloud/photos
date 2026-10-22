@@ -16,7 +16,7 @@ export type PhotoMetadataUpdate = {
 }
 
 /**
- * Correct the taken date and the position of a photo.
+ * Correct the taken date and optionally the position of a photo.
  *
  * The values are stored next to the ones extracted from the picture rather
  * than written into it, so re-reading the file will not bring the old values
@@ -33,18 +33,17 @@ export async function savePhotoMetadata(photo: PhotoTarget, update: PhotoMetadat
 		`<nc:metadata-photos-original_date_time>${takenAt}</nc:metadata-photos-original_date_time>`,
 	]
 
-	if (location !== null) {
+	if (
+		location?.latitude !== null
+		&& location?.latitude !== undefined
+		&& location?.longitude !== null
+		&& location?.longitude !== undefined
+	) {
 		setProperties.push(`<nc:metadata-photos-gps>
 			<nc:latitude>${location.latitude}</nc:latitude>
 			<nc:longitude>${location.longitude}</nc:longitude>
 		</nc:metadata-photos-gps>`)
 	}
-
-	// Removing the property rather than sending empty coordinates keeps the
-	// photo out of the places, which a position of 0/0 would not.
-	const removeProperties = location === null
-		? '<d:remove><d:prop><nc:metadata-photos-gps /></d:prop></d:remove>'
-		: ''
 
 	await davClient.customRequest(photo.davPath, {
 		method: 'PROPPATCH',
@@ -55,7 +54,6 @@ export async function savePhotoMetadata(photo: PhotoTarget, update: PhotoMetadat
 						${setProperties.join('\n')}
 					</d:prop>
 				</d:set>
-				${removeProperties}
 			</d:propertyupdate>`,
 	})
 }
