@@ -4,8 +4,8 @@
  */
 
 import type { Node } from '@nextcloud/files'
-
 import { FileType } from '@nextcloud/files'
+import { Permission } from '@nextcloud/files'
 import { getRootPath } from '@nextcloud/files/dav'
 import { getLanguage } from '@nextcloud/l10n'
 import { basename } from '@nextcloud/paths'
@@ -144,4 +144,51 @@ export async function getVideoDurationFromUrl(url): Promise<number> {
 
 		video.src = url
 	})
+}
+
+/**
+ *
+ * @param file
+ */
+export function toViewerFileInfo(file: Node): ViewerFileInfo {
+	let permissions = ''
+
+	if ((file.permissions & Permission.CREATE) === Permission.CREATE) {
+		permissions += 'CK'
+	}
+	if ((file.permissions & Permission.UPDATE) === Permission.UPDATE) {
+		permissions += 'WNV'
+	}
+	if ((file.permissions & Permission.READ) === Permission.READ) {
+		permissions += 'G'
+	}
+	if ((file.permissions & Permission.DELETE) === Permission.DELETE) {
+		permissions += 'D'
+	}
+	if ((file.permissions & Permission.SHARE) === Permission.SHARE) {
+		permissions += 'R'
+	}
+
+	let filename = file.path
+	let source = file.source
+	// Override the filename and source to allow deleting a file from the viewer.
+	// This is needed when the filename and source are related to the albums.
+	if (file.attributes['photos-collection-file-original-filename'] !== undefined) {
+		filename = file.attributes['photos-collection-file-original-filename']
+		source = getRemoteURL() + getRootPath() + filename
+	}
+
+	return {
+		fileid: file.fileid,
+		basename: file.basename,
+		filename,
+		mime: file.mime,
+		mtime: file.mtime,
+		ownerId: file.owner,
+		source,
+		hasPreview: file.attributes.hasPreview,
+		previewUrl: file.attributes.previewUrl ?? generateUrl(`/apps/photos/api/v1/preview/${file.fileid}?x=2048&y=2048`),
+		etag: file.attributes.etag,
+		permissions,
+	}
 }
