@@ -33,15 +33,19 @@
 			@refresh="resetFetchFilesState">
 
 			<template #subtitle>
-				<div v-if="photosCount > 0 && filesCount > photosCount" class="album__details album__details_all">
+				<div v-if="loadingMediaCounts" class="album__details">
+					{{ t('photos', 'Loading…') }}
+				</div>
+
+				<div v-else-if="photosCount > 0 && videosCount > 0" class="album__details album__details_all">
 					{{ n('photos', '%n item', '%n photos', photosCount) }} {{ t('photos', 'and') }} {{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
 				</div>
 
-				<div v-else-if="photosCount > 0 && filesCount === photosCount" class="album__details album__details_photos">
+				<div v-else-if="photosCount > 0" class="album__details album__details_photos">
 					{{ n('photos', '%n item', '%n photos', photosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
 				</div>
 
-				<div v-else-if="videosCount > 0 && filesCount === videosCount" class="album__details album__details__videos">
+				<div v-else-if="videosCount > 0" class="album__details album__details__videos">
 					{{ n('photos', '%n item', '%n videos', videosCount) }} ⸱ {{ t('photos', 'Created') }} {{ dateCreated }}
 				</div>
 			</template>
@@ -187,7 +191,7 @@
 			:emptyMessage="createAlbumButtonLabel"
 			:scrollToSection="scrubberTarget"
 			@add-collection="showAlbumCreationForm = $event"
-      @needContent="getContent">
+      		@needContent="getContent">
 			<template #default="{ file, isHeader }">
         <h2
           v-if="isHeader"
@@ -217,20 +221,19 @@
 			@jump="onScrubberJump" />
 
 		<NcModal
-      v-if="showAlbumCreationForm"
-      key="albumCreationForm"
-      labelId="new-album-form"
-      :lightBackdrop="true"
-      :setReturnFocus="newAlbumButton?.$el"
-      @close="handleAlbumCreateCancel">
-      <h2 class="timeline__heading">
-        {{ t('photos', 'New album') }}
-      </h2>
-      <AlbumForm
-        :filtersValue="selectedFilters"
-        @done="handleAlbumCreated"
-        @closing="handleAlbumCreateCancel" />
-    </NcModal>
+			v-if="showAlbumCreationForm"
+			key="albumCreationForm"
+			labelId="new-album-form"
+			:lightBackdrop="true"
+			:setReturnFocus="newAlbumButton?.$el"
+			@close="handleAlbumCreateCancel">
+			<h2 class="timeline__heading">
+				{{ t('photos', 'New album') }}
+			</h2>
+			<AlbumForm
+				@done="handleAlbumCreated"
+				@closing="handleAlbumCreateCancel" />
+		</NcModal>
 
 		<NcModal
 			v-if="showAlbumPicker"
@@ -241,13 +244,13 @@
 		</NcModal>
 
 		<PhotosPicker
-      v-model:open="showPhotosPicker"
-      :blacklist-ids="blacklistIds"
-      :destination="destination"
-      :name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
-      :allowempty="allowEmpty"
-      @closed="handlePickerClose"
-      @files-picked="handleFilesPicked" />
+			v-model:open="showPhotosPicker"
+			:blacklist-ids="blacklistIds"
+			:destination="destination"
+			:name="t('photos', 'Add photos to {albumName}', { albumName: destination })"
+			:allowempty="allowEmpty"
+			@closed="handlePickerClose"
+			@files-picked="handleFilesPicked" />
 	</div>
 </template>
 
@@ -302,11 +305,12 @@ import { downloadFiles } from '../services/downloadFiles.ts'
 import { fetchFile } from '../services/fileFetcher.ts'
 import { getFolderContent } from '../services/FolderContent.ts'
 import { logger } from '../services/logger.ts'
+import { getPhotos } from '../services/PhotoSearch.ts'
 import { useCollectionsStore } from '../store/collections.ts'
 import { useFilesStore } from '../store/files.ts'
 import { useFilterStore } from '../store/filters.ts'
 import { configChangedEvent, useUserConfigStore } from '../store/userConfig.ts'
-import { formatMonth, formatYear } from '../utils/dateUtils.ts'
+import { formatMonth, formatYear, toMonthKey } from '../utils/dateUtils.ts'
 
 const props = withDefaults(defineProps<{
 	onlyFavorites?: boolean
@@ -367,10 +371,6 @@ const monthCounts = computed<Record<string, number>>(() => {
 })
 
 const createAlbumButtonLabel = computed(() => {
-	if (Object.values(selectedFilters.value).some((values) => values.length > 0)) {
-		return t('photos', 'Create new album from filters')
-	}
-
 	return t('photos', 'Create new album')
 })
 
@@ -390,28 +390,109 @@ const inlineActions = computed(() => {
 	return 3
 })
 
-const filesCount = computed<number>(() => Object.values(fileIdsByMonth.value)
-	.reduce((sum, ids) => sum + ids.length, 0))
+const MEDIA_COUNT_BATCH_SIZE = 2000
 
-const photosCount = computed<number>(() => Object.values(fileIdsByMonth.value)
-	.flat()
-	.filter((fileId) => files.value[fileId]?.mime?.startsWith('image/'))
-	.length)
+const mediaCounts = ref<{
+	photos: number
+	videos: number
+	firstMonth: string
+	lastMonth: string
+} | null>(null)
 
-const videosCount = computed<number>(() => Object.values(fileIdsByMonth.value)
-	.flat()
-	.filter((fileId) => files.value[fileId]?.mime?.startsWith('video/'))
-	.length)
+const loadingMediaCounts = ref(false)
+
+let mediaCountAbortController: AbortController | undefined
+
+const photosCount = computed(() => mediaCounts.value?.photos ?? 0)
+const videosCount = computed(() => mediaCounts.value?.videos ?? 0)
+
+async function loadMediaCounts(): Promise<void> {
+	mediaCountAbortController?.abort()
+	mediaCountAbortController = new AbortController()
+	const signal = mediaCountAbortController.signal
+
+	mediaCounts.value = null
+	loadingMediaCounts.value = true
+
+	let firstResult = 0
+	let photos = 0
+	let videos = 0
+	let firstTimestamp: number | null = null
+	let lastTimestamp: number | null = null
+
+	try {
+		while (true) {
+			const result = await getPhotos({
+				firstResult,
+				nbResults: MEDIA_COUNT_BATCH_SIZE,
+				mimesType: props.mimesType,
+				onThisDay: props.onThisDay,
+				onlyFavorites: props.onlyFavorites,
+				extraFilters: filtersQuery.value,
+				signal,
+			})
+
+			for (const file of result) {
+				if (file.mime?.startsWith('image/')) {
+					photos++
+				} else if (file.mime?.startsWith('video/')) {
+					videos++
+				} else {
+					continue
+				}
+
+				const date = new Date(
+					(file.attributes['metadata-photos-original_date_time'] * 1000)
+					|| file.mtime
+					|| Date.now(),
+				)
+
+				const timestamp = date.getTime()
+
+				if (firstTimestamp === null || timestamp < firstTimestamp) {
+					firstTimestamp = timestamp
+				}
+
+				if (lastTimestamp === null || timestamp > lastTimestamp) {
+					lastTimestamp = timestamp
+				}
+			}
+
+			if (result.length < MEDIA_COUNT_BATCH_SIZE) {
+				break
+			}
+
+			firstResult += MEDIA_COUNT_BATCH_SIZE
+		}
+
+		if (!signal.aborted) {
+			mediaCounts.value = {
+				photos,
+				videos,
+				firstMonth: firstTimestamp === null ? '' : toMonthKey(new Date(firstTimestamp)),
+				lastMonth: lastTimestamp === null ? '' : toMonthKey(new Date(lastTimestamp)),
+			}
+		}
+	} catch (error) {
+		if (error instanceof DOMException && error.name === 'AbortError') {
+			return
+		}
+
+		logger.error('Failed to count timeline media', { error })
+	} finally {
+		if (!signal.aborted) {
+			loadingMediaCounts.value = false
+		}
+	}
+}
 
 const dateCreated = computed<string>(() => {
-	const months = Object.keys(fileIdsByMonth.value).sort()
+	const firstMonth = mediaCounts.value?.firstMonth ?? ''
+	const lastMonth = mediaCounts.value?.lastMonth ?? ''
 
-	if (months.length === 0) {
+	if (firstMonth === '' || lastMonth === '') {
 		return ''
 	}
-
-	const firstMonth = months[0]
-	const lastMonth = months[months.length - 1]
 
 	const firstFormatted = `${formatMonth(firstMonth)} ${formatYear(firstMonth)}`
 	const lastFormatted = `${formatMonth(lastMonth)} ${formatYear(lastMonth)}`
@@ -426,6 +507,13 @@ const dateCreated = computed<string>(() => {
 const croppedLayout = computed(() => userConfigStore.croppedLayout)
 
 const photosLocation = computed<string>(() => userConfigStore.photosLocation || '/')
+
+const timelineQueryKey = computed(() => JSON.stringify({
+	mimesType: [...props.mimesType].sort(),
+	onlyFavorites: props.onlyFavorites,
+	onThisDay: props.onThisDay,
+	extraFilters: filtersQuery.value,
+}))
 
 const uploadFolderPath = computed<string>(() => {
 	const location = photosLocation.value
@@ -444,10 +532,18 @@ const timelinePhotos = computed(() => fetchedFileIds.value
 	.map((fileId) => files.value[fileId])
 	.filter((file) => file !== undefined))
 
-watch(filtersQuery, () => {
-	resetFetchFilesState()
-	getContent()
-})
+watch(
+	timelineQueryKey,
+	(_query, previousQuery) => {
+		if (previousQuery !== undefined) {
+			resetFetchFilesState()
+			void getContent()
+		}
+
+		void loadMediaCounts()
+	},
+	{ immediate: true },
+)
 
 watch(photosLocation, () => {
 	fetchUploadFolder()
@@ -577,6 +673,8 @@ function downloadSelectedFiles(): void {
 function handleUserConfigChange({ key }: { key: string }): void {
 	if (key === 'photosSourceFolders') {
 		resetFetchFilesState()
+		void getContent()
+		void loadMediaCounts()
 	}
 }
 
@@ -633,11 +731,12 @@ async function uploadDestinationContent(): Promise<Node[]> {
 async function onUploadsFinished(): Promise<void> {
 	try {
 		resetFetchFilesState()
-		await getContent()
+		await Promise.all([
+			getContent(),
+			loadMediaCounts(),
+		])
 	} catch (error) {
-		logger.error('Failed to refresh timeline after upload', {
-			error,
-		})
+		logger.error('Failed to refresh timeline after upload', { error })
 	}
 }
 
@@ -657,6 +756,7 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+	mediaCountAbortController?.abort()
 	unsubscribe(configChangedEvent, handleUserConfigChange)
 	window.removeEventListener('resize', handleResize)
 })
