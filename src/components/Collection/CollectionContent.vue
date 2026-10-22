@@ -53,10 +53,11 @@
 <script setup lang="ts">
 import type { Node } from '@nextcloud/files'
 import type { Collection } from '../../services/collectionFetcher.ts'
-import { toViewerFileInfo, type PhotoTarget } from '../../utils/fileUtils.ts'
+import type { PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { t } from '@nextcloud/l10n'
+import { getViewer } from '@nextcloud/viewer'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { computed, onMounted, onUnmounted } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
@@ -93,29 +94,7 @@ const files = computed(() => filesStore.files)
 const sortedCollectionFileIds = computed(() => props.collectionFileIds.toSorted((fileId1, fileId2) => files.value[fileId1].attributes.timestamp < files.value[fileId2].attributes.timestamp ? -1 : 1))
 
 function openViewer(fileId: number): void {
-	const fileIds = burstStacks.value[fileId]?.memberIds
-		?? Object.values(fileIdsByMonth.value).flat()
-
-	const file = files.value[fileId]
-
-	if (file === undefined) {
-		return
-	}
-
-	const viewer = window.OCA.Viewer
-
-	if (viewer === undefined) {
-		logger.error('Legacy viewer is not available')
-		return
-	}
-
-	viewer.open({
-		fileInfo: toViewerFileInfo(file),
-		list: fileIds
-			.map((id) => files.value[id])
-			.filter((file) => file !== undefined)
-			.map(toViewerFileInfo),
-	})
+	getViewer().open(sortedCollectionFileIds.value.map((fileId) => files.value[fileId]), files.value[fileId], { enableSidebar: false })
 }
 
 function handleFileDeleted({ fileid }: Node): void {
