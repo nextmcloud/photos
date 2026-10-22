@@ -52,7 +52,7 @@
 				</CollectionCover>
 			</template>
 
-			<template #empty-collections-list>
+			<template #emptyCollectionsList>
 				<div class="albums__empty-content">
 					<div class="empty-collection-content">
 						<div class="empty-content__wrapper">
@@ -71,7 +71,7 @@
 							<template #icon>
 								<Plus :size="20" />
 							</template>
-							{{ t('photos', 'New album') }}
+							{{ t('photos', 'Create new album') }}
 						</NcButton>
 					</div>
 				</div>

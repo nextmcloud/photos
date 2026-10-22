@@ -23,38 +23,37 @@
 			</template>
 		</NcEmptyContent>
 
+		<button
+			v-if="yearRecap !== null"
+			type="button"
+			class="memories__recap"
+			:aria-label="recapAriaLabel"
+			@click="startRecap">
+			<img
+				class="memories__recap__cover"
+				:src="getPreviewUrl(yearRecap.cover, 1024)"
+				alt=""
+				decoding="async">
+			<span class="memories__recap__details">
+				<span class="memories__recap__details__eyebrow">{{ t('photos', 'Year in review') }}</span>
+				<span class="memories__recap__details__title">{{ t('photos', 'Your {year} in photos', { year: yearRecap.year }) }}</span>
+				<span class="memories__recap__details__meta">
+					<AnimatedNumber :value="yearRecap.highlights.length">
+						<template #default="{ current }">
+							{{ n('photos', '%n highlight', '%n highlights', current) }}
+						</template>
+					</AnimatedNumber>
+					·
+					<AnimatedNumber :value="yearRecap.totalCount">
+						<template #default="{ current }">
+							{{ n('photos', '%n photo this year', '%n photos this year', current) }}
+						</template>
+					</AnimatedNumber>
+				</span>
+			</span>
+		</button>
+
 		<ul v-if="trips.length > 0" class="memories__list">
-			<li v-if="yearRecap !== null" class="memories__trip">
-				<button
-					v-if="yearRecap !== null"
-					type="button"
-					class="memories__recap memories__trip__button"
-					:aria-label="recapAriaLabel"
-					@click="startRecap">
-					<img
-						class="memories__recap__cover"
-						:src="getPreviewUrl(yearRecap.cover, 512)"
-						alt=""
-						decoding="async">
-					<span class="memories__recap__details">
-						<span class="memories__recap__details__eyebrow">{{ t('photos', 'Year in review') }}</span>
-						<span class="memories__recap__details__title">{{ t('photos', 'Your {year} in photos', { year: yearRecap.year }) }}</span>
-						<span class="memories__recap__details__meta">
-							<AnimatedNumber :value="yearRecap.highlights.length">
-								<template #default="{ current }">
-									{{ n('photos', '%n highlight', '%n highlights', current) }}
-								</template>
-							</AnimatedNumber>
-							·
-							<AnimatedNumber :value="yearRecap.totalCount">
-								<template #default="{ current }">
-									{{ n('photos', '%n photo this year', '%n photos this year', current) }}
-								</template>
-							</AnimatedNumber>
-						</span>
-					</span>
-				</button>
-			</li>
 			<li v-for="trip in trips" :key="trip.id" class="memories__trip">
 				<button
 					type="button"

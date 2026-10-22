@@ -16,7 +16,7 @@
 
 			<NcActionButton closeAfterClick @click="metadataShown = true">
 				<template #icon>
-					<InformationOutline :size="20" />
+					<Database :size="20" />
 				</template>
 				{{ t('photos', 'View metadata') }}
 			</NcActionButton>
@@ -26,6 +26,13 @@
 					<PencilOutline :size="20" />
 				</template>
 				{{ t('photos', 'Edit metadata') }}
+			</NcActionButton>
+
+			<NcActionButton closeAfterClick @click="exifdataShown = true">
+				<template #icon>
+					<InformationOutline :size="20" />
+				</template>
+				{{ t('photos', 'View file info') }}
 			</NcActionButton>
 
 			<NcActionButton v-if="isLoggedIn" closeAfterClick @click="toggleFavorite">
@@ -79,6 +86,11 @@
 			:photo="photo"
 			@close="metadataEditShown = false" />
 
+		<PhotoExifdataDialog
+			v-if="exifdataShown"
+			:photo="photo"
+			@close="exifdataShown = false" />
+
 		<PhotoTagsDialog
 			v-if="tagsShown"
 			:photo="photo"
@@ -125,6 +137,7 @@ import NcActionSeparator from '@nextcloud/vue/components/NcActionSeparator'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcModal from '@nextcloud/vue/components/NcModal'
+import Database from 'vue-material-design-icons/Database.vue'
 import DotsVertical from 'vue-material-design-icons/DotsVertical.vue'
 import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline.vue'
 import InformationOutline from 'vue-material-design-icons/InformationOutline.vue'
@@ -136,6 +149,7 @@ import TagMultipleOutline from 'vue-material-design-icons/TagMultipleOutline.vue
 import TrashCanOutline from 'vue-material-design-icons/TrashCanOutline.vue'
 import AlbumPicker from './Albums/AlbumPicker.vue'
 import PhotoMetadataDialog from './PhotoMetadataDialog.vue'
+import PhotoExifdataDialog from './PhotoExifdataDialog.vue'
 import PhotoMetadataEditDialog from './PhotoMetadataEditDialog.vue'
 import PhotoTagsDialog from './PhotoTagsDialog.vue'
 import { areTagsInstalled } from '../services/AreTagsInstalled.ts'
@@ -158,6 +172,7 @@ const collectionsStore = useCollectionsStore()
 const menuOpen = ref(false)
 const metadataShown = ref(false)
 const metadataEditShown = ref(false)
+const exifdataShown = ref(false)
 const tagsShown = ref(false)
 const albumPickerShown = ref(false)
 const deleteConfirmationShown = ref(false)
