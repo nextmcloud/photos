@@ -6,7 +6,7 @@
 import type { Node } from '@nextcloud/files'
 import { FileType } from '@nextcloud/files'
 import { Permission } from '@nextcloud/files'
-import { getRootPath } from '@nextcloud/files/dav'
+import { getRemoteURL, getRootPath } from '@nextcloud/files/dav'
 import { getLanguage } from '@nextcloud/l10n'
 import { basename } from '@nextcloud/paths'
 import { generateUrl } from '@nextcloud/router'
