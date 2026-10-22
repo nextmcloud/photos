@@ -278,6 +278,8 @@ OC.L10N.register(
     "Upload Date" : "Hochladedatum",
     "Upload" : "Hochladen",
     "View file info" : "Dateiinfos anzeigen",
+    "Choose a media folder" : "Medienordner auswählen",
+    "Select at least one folder in Photos settings to show your photos and videos here." : "Wähle in den Fotos-Einstellungen mindestens einen Ordner aus, um deine Fotos und Videos hier anzuzeigen.",
     "You are about to delete {imageName}. Are you sure?" : "Du bist dabei, {imageName} zu löschen. Bist Du sicher?"
 },
 "nplurals=2; plural=(n != 1);");
