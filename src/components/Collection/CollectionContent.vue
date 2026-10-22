@@ -53,6 +53,7 @@
 <script setup lang="ts">
 import type { Node } from '@nextcloud/files'
 import type { Collection } from '../../services/collectionFetcher.ts'
+import { logger } from '../../services/logger.ts'
 import { toViewerFileInfo, type PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
@@ -103,9 +104,6 @@ const sortedCollectionFileIds = computed(() => props.collectionFileIds
 	}))
 
 function openViewer(fileId: number): void {
-	const fileIds = burstStacks.value[fileId]?.memberIds
-		?? Object.values(fileIdsByMonth.value).flat()
-
 	const file = files.value[fileId]
 
 	if (file === undefined) {
@@ -121,10 +119,11 @@ function openViewer(fileId: number): void {
 
 	viewer.open({
 		fileInfo: toViewerFileInfo(file),
-		list: fileIds
+		list: sortedCollectionFileIds.value
 			.map((id) => files.value[id])
 			.filter((file) => file !== undefined)
 			.map(toViewerFileInfo),
+		enableSidebar: false,
 	})
 }
 
