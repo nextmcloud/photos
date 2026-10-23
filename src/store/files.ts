@@ -119,34 +119,39 @@ export const useFilesStore = defineStore('files', () => {
 	}
 
 	/**
-	 * Correct the taken date and the position of a photo
+	 * Update the metadata of a photo
 	 *
 	 * @param photo - Photo to update
-	 * @param update - New taken date and position
+	 * @param update - Metadata to update
 	 * @param update.takenAt - Corrected capture time, as a unix timestamp
-	 * @param update.location - Corrected position, or null to drop it
+	 * @param update.location - Optional corrected position
 	 * @throws {Error} When the server rejects the update
 	 */
 	async function updatePhotoMetadata(photo: PhotoTarget, { takenAt, location }: PhotoMetadataUpdate): Promise<void> {
-		await savePhotoMetadata(photo, { takenAt, location })
+		const hasValidLocation = location !== undefined
+			&& location !== null
+			&& location.latitude !== null
+			&& location.latitude !== undefined
+			&& location.longitude !== null
+			&& location.longitude !== undefined
+
+		await savePhotoMetadata(photo, {
+			takenAt,
+			...(hasValidLocation ? { location } : {}),
+		})
 
 		const attributes = files.value[photo.fileid]?.attributes
 		if (attributes === undefined) {
 			return
 		}
 
-		// The dates driving the sorting and the grouping are precalculated, so
-		// they have to be recomputed for the photo to move to its new month.
 		const date = new Date(takenAt * 1000)
 		attributes['metadata-photos-original_date_time'] = takenAt
 		attributes.timestamp = Math.floor(date.getTime() / 1000)
 		attributes.month = toMonthKey(date)
 		attributes.day = toDayKey(date)
 
-		if (location === null) {
-			delete attributes['metadata-photos-gps']
-		} else {
-			// Coordinates are strings once they come back from a DAV listing.
+		if (hasValidLocation) {
 			attributes['metadata-photos-gps'] = {
 				latitude: String(location.latitude),
 				longitude: String(location.longitude),
