@@ -23,37 +23,39 @@
 			</template>
 		</NcEmptyContent>
 
-		<button
-			v-if="yearRecap !== null"
-			type="button"
-			class="memories__recap"
-			:aria-label="recapAriaLabel"
-			@click="startRecap">
-			<img
-				class="memories__recap__cover"
-				:src="getPreviewUrl(yearRecap.cover, 1024)"
-				alt=""
-				decoding="async">
-			<span class="memories__recap__details">
-				<span class="memories__recap__details__eyebrow">{{ t('photos', 'Year in review') }}</span>
-				<span class="memories__recap__details__title">{{ t('photos', 'Your {year} in photos', { year: yearRecap.year }) }}</span>
-				<span class="memories__recap__details__meta">
-					<AnimatedNumber :value="yearRecap.highlights.length">
-						<template #default="{ current }">
-							{{ n('photos', '%n highlight', '%n highlights', current) }}
-						</template>
-					</AnimatedNumber>
-					·
-					<AnimatedNumber :value="yearRecap.totalCount">
-						<template #default="{ current }">
-							{{ n('photos', '%n photo this year', '%n photos this year', current) }}
-						</template>
-					</AnimatedNumber>
-				</span>
-			</span>
-		</button>
-
-		<ul v-if="trips.length > 0" class="memories__list">
+		<ul
+			v-if="trips.length > 0 || yearRecap !== null"
+			class="memories__list">
+			<li v-if="yearRecap !== null" class="memories__trip">
+				<button
+					type="button"
+					class="memories__recap memories__trip__button"
+					:aria-label="recapAriaLabel"
+					@click="startRecap">
+					<img
+						class="memories__recap__cover"
+						:src="getPreviewUrl(yearRecap.cover, 512)"
+						alt=""
+						decoding="async">
+					<span class="memories__recap__details">
+						<span class="memories__recap__details__eyebrow">{{ t('photos', 'Year in review') }}</span>
+						<span class="memories__recap__details__title">{{ t('photos', 'Your {year} in photos', { year: yearRecap.year }) }}</span>
+						<span class="memories__recap__details__meta">
+							<AnimatedNumber :value="yearRecap.highlights.length">
+								<template #default="{ current }">
+									{{ n('photos', '%n highlight', '%n highlights', current) }}
+								</template>
+							</AnimatedNumber>
+							·
+							<AnimatedNumber :value="yearRecap.totalCount">
+								<template #default="{ current }">
+									{{ n('photos', '%n photo this year', '%n photos this year', current) }}
+								</template>
+							</AnimatedNumber>
+						</span>
+					</span>
+				</button>
+			</li>
 			<li v-for="trip in trips" :key="trip.id" class="memories__trip">
 				<button
 					type="button"
@@ -83,7 +85,6 @@
 import type { Trip, YearRecap } from '../services/memories.ts'
 
 import { n, t } from '@nextcloud/l10n'
-import { getViewer } from '@nextcloud/viewer'
 import { computed, onMounted } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import AnimatedNumber from '../components/AnimatedNumber.vue'
@@ -92,7 +93,7 @@ import HeaderNavigation from '../components/HeaderNavigation.vue'
 import { useLoadedPhotos } from '../composables/useLoadedPhotos.ts'
 import { buildYearRecap, detectTrips } from '../services/memories.ts'
 import { formatDateRange as formatRange } from '../utils/dateUtils.ts'
-import { getPreviewUrl } from '../utils/fileUtils.ts'
+import { getPreviewUrl, toViewerFileInfo } from '../utils/fileUtils.ts'
 
 defineProps<{
 	rootTitle: string
@@ -102,33 +103,74 @@ const { photos, loading, loadPhotos } = useLoadedPhotos()
 
 // The trips are refined as more photos get loaded by the other views, so they
 // are built from whatever is already in the store instead of waiting a fetch.
-const trips = computed<Trip[]>(() => detectTrips(photos.value))
+const trips = computed<Trip[]>(() => {
+	const start = performance.now()
+	const result = detectTrips(photos.value)
+	console.debug('[Memories performance] detectTrips', {
+		photos: photos.value.length,
+		duration: `${Math.round(performance.now() - start)} ms`,
+	})
+	return result
+})
 
-const yearRecap = computed<YearRecap | null>(() => buildYearRecap(photos.value))
+const yearRecap = computed<YearRecap | null>(() => {
+	const start = performance.now()
+	const result = buildYearRecap(photos.value)
+	console.debug('[Memories performance] buildYearRecap', {
+		photos: photos.value.length,
+		duration: `${Math.round(performance.now() - start)} ms`,
+	})
+	return result
+})
 
 const recapAriaLabel = computed<string>(() => yearRecap.value === null
 	? ''
 	: t('photos', 'Play a slideshow of your {year} highlights', { year: yearRecap.value.year }))
 
 onMounted(() => {
-	if (photos.value.length === 0) {
-		loadPhotos()
-	}
+	void loadPhotos()
 })
 
 function startRecap(): void {
-	if (yearRecap.value === null) {
+	if (yearRecap.value === null || yearRecap.value.highlights.length === 0) {
 		return
 	}
 
-	getViewer().open(yearRecap.value.highlights, yearRecap.value.highlights[0], { startSlideshow: true })
+	const viewer = window.OCA.Viewer
+
+	if (viewer === undefined) {
+		console.error('Legacy viewer is not available')
+		return
+	}
+
+	const highlights = yearRecap.value.highlights
+
+	viewer.open({
+		fileInfo: toViewerFileInfo(highlights[0]),
+		list: highlights.map(toViewerFileInfo),
+		startSlideshow: true,
+	})
 }
 
 /**
  * @param trip - The trip to open in the viewer
  */
 function openTrip(trip: Trip): void {
-	getViewer().open(trip.photos, trip.cover)
+	if (trip.photos.length === 0) {
+		return
+	}
+
+	const viewer = window.OCA.Viewer
+
+	if (viewer === undefined) {
+		console.error('Legacy viewer is not available')
+		return
+	}
+
+	viewer.open({
+		fileInfo: toViewerFileInfo(trip.cover),
+		list: trip.photos.map(toViewerFileInfo),
+	})
 }
 
 /**
