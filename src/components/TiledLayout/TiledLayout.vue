@@ -26,8 +26,10 @@ import { splitItemsInRows } from '../../services/TiledLayout.ts'
 const props = withDefaults(defineProps<{
 	sections: Section<I>[]
 	baseHeight?: number
+	fixedSize?: boolean
 }>(), {
 	baseHeight: 200,
+	fixedSize: false,
 })
 
 defineSlots<{
@@ -43,7 +45,13 @@ const tiledSections = computed<TiledSection<I>[]>(() => {
 	logger.debug('[TiledLayout] Computing rows', { items: props.sections })
 
 	return props.sections.map((section) => {
-		const rows = splitItemsInRows(section.items, containerWidth.value, props.baseHeight)
+		const rows = splitItemsInRows(
+			section.items,
+			containerWidth.value,
+			props.baseHeight,
+			props.fixedSize,
+		)
+
 		return {
 			...section,
 			key: section.id,
