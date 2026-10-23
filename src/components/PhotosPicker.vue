@@ -4,69 +4,37 @@
 -->
 <template>
 	<NcDialog
+		id="photos-picker"
 		contentClasses="photos-picker"
 		:name="name"
 		:open="open"
 		outTransition
 		size="large"
-		@update:open="(open) => $emit('update:open', open)">
-		<!-- Navigation containing the months available -->
-		<template v-if="monthsList.length > 0" #navigation="{ isCollapsed }">
-			<!-- Mobile view -->
-			<NcSelect
-				v-if="isCollapsed"
-				v-model="targetMonth"
-				:aria-label-listbox="t('photos', 'Dates')"
-				class="photos-picker__navigation__month-select"
-				:clearable="false"
-				:inputLabel="t('photos', 'Jump to specific date in list')"
-				:options="monthsList">
-				<template #selected-option="{ label }">
-					{{ dateMonthAndYear(label) }}
-				</template>
-				<template #option="{ label }">
-					{{ dateMonthAndYear(label) }}
-				</template>
-			</NcSelect>
-
-			<!-- Default view -->
-			<ul v-else :aria-label="t('photos', 'Dates')">
-				<li
-					v-for="month in monthsList"
-					:key="month"
-					class="photos-picker__navigation__month">
-					<NcButton
-						:variant="targetMonth === month ? 'secondary' : 'tertiary'"
-						:aria-label="t('photos', 'Jump to {date}', { date: dateMonthAndYear(month) })"
-						@click="targetMonth = month">
-						{{ dateMonthAndYear(month) }}
-					</NcButton>
-				</li>
-			</ul>
-		</template>
-
+		@update:open="(open) => $emit('update:open', open)"
+		@closing="$emit('closed')">
 		<!-- The actions on the bottom -->
 		<template #actions>
 			<div class="photos-picker__actions">
 				<div class="photos-picker__actions__buttons">
-					<NcUploadPicker
-						v-if="photosLocationFolder !== undefined"
-						:accept="allowedMimes"
-						:content="uploadDestinationContent"
-						:destination="photosLocationFolder"
-						multiple
-						@finished="refreshFiles" />
+					<NcButton
+						v-if="allowempty"
+						variant="secondary"
+						:disabled="loading"
+						@click="$emit('closed')">
+						<template #icon>
+							<ImageAlbum v-if="!loading" />
+							<NcLoadingIcon v-if="loading" />
+						</template>
+						{{ t('photos', 'Create empty album') }}
+					</NcButton>
 					<NcButton variant="primary" :disabled="loading || selectedFileIds.length === 0" @click="emitPickedEvent">
 						<template #icon>
 							<ImagePlusOutline v-if="!loading" />
 							<NcLoadingIcon v-if="loading" />
 						</template>
-						{{ t('photos', 'Add to {destination}', { destination }, undefined, { escape: false, sanitize: false }) }}
+						{{ t('photos', 'Add') }}
 					</NcButton>
 				</div>
-				<NcNoteCard v-if="photosLocationFolder?.attributes['owner-id'] !== currentUser" type="warning">
-					{{ t('photos', 'The destination folder is owned by {owner}', { owner: photosLocationFolder?.attributes['owner-id'] }) }}
-				</NcNoteCard>
 			</div>
 		</template>
 
@@ -96,36 +64,29 @@
 					:allowSelection="true"
 					:selected="selection[file.id] === true"
 					:showActionsMenu="false"
-					@selectToggled="onFileSelectToggle" />
+					@select-toggled="onFileSelectToggle" />
 			</template>
 		</FilesListViewer>
 	</NcDialog>
 </template>
 
 <script setup lang="ts">
-import type { File, Node } from '@nextcloud/files'
+import type { File } from '@nextcloud/files'
 
-import { getCurrentUser } from '@nextcloud/auth'
 import { t } from '@nextcloud/l10n'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { computed, ref, watch } from 'vue'
 import NcButton from '@nextcloud/vue/components/NcButton'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
-import NcNoteCard from '@nextcloud/vue/components/NcNoteCard'
-import NcSelect from '@nextcloud/vue/components/NcSelect'
-import NcUploadPicker from '@nextcloud/vue/components/NcUploadPicker'
+import ImageAlbum from 'vue-material-design-icons/ImageAlbum.vue'
 import ImagePlusOutline from 'vue-material-design-icons/ImagePlusOutline.vue'
 import FileComponent from './FileComponent.vue'
 import FilesListViewer from './FilesListViewer.vue'
-import { useAbortController } from '../composables/useAbortController.ts'
 import { useFetchFiles } from '../composables/useFetchFiles.ts'
 import { useFilesByMonth } from '../composables/useFilesByMonth.ts'
 import { useFilesSelection } from '../composables/useFilesSelection.ts'
-import { allMimes as allowedMimes } from '../services/AllowedMimes.ts'
-import { getFolderContent } from '../services/FolderContent.ts'
 import { useFilesStore } from '../store/files.ts'
-import { useUserConfigStore } from '../store/userConfig.ts'
 import { formatMonthAndYear } from '../utils/dateUtils.ts'
 
 const props = withDefaults(defineProps<{
@@ -147,29 +108,30 @@ const props = withDefaults(defineProps<{
 
 	// Whether we should disable the submit button and show a spinner.
 	loading?: boolean
+
+	// Whether we allow to create empty album.
+	allowempty?: boolean
 }>(), {
 	open: true,
 	blacklistIds: () => [],
 	loading: false,
+	allowempty: false,
 })
 
 const emit = defineEmits<{
 	filesPicked: [fileIds: string[]]
 	'update:open': [open: boolean]
+	closed: []
 }>()
 
 const isMobile = useIsMobile()
 const filesStore = useFilesStore()
-const userConfigStore = useUserConfigStore()
-const { abortSignal } = useAbortController()
 const { fetchFiles, fetchedFileIds, loadingFiles } = useFetchFiles()
 const { selection, selectedFileIds, onFileSelectToggle, resetSelection } = useFilesSelection()
 
 const targetMonth = ref<string>()
-const currentUser = getCurrentUser()?.uid
 
 const files = computed(() => filesStore.files)
-const photosLocationFolder = computed(() => userConfigStore.photosLocationFolder)
 
 const { fileIdsByMonth, monthsList } = useFilesByMonth(fetchedFileIds, files)
 
@@ -179,14 +141,6 @@ watch(monthsList, (value) => {
 	}
 })
 
-/**
- * List the nodes of the photos folder, so the picker can spot conflicts.
- */
-async function uploadDestinationContent(): Promise<Node[]> {
-	const { folders, files } = await getFolderContent(photosLocationFolder.value?.path ?? '/', { signal: abortSignal.value })
-	return [...folders, ...files]
-}
-
 function onFocusOut(event: FocusEvent) {
 	if (event.relatedTarget === null) { // Focus escaping to body
 		(event.target as HTMLElement | null)?.focus({ preventScroll: true })
@@ -195,10 +149,6 @@ function onFocusOut(event: FocusEvent) {
 
 function getFiles() {
 	fetchFiles({}, shouldShowFile)
-}
-
-function refreshFiles() {
-	fetchFiles({ firstResult: 0 }, shouldShowFile, true)
 }
 
 function shouldShowFile(file: File) {
@@ -256,7 +206,7 @@ function dateMonthAndYear(date: string) {
 
 		.section-header {
 			font-weight: bold;
-			font-size: 20px;
+			font-size: 1.5rem;
 			padding: 8px 0 4px 0;
 		}
 
