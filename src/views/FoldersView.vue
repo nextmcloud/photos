@@ -92,12 +92,11 @@ import type { Folder, Node } from '@nextcloud/files'
 import type { IUpload } from '@nextcloud/files/upload'
 import type { Section, TiledItem } from '../services/TiledLayout.ts'
 import type { PhotoFile } from '../store/files.ts'
-import type { PhotoTarget } from '../utils/fileUtils.ts'
+import { toViewerFileInfo, type PhotoTarget } from '../utils/fileUtils.ts'
 
 import { defaultRootPath } from '@nextcloud/files/dav'
 import { getUploader } from '@nextcloud/files/upload'
 import { t } from '@nextcloud/l10n'
-import { getViewer } from '@nextcloud/viewer'
 import { isAxiosError } from 'axios'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -215,9 +214,30 @@ watch(() => props.showShared, () => {
  *
  * @param fileid - Id of the photo to open
  */
-async function openViewer(fileid: number) {
-	const session = await getViewer().open(fileList.value, files.value[fileid] as PhotoFile)
-	session.addEventListener('close', () => window.OCA?.Files?.Sidebar?.close?.(), { once: true })
+function openViewer(fileId: number): void {
+	const fileIds = burstStacks.value[fileId]?.memberIds
+		?? Object.values(fileIdsByMonth.value).flat()
+
+	const file = files.value[fileId]
+
+	if (file === undefined) {
+		return
+	}
+
+	const viewer = window.OCA.Viewer
+
+	if (viewer === undefined) {
+		logger.error('Legacy viewer is not available')
+		return
+	}
+
+	viewer.open({
+		fileInfo: toViewerFileInfo(file),
+		list: fileIds
+			.map((id) => files.value[id])
+			.filter((file) => file !== undefined)
+			.map(toViewerFileInfo),
+	})
 }
 
 // Folders keep the ids of the files they hold, the listing skips the
@@ -256,7 +276,7 @@ async function fetchFolderContent() {
 	loading.value = true
 
 	// close any potential opened viewer & sidebar
-	getViewer().close()
+	window.OCA.Viewer.close()
 	window.OCA?.Files?.Sidebar?.close?.()
 
 	// if we don't already have some cached data let's show a loader

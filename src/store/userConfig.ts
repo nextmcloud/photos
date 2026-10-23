@@ -16,6 +16,7 @@ import { join } from '@nextcloud/paths'
 import { generateUrl } from '@nextcloud/router'
 import { defineStore } from 'pinia'
 import { ref, watch } from 'vue'
+import { useFilesStore } from './files.ts'
 import { davClient } from '../services/DavClient.ts'
 import { logger } from '../services/logger.ts'
 
@@ -91,9 +92,15 @@ export const useUserConfigStore = defineStore('userConfig', () => {
 	 */
 	async function updateUserConfig<K extends keyof PersistedUserConfig>(key: K, value: PersistedUserConfig[K]): Promise<void> {
 		(refs[key].value as PersistedUserConfig[K]) = value
+
 		await axios.put(generateUrl('apps/photos/api/v1/config/' + key), {
-			value: (typeof value === 'string') ? value : JSON.stringify(value),
+			value: typeof value === 'string' ? value : JSON.stringify(value),
 		})
+
+		if (key === 'photosSourceFolders') {
+			useFilesStore().clearFiles()
+		}
+
 		emit(configChangedEvent, { key, value })
 	}
 
