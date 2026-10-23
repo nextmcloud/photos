@@ -104,6 +104,7 @@
 				:baseHeight="tileBaseHeight"
 				:emptyMessage="createAlbumButtonLabel"
 				:scrollToSection="scrubberTarget"
+				:scrollOffset="150"
 				@add-collection="showAlbumCreationForm = $event"
 				@needContent="getContent">
 				<template #default="{ file, isHeader }">

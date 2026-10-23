@@ -44,6 +44,7 @@ const props = withDefaults(defineProps<{
 	renderDistance?: number
 	bottomBufferRatio?: number
 	scrollToKey?: string
+	scrollOffset?: number
 }>(), {
 	containerElement: null,
 	useWindow: false,
@@ -51,6 +52,7 @@ const props = withDefaults(defineProps<{
 	renderDistance: 0.5,
 	bottomBufferRatio: 2,
 	scrollToKey: '',
+	scrollOffset: 0,
 })
 
 const emit = defineEmits<{
@@ -248,9 +250,19 @@ watch(() => props.scrollToKey, (key) => {
 	const rowsContainerElement = rowsContainer.value as HTMLElement
 	const containerTop = props.useWindow ? 0 : (scrollContainer.value as HTMLElement).getBoundingClientRect().top
 	const scrollTop = props.useWindow ? window.scrollY : (scrollContainer.value as HTMLElement).scrollTop
-	const top = scrollTop + rowsContainerElement.getBoundingClientRect().top - containerTop + currentRowTopDistanceFromTop
+	const top = Math.max(
+		0,
+		scrollTop
+			+ rowsContainerElement.getBoundingClientRect().top
+			- containerTop
+			+ currentRowTopDistanceFromTop
+			- props.scrollOffset,
+	)
 
-	logger.debug('[VirtualScrolling] Scrolling to', { top })
+	logger.debug('[VirtualScrolling] Scrolling to', {
+		top,
+		offset: props.scrollOffset,
+	})
 	scrollContainer.value.scrollTo({ top, behavior: 'smooth' })
 })
 
