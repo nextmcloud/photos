@@ -1,19 +1,17 @@
-<!--
-  - SPDX-FileCopyrightText: 2026 Nextcloud GmbH and Nextcloud contributors
-  - SPDX-License-Identifier: AGPL-3.0-or-later
--->
-
 <template>
 	<NcDialog
-		:name="t('photos', 'Photo metadata')"
+		:name="t('photos', 'Media metadata')"
 		@update:open="emit('close')">
 		<NcLoadingIcon v-if="exifEntries === undefined" :size="32" class="photo-metadata__loading" />
-
 		<template v-else>
 			<dl class="photo-metadata">
 				<div class="photo-metadata__entry">
 					<dt>{{ t('photos', 'Filename') }}</dt>
 					<dd>{{ photo.basename }}</dd>
+				</div>
+				<div v-if="takenAt" class="photo-metadata__entry">
+					<dt>{{ t('photos', 'Taken at Date and time') }}</dt>
+					<dd>{{ takenAt }}</dd>
 				</div>
 				<div v-for="entry in exifEntries" :key="entry.label" class="photo-metadata__entry">
 					<dt>{{ entry.label }}</dt>
@@ -28,7 +26,6 @@
 					<dd>{{ formatCoordinates(location) }}</dd>
 				</div>
 			</dl>
-
 			<div v-if="locationFeaturesEnabled && location !== null" class="photo-metadata__map">
 				<LocationMap
 					height="200px"
@@ -36,10 +33,8 @@
 					:longitude="location.longitude"
 					:name="metadata?.place || photo.basename" />
 			</div>
-
-			<!-- EXIF is optional, so an empty summary is a normal outcome rather than an error. -->
 			<p v-if="exifEntries.length === 0 && location === null" class="photo-metadata__empty">
-				{{ t('photos', 'This photo carries no camera metadata.') }}
+				{{ t('photos', 'No camera metadata available.') }}
 			</p>
 		</template>
 	</NcDialog>
@@ -49,7 +44,7 @@
 import type { PhotoExif } from '../utils/exif.ts'
 import type { PhotoTarget } from '../utils/fileUtils.ts'
 
-import { translate as t } from '@nextcloud/l10n'
+import { getCanonicalLocale, translate as t } from '@nextcloud/l10n'
 import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 import NcDialog from '@nextcloud/vue/components/NcDialog'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
@@ -58,7 +53,6 @@ import { locationFeaturesEnabled } from '../services/LocationFeatures.ts'
 import { formatCoordinates, getExifSummary, getPhotoLocation } from '../utils/exif.ts'
 
 const props = defineProps<{
-	/** Photo to show the metadata of. */
 	photo: PhotoTarget
 }>()
 
@@ -66,17 +60,20 @@ const emit = defineEmits<{
 	(event: 'close'): void
 }>()
 
-// Leaflet is heavy and only ever needed once this dialog is open.
 const LocationMap = defineAsyncComponent(() => import('./LocationMap.vue'))
-
-/** Metadata of the photo, `undefined` while it is being fetched. */
 const metadata = ref<PhotoExif | undefined>()
-
 const exifEntries = computed(() => metadata.value === undefined ? undefined : getExifSummary(metadata.value))
 const location = computed(() => !locationFeaturesEnabled || metadata.value === undefined ? null : getPhotoLocation(metadata.value.gps))
+const takenAt = computed(() => {
+	if (metadata.value?.takenAt === undefined) {
+		return null
+	}
+	return new Intl.DateTimeFormat(getCanonicalLocale(), {
+		dateStyle: 'medium',
+		timeStyle: 'short',
+	}).format(new Date(metadata.value.takenAt * 1000))
+})
 
-// The EXIF properties are not part of the file listings, they are only fetched
-// once the user asks for them.
 onMounted(async () => {
 	metadata.value = await fetchPhotoExif(props.photo)
 })
@@ -107,13 +104,9 @@ onMounted(async () => {
 		word-break: break-all;
 	}
 
-	// Sits next to the entries rather than inside them, so the map is not
-	// squeezed into the value column.
 	&__map {
 		margin-block-start: calc(var(--default-grid-baseline) * 4);
 
-		// The map is inset for the sidebar it was written for, here it fills
-		// the width of the dialog.
 		:deep(.location-map) {
 			margin: 0;
 		}
