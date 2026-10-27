@@ -8,6 +8,7 @@ import type { PhotoExif } from '../utils/exif.ts'
 import type { PhotoTarget } from '../utils/fileUtils.ts'
 
 import { davClient } from './DavClient.ts'
+import { locationFeaturesEnabled } from './LocationFeatures.ts'
 import { logger } from './logger.ts'
 
 const exifPropFind = `<?xml version="1.0"?>
@@ -15,8 +16,7 @@ const exifPropFind = `<?xml version="1.0"?>
 			<d:prop>
 				<nc:metadata-photos-exif />
 				<nc:metadata-photos-ifd0 />
-				<nc:metadata-photos-gps />
-				<nc:metadata-photos-place />
+				${locationFeaturesEnabled ? '<nc:metadata-photos-gps /><nc:metadata-photos-place />' : ''}
 				<nc:metadata-photos-original_date_time />
 			</d:prop>
 		</d:propfind>`
