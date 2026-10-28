@@ -35,7 +35,11 @@ class AutomaticPlaceMapperJob extends TimedJob {
 	}
 
 	#[\Override]
-	protected function run($argument) {
+	protected function run($argument): void {
+		if (!Application::LOCATION_FEATURES_ENABLED) {
+			return;
+		}
+
 		$placeMappingDone = $this->config->getAppValue(Application::APP_ID, 'lastPlaceMappingDone', 'false');
 
 		if ($placeMappingDone === 'true') {
