@@ -22,16 +22,18 @@ interface ClusterOptions {
 	windowSeconds: number
 	/** Photos a run needs before it is folded at all. */
 	minSize: number
+	maxSpanSeconds: number
 }
 
 const DEFAULTS: ClusterOptions = {
 	// Loose enough for a handheld ten-frames-per-second burst and for the pair a
 	// live photo is, tight enough that a whole morning of holiday pictures does
 	// not collapse into a single tile.
-	windowSeconds: 3,
+	windowSeconds: 1,
 	// A pair is a run worth folding: a live photo is one, and so is the second
 	// shot of the same thing right after the first.
-	minSize: 2,
+	minSize: 3,
+	maxSpanSeconds: 5,
 }
 
 /**
@@ -55,30 +57,41 @@ export function clusterBursts(
 	files: Record<string, PhotoFile>,
 	options: Partial<ClusterOptions> = {},
 ): Record<string, BurstStack> {
-	const { windowSeconds, minSize } = { ...DEFAULTS, ...options }
+	const { windowSeconds, maxSpanSeconds, minSize } = { ...DEFAULTS, ...options }
 	const stacks: Record<string, BurstStack> = {}
 
 	let index = 0
 	while (index < fileIds.length) {
 		const leaderId = fileIds[index]
 		const leader = files[leaderId]
+
 		if (leader === undefined) {
 			index++
 			continue
 		}
 
+		const leaderTimestamp = leader.attributes.timestamp
 		const memberIds = [leaderId]
-		let previousTimestamp = leader.attributes.timestamp
+		let previousTimestamp = leaderTimestamp
 		let next = index + 1
 
 		while (next < fileIds.length) {
 			const candidate = files[fileIds[next]]
-			if (candidate === undefined || Math.abs(previousTimestamp - candidate.attributes.timestamp) > windowSeconds) {
+
+			if (candidate === undefined) {
+				break
+			}
+
+			const timestamp = candidate.attributes.timestamp
+			const previousGap = Math.abs(previousTimestamp - timestamp)
+			const totalSpan = Math.abs(leaderTimestamp - timestamp)
+
+			if (previousGap > windowSeconds || totalSpan > maxSpanSeconds) {
 				break
 			}
 
 			memberIds.push(fileIds[next])
-			previousTimestamp = candidate.attributes.timestamp
+			previousTimestamp = timestamp
 			next++
 		}
 
@@ -86,7 +99,7 @@ export function clusterBursts(
 			stacks[leaderId] = { leaderId, memberIds }
 		}
 
-		index = next
+		index = memberIds.length >= minSize ? next : index + 1
 	}
 
 	return stacks
@@ -108,6 +121,7 @@ export function applyBurstStacks(
 	}
 
 	const leaderOf: Record<string, string> = {}
+
 	for (const stack of Object.values(stacks)) {
 		for (const memberId of stack.memberIds) {
 			leaderOf[memberId] = stack.leaderId
@@ -116,13 +130,14 @@ export function applyBurstStacks(
 
 	const folded: string[] = []
 	const seen = new Set<string>()
+
 	for (const fileId of fileIds) {
 		const leaderId = leaderOf[fileId] ?? fileId
-		if (seen.has(leaderId)) {
-			continue
+
+		if (!seen.has(leaderId)) {
+			seen.add(leaderId)
+			folded.push(leaderId)
 		}
-		seen.add(leaderId)
-		folded.push(leaderId)
 	}
 
 	return folded
