@@ -44,12 +44,6 @@ export function useLoadedPhotos(): {
 
 				requests++
 
-				console.debug('[Memories performance] fetched batch', {
-					firstResult,
-					files: files.length,
-					duration: `${Math.round(performance.now() - requestStart)} ms`,
-				})
-
 				for (const file of files) {
 					if (file.attributes.hidden) {
 						continue
@@ -73,12 +67,6 @@ export function useLoadedPhotos(): {
 			}
 
 			photos.value = loadedPhotos
-
-			console.debug('[Memories performance] loaded all photos', {
-				photos: photos.value.length,
-				requests,
-				duration: `${Math.round(performance.now() - start)} ms`,
-			})
 		} catch (error) {
 			if (error instanceof DOMException && error.name === 'AbortError') {
 				return

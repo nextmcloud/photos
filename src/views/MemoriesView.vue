@@ -84,8 +84,11 @@
 <script lang="ts" setup>
 import type { Trip, YearRecap } from '../services/memories.ts'
 
+import { subscribe, unsubscribe } from '@nextcloud/event-bus'
+import { defaultRemoteURL } from '@nextcloud/files/dav'
 import { n, t } from '@nextcloud/l10n'
-import { computed, onMounted } from 'vue'
+import { generateUrl } from '@nextcloud/router'
+import { computed, onMounted, onUnmounted } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import AnimatedNumber from '../components/AnimatedNumber.vue'
 import EmptyIllustration from '../components/EmptyIllustration.vue'
@@ -104,22 +107,12 @@ const { photos, loading, loadPhotos } = useLoadedPhotos()
 // The trips are refined as more photos get loaded by the other views, so they
 // are built from whatever is already in the store instead of waiting a fetch.
 const trips = computed<Trip[]>(() => {
-	const start = performance.now()
 	const result = detectTrips(photos.value)
-	console.debug('[Memories performance] detectTrips', {
-		photos: photos.value.length,
-		duration: `${Math.round(performance.now() - start)} ms`,
-	})
 	return result
 })
 
 const yearRecap = computed<YearRecap | null>(() => {
-	const start = performance.now()
 	const result = buildYearRecap(photos.value)
-	console.debug('[Memories performance] buildYearRecap', {
-		photos: photos.value.length,
-		duration: `${Math.round(performance.now() - start)} ms`,
-	})
 	return result
 })
 
@@ -170,8 +163,42 @@ function openTrip(trip: Trip): void {
 	viewer.open({
 		fileInfo: toViewerFileInfo(trip.cover),
 		list: trip.photos.map(toViewerFileInfo),
+		enableSidebar: true,
 	})
 }
+
+function handleViewerSidebarOpen(node: Node): void {
+	const davPath = node.source.startsWith(defaultRemoteURL)
+		? node.source.slice(defaultRemoteURL.length)
+		: undefined
+
+	if (!davPath) {
+		logger.error('Could not determine DAV path for viewer share action', {
+			fileid: node.fileid,
+			source: node.source,
+		})
+		return
+	}
+
+	sessionStorage.setItem('nmcsharing:pending-share', JSON.stringify({
+		fileid: node.fileid,
+		davPath,
+	}))
+
+	const url = generateUrl('/f/{fileid}', {
+		fileid: node.fileid,
+	})
+
+	window.location.href = `${url}?openfile=false&opendetails=true`
+}
+
+onMounted(() => {
+	subscribe('viewer:sidebar:open', handleViewerSidebarOpen)
+})
+
+onUnmounted(() => {
+	unsubscribe('viewer:sidebar:open', handleViewerSidebarOpen)
+})
 
 /**
  * Format the period covered by a trip, leaving out the parts shared by both

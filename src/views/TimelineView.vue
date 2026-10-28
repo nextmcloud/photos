@@ -147,7 +147,9 @@
 import { toViewerFileInfo, type PhotoTarget } from '../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
+import { defaultRemoteURL } from '@nextcloud/files/dav'
 import { n, t } from '@nextcloud/l10n'
+import { generateUrl } from '@nextcloud/router'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { storeToRefs } from 'pinia'
 import { computed, onMounted, onUnmounted, ref, toRef, useTemplateRef, watch } from 'vue'
@@ -322,6 +324,7 @@ function openViewer(fileId: number): void {
 			.map((id) => files.value[id])
 			.filter((file) => file !== undefined)
 			.map(toViewerFileInfo),
+		enableSidebar: true,
 	})
 }
 
@@ -387,12 +390,39 @@ onBeforeRouteLeave(() => {
 	})
 })
 
+function handleViewerSidebarOpen(node: Node): void {
+	const davPath = node.source.startsWith(defaultRemoteURL)
+		? node.source.slice(defaultRemoteURL.length)
+		: undefined
+
+	if (!davPath) {
+		logger.error('Could not determine DAV path for viewer share action', {
+			fileid: node.fileid,
+			source: node.source,
+		})
+		return
+	}
+
+	sessionStorage.setItem('nmcsharing:pending-share', JSON.stringify({
+		fileid: node.fileid,
+		davPath,
+	}))
+
+	const url = generateUrl('/f/{fileid}', {
+		fileid: node.fileid,
+	})
+
+	window.location.href = `${url}?openfile=false&opendetails=true`
+}
+
 onMounted(() => {
 	subscribe(configChangedEvent, handleUserConfigChange)
+	subscribe('viewer:sidebar:open', handleViewerSidebarOpen)
 })
 
 onUnmounted(() => {
 	unsubscribe(configChangedEvent, handleUserConfigChange)
+	unsubscribe('viewer:sidebar:open', handleViewerSidebarOpen)
 })
 </script>
 
