@@ -52,6 +52,8 @@
 
 <script setup lang="ts">
 import type { Node } from '@nextcloud/files'
+import { defaultRemoteURL } from '@nextcloud/files/dav'
+import { generateUrl } from '@nextcloud/router'
 import type { Collection } from '../../services/collectionFetcher.ts'
 import { logger } from '../../services/logger.ts'
 import { toViewerFileInfo, type PhotoTarget } from '../../utils/fileUtils.ts'
@@ -123,7 +125,7 @@ function openViewer(fileId: number): void {
 			.map((id) => files.value[id])
 			.filter((file) => file !== undefined)
 			.map(toViewerFileInfo),
-		enableSidebar: false,
+		enableSidebar: true,
 	})
 }
 
@@ -146,12 +148,39 @@ function removeFromCollection(fileId: number): void {
 	collectionsStore.removeFileIdsFromCollection(props.collection.root + props.collection.path, [fileId?.toString()])
 }
 
+function handleViewerSidebarOpen(node: Node): void {
+	const davPath = node.source.startsWith(defaultRemoteURL)
+		? node.source.slice(defaultRemoteURL.length)
+		: undefined
+
+	if (!davPath) {
+		logger.error('Could not determine DAV path for viewer share action', {
+			fileid: node.fileid,
+			source: node.source,
+		})
+		return
+	}
+
+	sessionStorage.setItem('nmcsharing:pending-share', JSON.stringify({
+		fileid: node.fileid,
+		davPath,
+	}))
+
+	const url = generateUrl('/f/{fileid}', {
+		fileid: node.fileid,
+	})
+
+	window.location.href = `${url}?openfile=false&opendetails=true`
+}
+
 onMounted(() => {
 	subscribe('files:node:deleted', handleFileDeleted)
+	subscribe('viewer:sidebar:open', handleViewerSidebarOpen)
 })
 
 onUnmounted(() => {
 	unsubscribe('files:node:deleted', handleFileDeleted)
+	unsubscribe('viewer:sidebar:open', handleViewerSidebarOpen)
 })
 
 defineExpose({ selectedFileIds, onUncheckFiles })
