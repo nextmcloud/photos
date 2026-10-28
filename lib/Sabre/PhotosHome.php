@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace OCA\Photos\Sabre;
 
 use OCA\Photos\Album\AlbumMapper;
+use OCA\Photos\AppInfo\Application;
 use OCA\Photos\DB\Place\PlaceMapper;
 use OCA\Photos\Sabre\Album\AlbumsHome;
 use OCA\Photos\Sabre\Album\SharedAlbumsHome;
@@ -76,6 +77,10 @@ class PhotosHome implements ICollection {
 
 	#[\Override]
 	public function getChild($name) {
+		if ($name === PlacesHome::NAME && !Application::LOCATION_FEATURES_ENABLED) {
+			throw new NotFound();
+		}
+
 		return match ($name) {
 			AlbumsHome::NAME => new AlbumsHome($this->principalInfo, $this->albumMapper, $this->userId, $this->rootFolder, $this->userConfigService, $this->logger, $this->userManager),
 			SharedAlbumsHome::NAME => new SharedAlbumsHome($this->principalInfo, $this->albumMapper, $this->userId, $this->rootFolder, $this->userManager, $this->groupManager, $this->userConfigService, $this->logger),
@@ -89,16 +94,23 @@ class PhotosHome implements ICollection {
 	 */
 	#[\Override]
 	public function getChildren(): array {
-		return [
+		$children = [
 			new AlbumsHome($this->principalInfo, $this->albumMapper, $this->userId, $this->rootFolder, $this->userConfigService, $this->logger, $this->userManager),
 			new SharedAlbumsHome($this->principalInfo, $this->albumMapper, $this->userId, $this->rootFolder, $this->userManager, $this->groupManager, $this->userConfigService, $this->logger),
-			new PlacesHome($this->userId, $this->rootFolder, $this->reverseGeoCoderService, $this->placeMapper),
 		];
+
+		if (Application::LOCATION_FEATURES_ENABLED) {
+			$children[] = new PlacesHome($this->userId, $this->rootFolder, $this->reverseGeoCoderService, $this->placeMapper);
+		}
+
+		return $children;
 	}
 
 	#[\Override]
 	public function childExists($name): bool {
-		return $name === AlbumsHome::NAME || $name === SharedAlbumsHome::NAME || $name === PlacesHome::NAME;
+		return $name === AlbumsHome::NAME
+			|| $name === SharedAlbumsHome::NAME
+			|| (Application::LOCATION_FEATURES_ENABLED && $name === PlacesHome::NAME);
 	}
 
 	#[\Override]

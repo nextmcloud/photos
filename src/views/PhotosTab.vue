@@ -13,7 +13,7 @@
 			</span>
 		</div>
 
-		<div v-if="place" class="photo-detail photo-detail__gps">
+		<div v-if="locationFeaturesEnabled && place" class="photo-detail photo-detail__gps">
 			<div class="photo-detail__gps__title">
 				<MapMarkerOutline /> {{ place }}
 			</div>
@@ -48,6 +48,7 @@ import CalendarOutline from 'vue-material-design-icons/CalendarOutline.vue'
 import CameraIris from 'vue-material-design-icons/CameraIris.vue'
 import MapMarkerOutline from 'vue-material-design-icons/MapMarkerOutline.vue'
 import LocationMap from '../components/LocationMap.vue'
+import { locationFeaturesEnabled } from '../services/LocationFeatures.ts'
 import { formatDate, formatTime } from '../utils/dateUtils.ts'
 
 type SideBarFile = PhotoFile & {
@@ -79,6 +80,7 @@ export default defineComponent({
 			// Opening the link
 			linkZoom: 18,
 			attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+			locationFeaturesEnabled,
 		}
 	},
 
