@@ -260,6 +260,7 @@ OC.L10N.register(
     "Details" : "Details",
     "Confirm" : "Bestätigen",
     "View Info" : "Info anzeigen",
+    "Loading…" : "Laden…",
     "_%n element_::_%n elements_" : ["%n Element","%n Elemente"],
     "Created" : "Erstellt",
     "Create empty album" : "Leeres Album erstellen",
