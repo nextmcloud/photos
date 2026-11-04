@@ -8,10 +8,12 @@
 namespace OCA\Photos\Controller;
 
 use OCA\Photos\AppInfo\Application;
+use OCA\Viewer\Event\LoadViewer;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\ContentSecurityPolicy;
 use OCP\AppFramework\Http\Template\PublicTemplateResponse;
 use OCP\AppFramework\Services\IInitialState;
+use OCP\EventDispatcher\IEventDispatcher;
 use OCP\IRequest;
 use OCP\Util;
 
@@ -20,10 +22,11 @@ class PublicAlbumController extends Controller {
 
 	public function __construct(
 		IRequest $request,
+		IEventDispatcher $eventDispatcher,
 		IInitialState $initialState,
 	) {
 		parent::__construct(Application::APP_ID, $request);
-
+		$this->eventDispatcher = $eventDispatcher;
 		$this->initialState = $initialState;
 	}
 
@@ -32,6 +35,8 @@ class PublicAlbumController extends Controller {
 	 * @NoCSRFRequired
 	 */
 	public function get(): PublicTemplateResponse {
+		$this->eventDispatcher->dispatch(LoadViewer::class, new LoadViewer());
+
 		$this->initialState->provideInitialState('image-mimes', Application::IMAGE_MIMES);
 		$this->initialState->provideInitialState('video-mimes', Application::VIDEO_MIMES);
 		$this->initialState->provideInitialState('maps', false);
