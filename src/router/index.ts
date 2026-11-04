@@ -3,12 +3,15 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+import type { RouteRecordRaw } from 'vue-router'
+
 import { t } from '@nextcloud/l10n'
 import { generateUrl } from '@nextcloud/router'
 import { createRouter, createWebHistory } from 'vue-router'
 import { imageMimes, videoMimes } from '../services/AllowedMimes.js'
 import { areTagsInstalled } from '../services/AreTagsInstalled.ts'
 import { isRecognizeInstalled } from '../services/IsRecognizeInstalled.ts'
+import { locationFeaturesEnabled } from '../services/LocationFeatures.ts'
 
 const FoldersView = () => import('../views/FoldersView.vue')
 const MapView = () => import('../views/MapView.vue')
@@ -39,6 +42,47 @@ const baseTitle = document.title
 function parsePathParams(path: string | string[]): string {
 	return `/${Array.isArray(path) ? path.join('/') : path || ''}`
 }
+
+const placesRoutes: RouteRecordRaw[] = locationFeaturesEnabled
+	? [
+			{
+				path: '/places',
+				component: PlacesView,
+				name: 'places',
+			},
+			{
+				path: '/places/:placeName(.+)',
+				component: PlaceContent,
+				name: 'placesContent',
+				props: (route) => ({
+					placeName: route.params.placeName,
+				}),
+			},
+		]
+	: []
+
+const mapRoutes: RouteRecordRaw[] = locationFeaturesEnabled
+	? [
+			{
+				path: '/map',
+				name: 'map',
+				component: MapView,
+				props: () => ({
+					rootTitle: t('photos', 'Map'),
+				}),
+				meta: {
+					rootTitle: () => {
+						return t('photos', 'Map')
+					},
+				},
+			},
+			{
+				// The map used to be handled by the Maps app, keep the old links working.
+				path: '/maps',
+				redirect: { name: 'map' },
+			},
+		]
+	: []
 
 export const router = createRouter({
 	// if index.php is in the url AND we got this far, then it's working:
@@ -146,19 +190,7 @@ export const router = createRouter({
 				},
 			},
 		},
-		{
-			path: '/places',
-			component: PlacesView,
-			name: 'places',
-		},
-		{
-			path: '/places/:placeName(.+)',
-			component: PlaceContent,
-			name: 'placesContent',
-			props: (route) => ({
-				placeName: route.params.placeName,
-			}),
-		},
+		...placesRoutes,
 		{
 			path: '/folders/:path(.*)?',
 			component: FoldersView,
@@ -236,24 +268,7 @@ export const router = createRouter({
 				},
 			},
 		},
-		{
-			path: '/map',
-			name: 'map',
-			component: MapView,
-			props: () => ({
-				rootTitle: t('photos', 'Map'),
-			}),
-			meta: {
-				rootTitle: () => {
-					return t('photos', 'Map')
-				},
-			},
-		},
-		{
-			// The map used to be handled by the Maps app, keep the old links working.
-			path: '/maps',
-			redirect: { name: 'map' },
-		},
+		...mapRoutes,
 		{
 			path: '/memories',
 			name: 'memories',

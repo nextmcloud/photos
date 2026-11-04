@@ -138,6 +138,7 @@
 					</template>
 				</NcAppNavigationItem>
 				<NcAppNavigationItem
+					v-if="locationFeaturesEnabled"
 					:to="{ name: 'places' }"
 					:name="t('photos', 'Places')"
 					data-id-app-nav-item="places">
@@ -147,6 +148,7 @@
 					</template>
 				</NcAppNavigationItem>
 				<NcAppNavigationItem
+					v-if="locationFeaturesEnabled"
 					:to="{ name: 'map' }"
 					:name="t('photos', 'Map')"
 					data-id-app-nav-item="map">
@@ -243,6 +245,7 @@ import videoplaceholder from './assets/video.svg'
 import { areTagsInstalled } from './services/AreTagsInstalled.ts'
 import { isAppStoreEnabled } from './services/IsAppStoreEnabled.ts'
 import { isRecognizeInstalled } from './services/IsRecognizeInstalled.ts'
+import { locationFeaturesEnabled } from './services/LocationFeatures.ts'
 import { logger } from './services/logger.ts'
 import { nameFilterId } from './services/PhotosFilters/nameFilter.ts'
 import { useFilesStore } from './store/files.ts'
