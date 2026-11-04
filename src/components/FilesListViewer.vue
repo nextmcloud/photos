@@ -4,16 +4,38 @@
 -->
 <template>
 	<div class="files-list-viewer">
-		<NcEmptyContent
+		<div
 			v-if="emptyMessage !== '' && photosCount === 0 && !loading"
-			key="emptycontent"
-			:name="emptyMessage">
-			<template #icon>
-				<PackageVariant />
-			</template>
-		</NcEmptyContent>
+			:key="routeName"
+			class="timeline__empty-content">
+			<div class="empty-collection-content" :data-title="routeName">
+				<div class="empty-content__wrapper">
+					<div class="empty-content__image" />
+				</div>
+				<div class="empty-content__name">
+					{{ emptyName }}
+				</div>
+				<div class="empty-content__action">
+					{{ emptyAction }}
+				</div>
+				<NcButton
+					ref="newAlbumButton"
+					:aria-label="emptyMessage"
+					data-cy-header-action="create-album"
+					variant="primary"
+					@click="emit('add-collection', true)">
+					{{ emptyMessage }}
+					<template #icon>
+						<PlusBoxMultipleOutline />
+					</template>
+				</NcButton>
+			</div>
+		</div>
 
-		<TiledLayout :baseHeight="baseHeight" :sections="itemsBySections">
+		<TiledLayout
+			:baseHeight="baseHeight"
+			:sections="itemsBySections"
+			:fixedSize="croppedLayout">
 			<template #default="{ tiledSections }">
 				<VirtualScrolling
 					:useWindow="useWindow"
@@ -21,7 +43,7 @@
 					:sections="tiledSections"
 					:scrollToKey="scrollToSection"
 					:headerHeight="sectionHeaderHeight"
-					@needContent="needContent">
+					@need-content="needContent">
 					<template #default="{ visibleSections }">
 						<div v-for="section of visibleSections" :key="section.id">
 							<template v-if="section.id !== ''">
@@ -75,10 +97,12 @@ import type { TiledItem } from '../services/TiledLayout.ts'
 import type { PhotoFile } from '../store/files.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
+import { t } from '@nextcloud/l10n'
 import { computed, onMounted, onUnmounted } from 'vue'
-import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
+import { useRoute } from 'vue-router'
+import NcButton from '@nextcloud/vue/components/NcButton'
 import NcLoadingIcon from '@nextcloud/vue/components/NcLoadingIcon'
-import PackageVariant from 'vue-material-design-icons/PackageVariant.vue'
+import PlusBoxMultipleOutline from 'vue-material-design-icons/PlusBoxMultipleOutline.vue'
 import TiledLayout from '../components/TiledLayout/TiledLayout.vue'
 import VirtualScrolling from '../components/VirtualScrolling.vue'
 import { fetchFile } from '../services/fileFetcher.ts'
@@ -121,6 +145,7 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
 	needContent: []
+	'add-collection': [value: boolean]
 }>()
 
 defineSlots<{
@@ -128,6 +153,7 @@ defineSlots<{
 	default(props: { file: Pick<TiledItem, 'id'>, isHeader?: boolean }): unknown
 }>()
 
+const route = useRoute()
 const filesStore = useFilesStore()
 const userConfigStore = useUserConfigStore()
 
@@ -182,7 +208,35 @@ const itemsBySections = computed<{ id: string, items: TiledItem[] }[]>(() => {
 	return []
 })
 
-const photosCount = computed<number>(() => itemsBySections.value.map(({ items }) => items.length).reduce((total, length) => total + length, 0))
+const photosCount = computed<number>(() => itemsBySections.value
+	.map(({ items }) => items.length)
+	.reduce((total, length) => total + length, 0))
+
+const routeName = computed<string>(() => route.name?.toString() ?? '')
+
+const emptyName = computed<string>(() => {
+	if (routeName.value === 'photos') {
+		return t('photos', 'No photos available yet.')
+	}
+
+	if (routeName.value === 'videos') {
+		return t('photos', 'No videos available yet.')
+	}
+
+	return t('photos', 'No media available yet.')
+})
+
+const emptyAction = computed<string>(() => {
+	if (routeName.value === 'photos') {
+		return t('photos', 'Create an album and add your photos there.')
+	}
+
+	if (routeName.value === 'videos') {
+		return t('photos', 'Create an album and add your videos there.')
+	}
+
+	return t('photos', 'Create an album and add your media there.')
+})
 
 // Ask the parent for more content.
 function needContent(): void {
@@ -191,11 +245,16 @@ function needContent(): void {
 
 function mapFileToItem(fileId: string): TiledItem {
 	const file = files.value[fileId] as File
+	const isVideo = file.mime?.startsWith('video/')
+	const metadata = isVideo
+		? (croppedLayout.value ? { width: 100, height: 200 } : { width: 200, height: 400 })
+		: file.attributes['metadata-photos-size']
+
 	return {
 		id: file.fileid?.toString() as string,
-		width: file.attributes['metadata-photos-size'].width,
-		height: file.attributes['metadata-photos-size'].height,
-		ratio: croppedLayout.value ? 1 : file.attributes['metadata-photos-size'].width / file.attributes['metadata-photos-size'].height,
+		width: metadata.width,
+		height: metadata.height,
+		ratio: croppedLayout.value ? 1 : metadata.width / metadata.height,
 	}
 }
 
@@ -208,7 +267,7 @@ async function handleFileUpdated({ fileid }: Node): Promise<void> {
 	filesStore.appendFiles([fetchedFile as File])
 }
 
-function handleFileDeleted({ fileid }: Node) {
+function handleFileDeleted({ fileid }: Node): void {
 	filesStore.deleteFile(fileid as number)
 }
 
