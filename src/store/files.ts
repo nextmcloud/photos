@@ -75,6 +75,13 @@ export const useFilesStore = defineStore('files', () => {
 	}
 
 	/**
+	 * Clear all files currently held in the global photos store.
+	 */
+	function clearFiles(): void {
+		files.value = {}
+	}
+
+	/**
 	 * Set list of all .nomedia/.noimage files
 	 *
 	 * @param paths - Paths to exclude from the listings
@@ -265,6 +272,7 @@ export const useFilesStore = defineStore('files', () => {
 		files,
 		nomediaPaths,
 		appendFiles,
+		clearFiles,
 		setNomediaPaths,
 		favoriteFile,
 		deleteFile,

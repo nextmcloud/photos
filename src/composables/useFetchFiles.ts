@@ -25,10 +25,6 @@ import { useAbortController } from './useAbortController.ts'
 
 const numberOfImagesPerBatch = 200
 
-/**
- * Fetch the photos of the library in batches into the store, and keep track
- * of the ones fetched so far.
- */
 export function useFetchFiles(): {
 	fetchFiles: (options?: Partial<PhotoSearchOptions>, filter?: (file: File) => boolean, force?: boolean) => Promise<number[]>
 	resetFetchFilesState: () => void
@@ -48,13 +44,11 @@ export function useFetchFiles(): {
 	const doneFetchingFiles = ref(false)
 	const errorFetchingFiles = ref<null | number | Error>(null)
 
-	/**
-	 * @param options - Options to pass to getPhotos.
-	 * @param filter - Function to filter out some files.
-	 * @param force - Force fetching even if doneFetchingFiles is true
-	 * @return The next batch of data depending on global offset.
-	 */
-	async function fetchFiles(options: Partial<PhotoSearchOptions> = {}, filter?: (file: File) => boolean, force: boolean = false): Promise<number[]> {
+	async function fetchFiles(
+		options: Partial<PhotoSearchOptions> = {},
+		filter?: (file: File) => boolean,
+		force: boolean = false,
+	): Promise<number[]> {
 		if ((doneFetchingFiles.value && !force) || loadingFiles.value) {
 			return []
 		}
@@ -66,7 +60,6 @@ export function useFetchFiles(): {
 			errorFetchingFiles.value = null
 			loadingFiles.value = true
 
-			// Load next batch of images
 			let fetchedFiles = await getPhotos({
 				firstResult: fetchedFileIds.value.length,
 				nbResults: numberOfImagesPerBatch,
@@ -74,7 +67,6 @@ export function useFetchFiles(): {
 				signal,
 			})
 
-			// If we get less files than requested that means we got to the end
 			if (fetchedFiles.length !== numberOfImagesPerBatch) {
 				doneFetchingFiles.value = true
 			}
@@ -85,10 +77,9 @@ export function useFetchFiles(): {
 
 			const fileIds = fetchedFiles
 				.map((file) => file.fileid as number)
-				.filter((fileId) => !fetchedFileIds.value.includes(fileId)) // Filter to prevent duplicate fileIds.
+				.filter((fileId) => !fetchedFileIds.value.includes(fileId))
 
 			fetchedFileIds.value.push(...fileIds)
-
 			filesStore.appendFiles(fetchedFiles)
 
 			logger.debug(`[useFetchFiles] Fetched ${fileIds.length} new files: `, { fileIds })
@@ -98,25 +89,39 @@ export function useFetchFiles(): {
 			if ((error as WebDAVClientError).response?.status === 404) {
 				const { photosLocation, photosSourceFolders } = userConfigStore
 				const errorBody = await getErrorBody(error)
-				const missingFolder = photosSourceFolders
-					.find((source) => errorBody.includes(`File with name ${source} could not be located`))
+				const missingFolder = photosSourceFolders.find(
+					(source) => errorBody.includes(`File with name ${source} could not be located`),
+				)
 
 				if (missingFolder !== undefined) {
 					if (missingFolder === photosLocation) {
 						logger.debug(`The ${missingFolder} folder does not exist, creating it.`)
+
 						try {
 							await davClient.createDirectory(join(defaultRootPath, missingFolder))
 							resetFetchFilesState()
 							return []
-						} catch (error) {
+						} catch (createError) {
 							errorFetchingFiles.value = 404
-							logger.error('Fail to create source directory', { error })
+							logger.error('Fail to create source directory', { error: createError })
 						}
 					} else {
-						errorFetchingFiles.value = 404
-						logger.error(`The ${missingFolder} media folder does not exist.`, { error })
-						showError(t('photos', 'The folder {folder} does not exist anymore. You can remove it from your media folders in the Photos settings.', { folder: missingFolder }))
-						return []
+						logger.info(`The ${missingFolder} media folder does not exist. Removing it from media folders.`)
+
+						const updatedSourceFolders = photosSourceFolders.filter(
+							(source) => source !== missingFolder,
+						)
+
+						try {
+							await userConfigStore.updateUserConfig('photosSourceFolders', updatedSourceFolders)
+							return []
+						} catch (updateError) {
+							errorFetchingFiles.value = updateError as Error
+							logger.error('Failed to remove missing media folder from Photos settings', {
+								error: updateError,
+								folder: missingFolder,
+							})
+						}
 					}
 				} else {
 					errorFetchingFiles.value = error as Error

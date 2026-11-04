@@ -15,6 +15,7 @@ use OC\User\NoUserException;
 use OCA\Files\Event\LoadSidebar;
 use OCA\Photos\AppInfo\Application;
 use OCA\Photos\Service\UserConfigService;
+use OCA\Viewer\Event\LoadViewer;
 use OCP\App\IAppManager;
 use OCP\AppFramework\Controller;
 use OCP\AppFramework\Http\ContentSecurityPolicy;
@@ -84,6 +85,7 @@ class PageController extends Controller {
 		$user = $this->userSession->getUser();
 
 		$this->eventDispatcher->dispatch(LoadSidebar::class, new LoadSidebar());
+		$this->eventDispatcher->dispatch(LoadViewer::class, new LoadViewer());
 
 		$this->initialState->provideInitialState('image-mimes', Application::IMAGE_MIMES);
 		$this->initialState->provideInitialState('video-mimes', Application::VIDEO_MIMES);

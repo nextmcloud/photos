@@ -42,6 +42,7 @@
 					:containerElement="containerElement"
 					:sections="tiledSections"
 					:scrollToKey="scrollToSection"
+					:scrollOffset="scrollOffset"
 					:headerHeight="sectionHeaderHeight"
 					@need-content="needContent">
 					<template #default="{ visibleSections }">
@@ -126,6 +127,8 @@ const props = withDefaults(defineProps<{
 	sectionHeaderHeight?: number
 	// Instruct VirtualScrolling to scroll to the given section id.
 	scrollToSection?: string
+	// Additional offset when scrolling to a section.
+	scrollOffset?: number
 	// The containerElement props to forward to TileLayout.
 	containerElement?: HTMLElement | null
 	// The useWindow props to forward to TileLayout.
@@ -139,6 +142,7 @@ const props = withDefaults(defineProps<{
 	baseHeight: 200,
 	sectionHeaderHeight: 75,
 	scrollToSection: '',
+	scrollOffset: 0,
 	containerElement: null,
 	useWindow: false,
 })
