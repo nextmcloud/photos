@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: AGPL-3.0-or-later
  */
 
+use OCA\Photos\AppInfo\Application;
+
 return [
 	'routes' => [
 		// API endpoints used by the Photos frontend
@@ -55,20 +57,21 @@ return [
 			'verb' => 'GET',
 			'postfix' => 'memories',
 		],
-		[
-			'name' => 'page#index',
-			'url' => '/map',
-			'verb' => 'GET',
-			'postfix' => 'map',
-		],
-		[
-			// The map used to be handled by the Maps app, the frontend router sends
-			// the old links to the map view.
-			'name' => 'page#index',
-			'url' => '/maps',
-			'verb' => 'GET',
-			'postfix' => 'maps',
-		],
+
+		...(Application::LOCATION_FEATURES_ENABLED ? [
+			[
+				'name' => 'page#index',
+				'url' => '/map',
+				'verb' => 'GET',
+				'postfix' => 'map',
+			],
+			[
+				'name' => 'page#index',
+				'url' => '/maps',
+				'verb' => 'GET',
+				'postfix' => 'maps',
+			],
+		] : []),
 
 		// Collection and folder views
 		[
@@ -95,18 +98,22 @@ return [
 				'path' => '',
 			],
 		],
-		[
-			'name' => 'page#index',
-			'url' => '/places/{path}',
-			'verb' => 'GET',
-			'postfix' => 'places',
-			'requirements' => [
-				'path' => '.*',
+
+		...(Application::LOCATION_FEATURES_ENABLED ? [
+			[
+				'name' => 'page#index',
+				'url' => '/places/{path}',
+				'verb' => 'GET',
+				'postfix' => 'places',
+				'requirements' => [
+					'path' => '.*',
+				],
+				'defaults' => [
+					'path' => '',
+				],
 			],
-			'defaults' => [
-				'path' => '',
-			],
-		],
+		] : []),
+
 		[
 			'name' => 'page#index',
 			'url' => '/folders/{path}',

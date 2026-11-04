@@ -9,6 +9,7 @@ declare(strict_types=1);
 namespace OCA\Photos\Sabre;
 
 use OCA\DAV\Connector\Sabre\File;
+use OCA\Photos\AppInfo\Application;
 use OCA\Photos\Listener\ExifMetadataProvider;
 use OCA\Photos\Listener\OriginalDateTimeMetadataProvider;
 use OCA\Photos\Listener\PlaceMetadataProvider;
@@ -116,11 +117,14 @@ class MetadataPropPatchPlugin extends ServerPlugin {
 
 			// The place is derived from the coordinates, keeping the previous
 			// one would leave the photo in the wrong place collection.
-			$place = $this->mediaPlaceManager->getPlaceForMetadata($metadata);
-			if ($place === null) {
-				$metadata->unset(PlaceMetadataProvider::METADATA_KEY);
-			} else {
-				$metadata->setString(PlaceMetadataProvider::METADATA_KEY, $place, true);
+			if (Application::LOCATION_FEATURES_ENABLED) {
+				$place = $this->mediaPlaceManager->getPlaceForMetadata($metadata);
+
+				if ($place === null) {
+					$metadata->unset(PlaceMetadataProvider::METADATA_KEY);
+				} else {
+					$metadata->setString(PlaceMetadataProvider::METADATA_KEY, $place, true);
+				}
 			}
 		}
 

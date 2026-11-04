@@ -5,10 +5,15 @@
 
 /* eslint-disable @stylistic/no-tabs */
 import { registerDavProperty } from '@nextcloud/files/dav'
+import { locationFeaturesEnabled } from './services/LocationFeatures.ts'
+
 registerDavProperty('nc:metadata-photos-exif')
 registerDavProperty('nc:metadata-photos-ifd0')
-registerDavProperty('nc:metadata-photos-gps')
-registerDavProperty('nc:metadata-photos-place')
+
+if (locationFeaturesEnabled) {
+	registerDavProperty('nc:metadata-photos-gps')
+	registerDavProperty('nc:metadata-photos-place')
+}
 
 // Init Photos tab component
 // let PhotosTabView = null
