@@ -163,6 +163,7 @@
 					<NcButton
 						variant="tertiary"
 						alignment="start"
+						:title="t('photos', 'Photos settings')"
 						wide
 						@click="showSettings">
 						<template #icon>
