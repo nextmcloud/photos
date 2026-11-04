@@ -643,10 +643,6 @@ $magnify-transition: transform 520ms cubic-bezier(0.22, 1, 0.36, 1);
 		.photo-actions-menu {
 			opacity: 1;
 		}
-
-		.favorite-state {
-			display: none;
-		}
 	}
 
 	.selection-checkbox {

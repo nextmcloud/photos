@@ -49,10 +49,9 @@
 </template>
 
 <script setup lang="ts">
-import type { PhotoTarget } from '../utils/fileUtils.ts'
+import { toViewerFileInfo, type PhotoTarget } from '../utils/fileUtils.ts'
 
 import { translatePlural as n, translate as t } from '@nextcloud/l10n'
-import { getViewer } from '@nextcloud/viewer'
 import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { computed, onBeforeMount, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -113,7 +112,7 @@ function onPhotoDeleted(photo: PhotoTarget): void {
 
 async function fetchContent(): Promise<void> {
 	// close any potential opened viewer
-	getViewer().close()
+	window.OCA.Viewer.close()
 
 	loading.value = true
 	error.value = null
@@ -137,7 +136,29 @@ async function fetchContent(): Promise<void> {
 }
 
 function openViewer(fileId: number): void {
-	getViewer().open(fileIds.value.map((fileId) => files.value[fileId]), files.value[fileId])
+	const fileIds = burstStacks.value[fileId]?.memberIds
+		?? Object.values(fileIdsByMonth.value).flat()
+
+	const file = files.value[fileId]
+
+	if (file === undefined) {
+		return
+	}
+
+	const viewer = window.OCA.Viewer
+
+	if (viewer === undefined) {
+		logger.error('Legacy viewer is not available')
+		return
+	}
+
+	viewer.open({
+		fileInfo: toViewerFileInfo(file),
+		list: fileIds
+			.map((id) => files.value[id])
+			.filter((file) => file !== undefined)
+			.map(toViewerFileInfo),
+	})
 }
 
 onBeforeMount(() => {

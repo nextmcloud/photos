@@ -172,9 +172,12 @@
 			</template>
 		</NcAppNavigation>
 		<NcAppContent>
-			<RouterView />
+			<RouterView v-slot="{ Component }">
+				<component
+					:is="Component"
+					@open-settings="showSettings" />
+			</RouterView>
 
-			<!-- svg img loading placeholder (linked to the File component) -->
 			<!-- eslint-disable-next-line vue/no-v-html (because it's an SVG file) -->
 			<span class="hidden-visually" role="none" v-html="svgplaceholder" />
 			<!-- eslint-disable-next-line vue/no-v-html (because it's an SVG file) -->

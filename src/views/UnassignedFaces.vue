@@ -102,10 +102,9 @@
 </template>
 
 <script setup lang="ts">
-import type { PhotoTarget } from '../utils/fileUtils.ts'
+import { toViewerFileInfo, type PhotoTarget } from '../utils/fileUtils.ts'
 
 import { n, t } from '@nextcloud/l10n'
-import { getViewer } from '@nextcloud/viewer'
 import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NcActionButton from '@nextcloud/vue/components/NcActionButton'
@@ -154,7 +153,29 @@ function onPhotoDeleted(photo: PhotoTarget): void {
 }
 
 function openViewer(fileId: number): void {
-	getViewer().open(faceFileIds.value.map((fileId) => files.value[fileId]), files.value[fileId], { enableSidebar: false })
+	const fileIds = burstStacks.value[fileId]?.memberIds
+		?? Object.values(fileIdsByMonth.value).flat()
+
+	const file = files.value[fileId]
+
+	if (file === undefined) {
+		return
+	}
+
+	const viewer = window.OCA.Viewer
+
+	if (viewer === undefined) {
+		logger.error('Legacy viewer is not available')
+		return
+	}
+
+	viewer.open({
+		fileInfo: toViewerFileInfo(file),
+		list: fileIds
+			.map((id) => files.value[id])
+			.filter((file) => file !== undefined)
+			.map(toViewerFileInfo),
+	})
 }
 
 async function handleMove(faceName: string, fileIds: string[]): Promise<void> {
