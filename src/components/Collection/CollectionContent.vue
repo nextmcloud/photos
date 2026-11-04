@@ -35,7 +35,7 @@
 			:containerElement="appContent"
 			class="collection__media"
 			:fileIds="sortedCollectionFileIds"
-			:baseHeight="isMobile ? 120 : 200"
+			:baseHeight="tileBaseHeight"
 			:loading="loading">
 			<template #default="{ file }">
 				<FileComponent
@@ -52,13 +52,14 @@
 
 <script setup lang="ts">
 import type { Node } from '@nextcloud/files'
+import { defaultRemoteURL } from '@nextcloud/files/dav'
+import { generateUrl } from '@nextcloud/router'
 import type { Collection } from '../../services/collectionFetcher.ts'
-import type { PhotoTarget } from '../../utils/fileUtils.ts'
+import { logger } from '../../services/logger.ts'
+import { toViewerFileInfo, type PhotoTarget } from '../../utils/fileUtils.ts'
 
 import { subscribe, unsubscribe } from '@nextcloud/event-bus'
 import { t } from '@nextcloud/l10n'
-import { getViewer } from '@nextcloud/viewer'
-import { useIsMobile } from '@nextcloud/vue/composables/useIsMobile'
 import { computed, onMounted, onUnmounted } from 'vue'
 import NcEmptyContent from '@nextcloud/vue/components/NcEmptyContent'
 import AlertCircleOutline from 'vue-material-design-icons/AlertCircleOutline.vue'
@@ -66,6 +67,7 @@ import ImageMultipleOutline from 'vue-material-design-icons/ImageMultipleOutline
 import FileComponent from '../FileComponent.vue'
 import FilesListViewer from '../FilesListViewer.vue'
 import { useFilesSelection } from '../../composables/useFilesSelection.ts'
+import { useGridDensity } from '../../composables/useGridDensity.ts'
 import { useCollectionsStore } from '../../store/collections.ts'
 import { useFilesStore } from '../../store/files.ts'
 
@@ -82,19 +84,49 @@ const props = withDefaults(defineProps<{
 	error: null,
 })
 
-const isMobile = useIsMobile()
 const collectionsStore = useCollectionsStore()
 const filesStore = useFilesStore()
 const { selection, selectedFileIds, onFileSelectToggle, onUncheckFiles, resetSelection } = useFilesSelection()
+const { tileBaseHeight } = useGridDensity()
 
 const appContent = document.getElementById('app-content-vue')
 
 const files = computed(() => filesStore.files)
 
-const sortedCollectionFileIds = computed(() => props.collectionFileIds.toSorted((fileId1, fileId2) => files.value[fileId1].attributes.timestamp < files.value[fileId2].attributes.timestamp ? -1 : 1))
+const sortedCollectionFileIds = computed(() => props.collectionFileIds
+	.filter((fileId) => files.value[fileId] !== undefined)
+	.toSorted((fileId1, fileId2) => {
+		const file1 = files.value[fileId1]
+		const file2 = files.value[fileId2]
+
+		const timestamp1 = Number(file1.attributes.timestamp ?? 0)
+		const timestamp2 = Number(file2.attributes.timestamp ?? 0)
+
+		return timestamp1 - timestamp2
+	}))
 
 function openViewer(fileId: number): void {
-	getViewer().open(sortedCollectionFileIds.value.map((fileId) => files.value[fileId]), files.value[fileId], { enableSidebar: false })
+	const file = files.value[fileId]
+
+	if (file === undefined) {
+		return
+	}
+
+	const viewer = window.OCA.Viewer
+
+	if (viewer === undefined) {
+		logger.error('Legacy viewer is not available')
+		return
+	}
+
+	viewer.open({
+		fileInfo: toViewerFileInfo(file),
+		list: sortedCollectionFileIds.value
+			.map((id) => files.value[id])
+			.filter((file) => file !== undefined)
+			.map(toViewerFileInfo),
+		enableSidebar: true,
+	})
 }
 
 function handleFileDeleted({ fileid }: Node): void {
@@ -116,12 +148,39 @@ function removeFromCollection(fileId: number): void {
 	collectionsStore.removeFileIdsFromCollection(props.collection.root + props.collection.path, [fileId?.toString()])
 }
 
+function handleViewerSidebarOpen(node: Node): void {
+	const davPath = node.source.startsWith(defaultRemoteURL)
+		? node.source.slice(defaultRemoteURL.length)
+		: undefined
+
+	if (!davPath) {
+		logger.error('Could not determine DAV path for viewer share action', {
+			fileid: node.fileid,
+			source: node.source,
+		})
+		return
+	}
+
+	sessionStorage.setItem('nmcsharing:pending-share', JSON.stringify({
+		fileid: node.fileid,
+		davPath,
+	}))
+
+	const url = generateUrl('/f/{fileid}', {
+		fileid: node.fileid,
+	})
+
+	window.location.href = `${url}?openfile=false&opendetails=true`
+}
+
 onMounted(() => {
 	subscribe('files:node:deleted', handleFileDeleted)
+	subscribe('viewer:sidebar:open', handleViewerSidebarOpen)
 })
 
 onUnmounted(() => {
 	unsubscribe('files:node:deleted', handleFileDeleted)
+	unsubscribe('viewer:sidebar:open', handleViewerSidebarOpen)
 })
 
 defineExpose({ selectedFileIds, onUncheckFiles })
