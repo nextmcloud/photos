@@ -266,7 +266,7 @@ OC.L10N.register(
     "Create empty album" : "Leeres Album erstellen",
     "Rename album" : "Album umbenennen",
     "Remove element {imageName} from Album" : "Element {imageName} aus Album entfernen",
-    "Share Album" : "Album teilen",
+    "Share album" : "Album teilen",
     "Enter Name" : "Name eingeben",
     "Add people who can access your album" : "Füge Personen hinzu, die auf Dein Album zugreifen können",
     "Link to copy" : "Link zum Kopieren",
